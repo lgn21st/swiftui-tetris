@@ -1,9 +1,27 @@
 public enum ThemeConstants {
-    public static let backgroundOpacity: Double = 0.85
-    public static let panelOpacity: Double = 0.6
+    public static let backgroundOpacity: Double = 0.06
+    public static let panelOpacity: Double = 0.1
     public static let previewOpacity: Double = 0.45
     public static let overlayOpacity: Double = 0.55
     public static let dividerOpacity: Double = 0.3
-    public static let panelShadowOpacity: Double = 0.35
+    public static let panelShadowOpacity: Double = 0.0
     public static let hudBackgroundOpacity: Double = 0.4
+    public static let panelBorderOpacity: Double = 1.0
+    public static let boardBackgroundOpacity: Double = 0.11
+    public static let panelBackgroundOpacity: Double = 0.1
+    public static let appBackgroundRed: Double = 16.0 / 255.0
+    public static let appBackgroundGreen: Double = 16.0 / 255.0
+    public static let appBackgroundBlue: Double = 16.0 / 255.0
+    public static let boardBackgroundRed: Double = 28.0 / 255.0
+    public static let boardBackgroundGreen: Double = 28.0 / 255.0
+    public static let boardBackgroundBlue: Double = 28.0 / 255.0
+    public static let panelBackgroundRed: Double = 26.0 / 255.0
+    public static let panelBackgroundGreen: Double = 26.0 / 255.0
+    public static let panelBackgroundBlue: Double = 26.0 / 255.0
+    public static let panelTextRed: Double = 230.0 / 255.0
+    public static let panelTextGreen: Double = 230.0 / 255.0
+    public static let panelTextBlue: Double = 230.0 / 255.0
+    public static let borderColorRed: Double = 46.0 / 255.0
+    public static let borderColorGreen: Double = 46.0 / 255.0
+    public static let borderColorBlue: Double = 46.0 / 255.0
 }

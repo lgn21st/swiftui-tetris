@@ -14,7 +14,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Build (debug): `swift build`
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
-- Fullscreen toggle: Cmd+Ctrl+F (window size persists).
+- Fullscreen toggle: Cmd+Ctrl+F.
 - Gamepad: GameController support (dpad + A/B/X/Y + menu/options).
 
 ## CLI Packaging
@@ -43,6 +43,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/porting-plan.md`: milestones and exit criteria.
 - `docs/progress.md`: consolidated progress log.
 - `docs/cli-packaging.md`: CLI packaging instructions.
+- `docs/release-checklist.md`: pre-release QA checklist.
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Near-term Plan

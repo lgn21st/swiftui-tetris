@@ -31,7 +31,7 @@ public enum QueueRng {
         queue.append(contentsOf: bag)
     }
 
-    public static func ensureQueue(rng: inout SimpleRng, queue: inout [TetrominoType], minimum: Int = 5) {
+    public static func ensureQueue(rng: inout SimpleRng, queue: inout [TetrominoType], minimum: Int = 1) {
         while queue.count < minimum {
             refillBag(rng: &rng, queue: &queue)
         }

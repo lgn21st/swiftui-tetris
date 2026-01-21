@@ -51,7 +51,7 @@ public struct HUDState: Equatable {
             lockWarningActive: clampedRatio >= lockWarningThreshold,
             hintText: defaultHint,
             holdKind: state.hold,
-            nextKinds: Array(state.nextQueue.prefix(5))
+            nextKinds: Array(state.nextQueue.prefix(1))
         )
     }
 }

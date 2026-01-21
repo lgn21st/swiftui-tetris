@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 import Combine
 import Renderer
 import Core
@@ -172,6 +173,12 @@ public final class SceneDriver: ObservableObject {
             input.setDownHeld(false, state: &loop.state)
         default:
             break
+        }
+    }
+
+    public func toggleFullScreen() {
+        DispatchQueue.main.async {
+            NSApp.keyWindow?.toggleFullScreen(nil)
         }
     }
 

@@ -5,7 +5,7 @@ This document captures the current gpui-tetris rules and timing so the SwiftUI/S
 ## Core Constants
 - Board: width=10, height=20
 - Spawn position: (x=3, y=0)
-- Next queue size: 5
+- Next queue size: 1
 - Tick step: 16 ms (default GameConfig.tick_ms)
 - Base drop ms: 1000 (default GameConfig.base_drop_ms)
 - Soft drop multiplier: 10
@@ -65,7 +65,7 @@ L:
 ## RNG and Queue
 - 7-bag shuffle (Fisher-Yates) fills queue.
 - LCG RNG (Numerical Recipes constants) used in gpui.
-- Queue is kept at length >= 5 by refilling bags.
+- Queue is kept at length >= 1 by refilling bags.
 
 ## Actions
 GameAction:

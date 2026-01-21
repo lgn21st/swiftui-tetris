@@ -56,3 +56,14 @@
 - 2026-01-21: Added button press tracking to avoid missed gamepad button events; added tests.
 - 2026-01-21: Asset locator now resolves bundled assets for packaged apps with tests.
 - 2026-01-21: Packager now copies assets folder into app bundle (resources) with tests.
+- 2026-01-21: Added release checklist for final QA and packaging.
+- 2026-01-21: Fixed window size to content (no persistence) and filled background on resize attempts.
+- 2026-01-21: Reduced next preview to a single piece to match gpui-tetris.
+- 2026-01-21: Added bordered frames for playfield and HUD with aligned heights.
+- 2026-01-21: Matched gpui-tetris border color/style for playfield and HUD.
+- 2026-01-21: Matched gpui layout padding/gap, panel height, and colors.
+- 2026-01-21: Anchored layout scaling and alignment to prevent top clipping after pause.
+- 2026-01-21: Reframed base layout to top-leading with fixed content sizing and overlay framing to stabilize HUD/board alignment.
+- 2026-01-21: Enabled resizable window with centered content group and reset-to-default window sizing on launch.
+- 2026-01-21: Centered content group vertically within the window while keeping scale centered.
+- 2026-01-21: Applied gpui-matched board background color inside SpriteKit rendering.

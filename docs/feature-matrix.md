@@ -14,7 +14,7 @@ Legend:
 | Rotation system | SRS kicks for I/J/L/S/T/Z, O no kicks | Yes | Port kicks table verbatim. |
 | Ghost piece | Cached landing positions | Yes | SpriteKit: separate node layer with alpha. |
 | Hold | Once per spawn; swap or store | Yes | Keep hold gating and can_hold flag. |
-| Next queue | 5-piece preview | Yes | Queue filled by 7-bag shuffle. |
+| Next queue | 1-piece preview | Yes | Queue filled by 7-bag shuffle. |
 | RNG | 7-bag with LCG shuffle | Yes | Use 7-bag; RNG impl can differ if deterministic tests are not required. |
 | Line clear | Classic row clear | Yes | Keep clear order from bottom up. |
 | Line clear pause | 180 ms freeze | Yes | Freeze gravity and hide active/ghost during pause. |
@@ -52,7 +52,7 @@ Legend:
 | Settings | S | Optional | Keep settings overlay if easy. |
 | Mute | M | Optional | Toggle SFX muted. |
 | Volume | +/- adjust; 0 reset | Optional | Use 0.1 steps from default 0.7. |
-| Fullscreen | Cmd+Ctrl+F | Optional | Key capture maps Cmd+Ctrl+F to NSWindow toggle; window frame persisted. |
+| Fullscreen | Cmd+Ctrl+F | Optional | Key capture maps Cmd+Ctrl+F to NSWindow toggle. |
 | Focus loss | Auto-pause | Yes | On window resign key / app inactive. |
 | Gamepad | Xbox mapping via gilrs | Optional | GameController: dpad left/right/down, A/B rotate, X hard drop, Y hold, menu pause, options restart. |
 

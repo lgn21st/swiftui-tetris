@@ -9,7 +9,7 @@
 ## Scope
 ### MVP (must-have parity)
 - Board 10x20, 7 tetrominoes, SRS rotation.
-- Hold, next queue (5), ghost piece.
+- Hold, next queue (1), ghost piece.
 - Tick/lock/line clear pause timings.
 - Classic scoring and leveling.
 - Keyboard input with DAS/ARR and soft drop grace.
@@ -28,8 +28,9 @@
 - Input repeat + pause/focus handling: complete with tests.
 - SpriteKit board rendering + landing flash: complete with tests.
 - HUD/overlays: side panel with hold/next preview grids implemented.
+- Layout parity: top-leading alignment, padding, and panel sizing matched to gpui.
 - Audio: per-event gain + settings controls + persistence.
-- Window defaults + scaling: implemented.
+- Window defaults + scaling: implemented; content stays centered on resize.
 
 ## Milestones
 

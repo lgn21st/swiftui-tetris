@@ -10,49 +10,64 @@ public struct SidePanelView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: LayoutConstants.panelSectionSpacing) {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text(state.scoreText)
                 Text(state.levelText)
                 Text(state.linesText)
-            }
-            Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
-            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text(state.statusText)
-                    .foregroundColor(.white.opacity(0.85))
                 Text(state.rulesetText)
-                    .foregroundColor(.white.opacity(0.85))
+                Text(state.holdText)
+                if state.comboText.contains("-") == false || state.b2bText.contains("-") == false {
+                    VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                        Text(state.comboText)
+                        Text(state.b2bText)
+                    }
+                }
+                ProgressView(value: state.lockBarRatio)
+                    .tint(state.lockWarningActive ? .red : .green)
             }
-            Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
+                    .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
-                Text(state.holdText)
-                    .font(.system(size: TypographyConstants.sidePanelHintFontSize, weight: .regular, design: .monospaced))
-                    .foregroundColor(.white.opacity(0.8))
             }
-            Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Next")
+                    .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
                 ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
                     PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
                 }
             }
-            Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
-            Text(state.comboText)
-            Text(state.b2bText)
-            ProgressView(value: state.lockBarRatio)
-                .tint(state.lockWarningActive ? .red : .green)
-            Text(state.hintText)
-                .font(.system(size: TypographyConstants.sidePanelHintFontSize, weight: .regular, design: .monospaced))
-                .foregroundColor(.white.opacity(0.85))
             Spacer()
         }
         .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
-        .foregroundColor(.white)
+        .foregroundColor(
+            Color(
+                red: ThemeConstants.panelTextRed,
+                green: ThemeConstants.panelTextGreen,
+                blue: ThemeConstants.panelTextBlue
+            )
+        )
         .padding(LayoutConstants.panelPadding)
-        .frame(width: LayoutConstants.panelWidth, height: LayoutConstants.baseSize.height)
-        .background(Color.black.opacity(ThemeConstants.panelOpacity))
-        .cornerRadius(LayoutConstants.panelCornerRadius)
+        .frame(width: LayoutConstants.panelWidth, height: LayoutConstants.boardHeight)
+        .background(
+            Color(
+                red: ThemeConstants.panelBackgroundRed,
+                green: ThemeConstants.panelBackgroundGreen,
+                blue: ThemeConstants.panelBackgroundBlue
+            )
+        )
+        .overlay(
+            Rectangle().stroke(
+                Color(
+                    red: ThemeConstants.borderColorRed,
+                    green: ThemeConstants.borderColorGreen,
+                    blue: ThemeConstants.borderColorBlue,
+                    opacity: ThemeConstants.panelBorderOpacity
+                ),
+                lineWidth: LayoutConstants.panelBorderWidth
+            )
+        )
         .shadow(
             color: .black.opacity(ThemeConstants.panelShadowOpacity),
             radius: LayoutConstants.panelShadowRadius,

@@ -6,4 +6,5 @@ public enum WindowConfig {
     public static let minScale: CGFloat = 0.6
     public static let minWidth: CGFloat = defaultWidth * minScale
     public static let minHeight: CGFloat = defaultHeight * minScale
+    public static let allowsResize: Bool = true
 }

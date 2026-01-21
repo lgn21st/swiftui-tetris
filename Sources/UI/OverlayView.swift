@@ -30,7 +30,6 @@ public struct OverlayView: View {
                     }
                 }
             }
-            .ignoresSafeArea()
         }
     }
 }

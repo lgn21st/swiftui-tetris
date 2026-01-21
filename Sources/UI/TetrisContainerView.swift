@@ -5,22 +5,57 @@ import AppKit
 
 public struct TetrisContainerView: View {
     @StateObject private var driver = SceneDriver()
-    @StateObject private var windowCoordinator = WindowStateCoordinator()
 
     public init() {}
 
     public var body: some View {
         GeometryReader { proxy in
             let scale = LayoutScale.scale(for: proxy.size)
-            ZStack {
-                HStack(spacing: 0) {
+            ZStack(alignment: LayoutConstants.baseAlignment) {
+                Color(
+                    red: ThemeConstants.appBackgroundRed,
+                    green: ThemeConstants.appBackgroundGreen,
+                    blue: ThemeConstants.appBackgroundBlue
+                )
+                .frame(
+                    width: LayoutConstants.baseSize.width,
+                    height: LayoutConstants.baseSize.height
+                )
+                HStack(alignment: .top, spacing: LayoutConstants.baseGap) {
                     SpriteView(scene: driver.scene)
                         .frame(width: LayoutConstants.boardWidth, height: LayoutConstants.boardHeight)
-                        .background(Color.black)
+                        .background(
+                            Color(
+                                red: ThemeConstants.boardBackgroundRed,
+                                green: ThemeConstants.boardBackgroundGreen,
+                                blue: ThemeConstants.boardBackgroundBlue
+                            )
+                        )
+                        .overlay(
+                            Rectangle().stroke(
+                                Color(
+                                    red: ThemeConstants.borderColorRed,
+                                    green: ThemeConstants.borderColorGreen,
+                                    blue: ThemeConstants.borderColorBlue,
+                                    opacity: ThemeConstants.panelBorderOpacity
+                                ),
+                                lineWidth: LayoutConstants.boardBorderWidth
+                            )
+                        )
                     SidePanelView(state: driver.hudState)
                 }
-                .background(Color.black.opacity(ThemeConstants.backgroundOpacity))
+                .frame(
+                    width: LayoutConstants.contentWidth,
+                    height: LayoutConstants.contentHeight,
+                    alignment: .topLeading
+                )
+                .padding(LayoutConstants.basePadding)
                 OverlayView(state: driver.overlayState)
+                    .frame(
+                        width: LayoutConstants.baseSize.width,
+                        height: LayoutConstants.baseSize.height,
+                        alignment: .topLeading
+                    )
                 if driver.overlayState.isSettings {
                     SettingsView(settings: Binding(
                         get: { driver.settings },
@@ -29,30 +64,53 @@ public struct TetrisContainerView: View {
                     .transition(
                         .scale(scale: LayoutConstants.settingsEnterScale).combined(with: .opacity)
                     )
+                    .frame(
+                        width: LayoutConstants.baseSize.width,
+                        height: LayoutConstants.baseSize.height,
+                        alignment: .center
+                    )
                 }
                 if driver.diagnosticsVisible {
                     DiagnosticsView(state: driver.diagnosticsState)
+                        .frame(
+                            width: LayoutConstants.baseSize.width,
+                            height: LayoutConstants.baseSize.height,
+                            alignment: .topLeading
+                        )
                 }
-                WindowStateView { window in
-                    windowCoordinator.attach(to: window)
-                }
-                .frame(width: 0, height: 0)
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) },
-                    onToggleFullScreen: { windowCoordinator.toggleFullScreen() }
+                    onToggleFullScreen: { driver.toggleFullScreen() }
                 )
                 .frame(width: 0, height: 0)
+                WindowStateView { window in
+                    WindowDefaults.apply(to: window)
+                }
             }
-            .frame(width: LayoutConstants.baseSize.width, height: LayoutConstants.baseSize.height)
-            .scaleEffect(scale)
+            .frame(
+                width: LayoutConstants.baseSize.width,
+                height: LayoutConstants.baseSize.height,
+                alignment: LayoutConstants.baseAlignment
+            )
+            .scaleEffect(scale, anchor: LayoutConstants.scaleAnchor)
             .animation(
                 .easeOut(duration: LayoutConstants.settingsAnimationDuration),
                 value: driver.overlayState.isSettings
             )
-            .frame(width: proxy.size.width, height: proxy.size.height)
+            .frame(
+                width: proxy.size.width,
+                height: proxy.size.height,
+                alignment: LayoutConstants.windowAlignment
+            )
             .frame(minWidth: WindowConfig.minWidth, minHeight: WindowConfig.minHeight)
-            .ignoresSafeArea()
+            .background(
+                Color(
+                    red: ThemeConstants.appBackgroundRed,
+                    green: ThemeConstants.appBackgroundGreen,
+                    blue: ThemeConstants.appBackgroundBlue
+                )
+            )
             .onAppear { driver.start() }
             .onDisappear { driver.stop() }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in

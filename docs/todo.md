@@ -9,7 +9,6 @@ Track areas where we intentionally used a basic implementation and plan to revis
 - Confirm gamepad Y button behavior across common controllers.
 
 ## Audio / Assets / Packaging
-- Confirm audio path resolution inside packaged `.app` bundle.
 - Verify icon/entitlements flow for signed builds.
 - Document any differences between `swift run App` and packaged app behavior.
 
@@ -20,4 +19,3 @@ Track areas where we intentionally used a basic implementation and plan to revis
 
 ## Diagnostics / Tooling
 - Validate diagnostics overlay usefulness and key toggles during gameplay.
-- Add optional CLI smoke-test checklist in docs once stable.

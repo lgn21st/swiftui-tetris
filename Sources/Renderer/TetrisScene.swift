@@ -9,14 +9,14 @@ public final class TetrisScene: SKScene {
     public override init(size: CGSize) {
         super.init(size: size)
         scaleMode = .resizeFill
-        backgroundColor = .black
+        backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
     }
 
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         scaleMode = .resizeFill
-        backgroundColor = .black
+        backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
     }
 

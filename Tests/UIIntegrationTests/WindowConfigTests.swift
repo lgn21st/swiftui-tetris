@@ -11,4 +11,8 @@ final class WindowConfigTests: XCTestCase {
         XCTAssertEqual(WindowConfig.minWidth, 288)
         XCTAssertEqual(WindowConfig.minHeight, 432)
     }
+
+    func testWindowResizabilityFlag() {
+        XCTAssertTrue(WindowConfig.allowsResize)
+    }
 }
