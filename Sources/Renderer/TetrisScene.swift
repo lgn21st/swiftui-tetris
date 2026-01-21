@@ -3,26 +3,37 @@ import Core
 
 public final class TetrisScene: SKScene {
     public static let defaultSize = CGSize(width: 480, height: 720)
+    public static let fixedStepMs: Double = 16
+    public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = 24
     private var cellNodes: [[SKShapeNode]] = []
+    private var clock: FixedStepClock
+    public var onFixedStep: ((Int) -> Void)?
 
     public override init(size: CGSize) {
+        self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         super.init(size: size)
-        scaleMode = .resizeFill
-        backgroundColor = RenderTheme.boardBackgroundColor
-        buildGrid()
+        commonInit()
+    }
+
+    public init(size: CGSize, stepMs: Double, maxDeltaMs: Double) {
+        self.clock = FixedStepClock(stepMs: stepMs, maxDeltaMs: maxDeltaMs)
+        super.init(size: size)
+        commonInit()
     }
 
     public required init?(coder: NSCoder) {
+        self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         super.init(coder: coder)
-        scaleMode = .resizeFill
-        backgroundColor = RenderTheme.boardBackgroundColor
-        buildGrid()
+        commonInit()
     }
 
     public override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
-        // Placeholder for tick-driven updates.
+        let steps = clock.advance(currentTime: currentTime)
+        if steps > 0 {
+            onFixedStep?(steps)
+        }
     }
 
     public func render(state: RenderState) {
@@ -64,5 +75,11 @@ public final class TetrisScene: SKScene {
                 cellNodes[y][x] = node
             }
         }
+    }
+
+    private func commonInit() {
+        scaleMode = .resizeFill
+        backgroundColor = RenderTheme.boardBackgroundColor
+        buildGrid()
     }
 }

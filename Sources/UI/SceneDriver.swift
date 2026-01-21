@@ -10,8 +10,6 @@ public final class SceneDriver: ObservableObject {
     private let input: InputEngine
     private let audio: AudioEngine?
     private var gamepad: GamepadManager?
-    private var timer: Timer?
-    private var lastTick: Date?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
     @Published public var settings: SettingsState
@@ -62,19 +60,14 @@ public final class SceneDriver: ObservableObject {
                 self?.handleGamepadAction(action)
             }
         )
+        self.scene.onFixedStep = { [weak self] steps in
+            let elapsed = Int(Double(steps) * TetrisScene.fixedStepMs)
+            self?.tick(elapsedMs: elapsed)
+        }
     }
 
     public func start() {
-        guard timer == nil else { return }
-        lastTick = Date()
         gamepad?.start()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            let now = Date()
-            let elapsed = Int(now.timeIntervalSince(self.lastTick ?? now) * 1000)
-            self.lastTick = now
-            self.tick(elapsedMs: elapsed)
-        }
     }
 
     func tick(elapsedMs: Int) {
@@ -109,9 +102,6 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func stop() {
-        timer?.invalidate()
-        timer = nil
-        lastTick = nil
         gamepad?.stop()
     }
 

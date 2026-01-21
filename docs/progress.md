@@ -88,3 +88,5 @@
 - 2026-01-21: Documented codesign/notarize steps for release packaging.
 - 2026-01-21: Removed porting references; updated roadmap and feature matrix for a standalone game.
 - 2026-01-21: Added SwiftUI + SpriteKit architecture review and refactor track.
+- 2026-01-21: Added fixed-step clock tests and helper for SpriteKit loop migration.
+- 2026-01-21: Wired TetrisScene fixed-step updates into SceneDriver; removed Timer-based loop.
