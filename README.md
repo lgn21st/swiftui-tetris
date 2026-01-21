@@ -35,7 +35,6 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - `docs/codesign-notarize.md`: codesign + notarization steps.
 - `docs/release-checklist.md`: pre-release QA checklist.
 - `docs/runtime-differences.md`: CLI vs packaged behavior notes.
-- `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Status
 Core and optional features are implemented and covered by tests, including fullscreen + diagnostics overlay, line-clear shimmer, score popups, a T-Spin badge, an ambient loop with ducking, onboarding hints, title hint blink, HUD dividers, footer-aligned Hold/Next previews with larger default-system typography, ghost outline stroke, active-piece highlight textures, lock-bar warning pulse, board gridlines, a group backdrop vignette, and an active-piece pulse. Render mapping now consumes a Core snapshot boundary.

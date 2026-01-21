@@ -9,6 +9,7 @@
 - Renderer optimizations: incremental buffer updates, render skip on no changes.
 - Prewarmed textures and capped popup nodes; fixed 4‑node active overlay.
 - Diagnostics updates throttled (~5Hz).
+- Folded the beginner guide into `docs/architecture.md` and merged todo into roadmap.
 
 ## 2026-01-21
 - HUD typography and layout improvements; hold/next in footer.

@@ -2,6 +2,54 @@
 
 This document defines the target architecture and refactor plan for a SwiftUI + SpriteKit-native Tetris, without porting constraints. The goal is to maximize responsiveness, maintainability, and testability while using platform-appropriate patterns.
 
+## Beginner Overview
+This section explains the codebase in plain language for new contributors.
+
+### Big Picture
+The game is split into three layers:
+1) Core (rules and state)
+2) Renderer (SpriteKit drawing)
+3) UI (SwiftUI views, input, audio)
+
+Flow:
+```
+Input (keyboard/gamepad)
+        -> Core state updates
+        -> RenderState snapshot
+        -> SpriteKit draws
+        -> SwiftUI overlays HUD
+```
+
+### Folder Map
+```
+Core/               Game rules and data (no UI)
+Renderer/           SpriteKit rendering and textures
+Sources/UI/         SwiftUI views, input, audio, SceneDriver
+Tests/              Unit + integration tests
+assets/             Audio files, icons
+```
+
+Where to edit:
+- Rules, scoring, timing -> Core/
+- Visual appearance -> Renderer/
+- HUD, overlays, inputs, audio -> Sources/UI/
+
+### Game Loop (Simple View)
+- TetrisScene.update(_:) runs every frame.
+- A fixed timestep clock advances Core logic (16ms).
+- Rendering happens after logic.
+
+### Tests (TDD)
+1) Add or update a test in Tests/.
+2) Implement the change in code.
+3) Run swift test.
+
+### Common CLI Commands
+- Tests: swift test
+- Run: swift run App
+- Build (debug): swift build
+- Build (release): swift build -c release
+
 ## Principles
 - **SpriteKit owns the game loop**: use `SKScene.update(_:)` with a fixed timestep accumulator.
 - **SwiftUI owns composition**: overlays, HUD, and window behaviors should be SwiftUI-first.
