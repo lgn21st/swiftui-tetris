@@ -5,15 +5,18 @@ public struct KeyCaptureView: NSViewRepresentable {
     public var onKeyDown: (String) -> Void
     public var onKeyUp: (String) -> Void
     public var onToggleFullScreen: () -> Void
+    public var isEnabled: Bool
 
     public init(
         onKeyDown: @escaping (String) -> Void,
         onKeyUp: @escaping (String) -> Void,
-        onToggleFullScreen: @escaping () -> Void = {}
+        onToggleFullScreen: @escaping () -> Void = {},
+        isEnabled: Bool = true
     ) {
         self.onKeyDown = onKeyDown
         self.onKeyUp = onKeyUp
         self.onToggleFullScreen = onToggleFullScreen
+        self.isEnabled = isEnabled
     }
 
     public func makeNSView(context: Context) -> KeyCaptureNSView {
@@ -21,8 +24,11 @@ public struct KeyCaptureView: NSViewRepresentable {
         view.onKeyDown = onKeyDown
         view.onKeyUp = onKeyUp
         view.onToggleFullScreen = onToggleFullScreen
+        view.isEnabled = isEnabled
         DispatchQueue.main.async {
-            view.window?.makeFirstResponder(view)
+            if view.isEnabled {
+                view.window?.makeFirstResponder(view)
+            }
         }
         return view
     }
@@ -31,6 +37,7 @@ public struct KeyCaptureView: NSViewRepresentable {
         nsView.onKeyDown = onKeyDown
         nsView.onKeyUp = onKeyUp
         nsView.onToggleFullScreen = onToggleFullScreen
+        nsView.isEnabled = isEnabled
     }
 }
 
@@ -38,10 +45,17 @@ public final class KeyCaptureNSView: NSView {
     var onKeyDown: ((String) -> Void)?
     var onKeyUp: ((String) -> Void)?
     var onToggleFullScreen: (() -> Void)?
+    var isEnabled: Bool = true {
+        didSet {
+            if !isEnabled {
+                window?.makeFirstResponder(nil)
+            }
+        }
+    }
     private var observers: [NSObjectProtocol] = []
 
     public override var acceptsFirstResponder: Bool {
-        true
+        isEnabled
     }
 
     public override func viewDidMoveToWindow() {
@@ -49,11 +63,14 @@ public final class KeyCaptureNSView: NSView {
         registerForWindowNotifications()
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
-            self.window?.makeFirstResponder(self)
+            if self.isEnabled {
+                self.window?.makeFirstResponder(self)
+            }
         }
     }
 
     public override func keyDown(with event: NSEvent) {
+        guard isEnabled else { return }
         if let key = event.charactersIgnoringModifiers,
            KeyCommandMapper.isFullScreenToggle(key: key, modifiers: event.modifierFlags) {
             onToggleFullScreen?()
@@ -67,6 +84,7 @@ public final class KeyCaptureNSView: NSView {
     }
 
     public override func keyUp(with event: NSEvent) {
+        guard isEnabled else { return }
         if let mapped = KeyCodeMapper.keyString(for: event.keyCode) {
             onKeyUp?(mapped)
         } else if let chars = event.charactersIgnoringModifiers {
@@ -85,7 +103,9 @@ public final class KeyCaptureNSView: NSView {
                 queue: .main
             ) { [weak self] _ in
                 guard let self else { return }
-                window.makeFirstResponder(self)
+                if self.isEnabled {
+                    window.makeFirstResponder(self)
+                }
             }
         ]
     }

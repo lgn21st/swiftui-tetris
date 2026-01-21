@@ -82,7 +82,8 @@ public struct TetrisContainerView: View {
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) },
-                    onToggleFullScreen: { driver.toggleFullScreen() }
+                    onToggleFullScreen: { driver.toggleFullScreen() },
+                    isEnabled: !driver.overlayState.isSettings
                 )
                 .frame(width: 0, height: 0)
                 WindowStateView { window in
