@@ -52,6 +52,7 @@
 - 2026-01-21: Added CLI packager support for icon and entitlements with tests.
 - 2026-01-21: Added RNG 7-bag queue, hold logic, and drop scoring with tests.
 - 2026-01-21: Added action mapping, lock reset limit, and pause/game-over guards with tests.
+- 2026-01-21: Added preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

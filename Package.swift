@@ -21,6 +21,7 @@ let package = Package(
         .executableTarget(name: "Packager", dependencies: ["Packaging"], path: "Sources/Packager"),
         .testTarget(name: "CoreTests", dependencies: ["Core"], path: "Tests/CoreTests"),
         .testTarget(name: "RendererTests", dependencies: ["Renderer", "Core"], path: "Tests/RendererTests"),
-        .testTarget(name: "PackagingTests", dependencies: ["Packaging"], path: "Tests/PackagingTests")
+        .testTarget(name: "PackagingTests", dependencies: ["Packaging"], path: "Tests/PackagingTests"),
+        .testTarget(name: "UIIntegrationTests", dependencies: ["UI", "Core"], path: "Tests/UIIntegrationTests")
     ]
 )

@@ -6,6 +6,8 @@ public struct GameState {
     public var score: Int
     public var level: Int
     public var lines: Int
+    public var combo: Int
+    public var backToBack: Bool
     public var hold: TetrominoType?
     public var canHold: Bool
     public var nextQueue: [TetrominoType]
@@ -35,6 +37,8 @@ public struct GameState {
         self.score = 0
         self.level = 0
         self.lines = 0
+        self.combo = -1
+        self.backToBack = false
         self.hold = nil
         self.canHold = true
         self.dropTimerMs = 0
@@ -236,13 +240,49 @@ public struct GameState {
         }
     }
 
-    public mutating func applyLineClear(cleared: Int) {
+    public mutating func applyLineClear(cleared: Int, tSpin: TSpinKind = .none) {
+        guard cleared >= 0 else { return }
+        var points = 0
+        let qualifiesB2B = (tSpin == .full && cleared > 0) || cleared == 4
+
+        if config.ruleset == .classic {
+            points = Scoring.classicScore(linesCleared: cleared, level: level)
+        } else {
+            switch tSpin {
+            case .full:
+                points = Scoring.modernScore(linesCleared: cleared, level: level, table: config.rules.tSpinFull)
+            case .mini:
+                points = Scoring.modernScore(linesCleared: cleared, level: level, table: config.rules.tSpinMini)
+            case .none:
+                points = Scoring.classicScore(linesCleared: cleared, level: level)
+            }
+
+            if qualifiesB2B && backToBack {
+                points = points * config.rules.b2bBonusNum / config.rules.b2bBonusDen
+            }
+        }
+
         if cleared > 0 {
-            let points = Scoring.classicScore(linesCleared: cleared, level: level)
-            score += points
-            lines += cleared
-            level = lines / 10
             lineClearTimerMs = 180
+            lines += cleared
+            if config.ruleset == .modern {
+                combo += 1
+                if combo > 0 {
+                    points += config.rules.comboBase * combo
+                }
+                backToBack = qualifiesB2B
+            } else {
+                combo = -1
+                backToBack = false
+            }
+            level = lines / 10
+        } else {
+            combo = -1
+            backToBack = false
+        }
+
+        if points > 0 {
+            score += points
         }
     }
 

@@ -5,6 +5,8 @@ public struct GameConfig: Equatable {
     public var lockResetLimit: Int
     public var baseDropMs: Int
     public var softDropGraceMs: Int
+    public var ruleset: Ruleset
+    public var rules: RulesConfig
 
     public init(
         tickMs: Int = 16,
@@ -12,7 +14,9 @@ public struct GameConfig: Equatable {
         lockDelayMs: Int = 450,
         lockResetLimit: Int = 15,
         baseDropMs: Int = 1000,
-        softDropGraceMs: Int = 150
+        softDropGraceMs: Int = 150,
+        ruleset: Ruleset = .classic,
+        rules: RulesConfig = RulesConfig()
     ) {
         self.tickMs = tickMs
         self.softDropMultiplier = softDropMultiplier
@@ -20,5 +24,7 @@ public struct GameConfig: Equatable {
         self.lockResetLimit = lockResetLimit
         self.baseDropMs = baseDropMs
         self.softDropGraceMs = softDropGraceMs
+        self.ruleset = ruleset
+        self.rules = rules
     }
 }
