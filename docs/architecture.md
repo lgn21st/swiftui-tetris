@@ -26,8 +26,9 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ### Rendering
 - Pre-allocate node grids for board + ghost + effects.
-- Use texture atlas or cached `SKTexture` for each tetromino color.
-- Avoid recreating nodes; update position/color/alpha only.
+- Use a render buffer to track changed and flash cells without per-frame allocations.
+- Update only nodes whose cell state changed, plus flash cells when flash alpha changes.
+- Use texture atlas or cached `SKTexture` for each tetromino color if profiling shows fill-rate pressure.
 
 ### Input
 - Create a single `InputRouter` that maps keyboard/gamepad to `GameAction`.
@@ -50,7 +51,8 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
    - Move timing from `SceneDriver.Timer` to `TetrisScene.update`.
 2) **Render Pipeline**
    - Add renderer tests to verify node reuse and color mapping.
-   - Switch to texture caching and node reuse.
+   - Add render buffer change tracking to avoid full-board updates.
+   - Switch to texture caching when node updates are no longer the bottleneck.
 3) **Input Router**
    - Add tests for keyboard/gamepad mappings in a unified router.
    - Route all inputs through a single action pipeline.
