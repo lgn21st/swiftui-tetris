@@ -14,6 +14,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Build (debug): `swift build`
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
+- If `swift run` is blocked by sandbox permissions, use `scripts/run_app.sh` or run the binary from `$(swift build --show-bin-path)/App`.
 
 ## CLI Packaging
 - Package .app (CLI):
