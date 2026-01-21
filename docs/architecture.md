@@ -10,8 +10,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - **Assets are bundled**: load audio/textures via `Bundle.module` (SwiftPM) for packaged parity.
 
 ## Gaps in Current Implementation
-- Game loop uses a `Timer` in `SceneDriver` instead of `SKScene.update(_:)`.
-- Rendering mixes UI-driven timing with SpriteKit’s lifecycle.
+- Rendering still uses `SKShapeNode` fill/stroke instead of cached textures.
 - Audio is `AVAudioPlayer`-based and not optimized for rapid, overlapping SFX.
 - Input lives in multiple layers; no unified “input device → action” abstraction.
 
@@ -46,10 +45,10 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - Provide accessibility: reduce motion, keyboard focus order, and legible text sizes.
 
 ## Refactor Plan (TDD)
-1) **Loop Migration**
+1) **Loop Migration (Done)**
    - Add tests around loop tick cadence.
    - Move timing from `SceneDriver.Timer` to `TetrisScene.update`.
-2) **Render Pipeline**
+2) **Render Pipeline (In Progress)**
    - Add renderer tests to verify node reuse and color mapping.
    - Add render buffer change tracking to avoid full-board updates.
    - Switch to texture caching when node updates are no longer the bottleneck.
