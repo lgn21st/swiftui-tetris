@@ -41,6 +41,7 @@
 - Avoid per-frame allocations and node churn.
 - Add texture cache if needed after profiling.
 - Skip node updates for unchanged cell states.
+- Update only flash cells when flash alpha changes.
 
 ### R3: Input Router (Planned)
 - Consolidate keyboard/gamepad mapping into a single router.

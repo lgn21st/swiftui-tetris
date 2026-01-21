@@ -96,3 +96,4 @@
 - 2026-01-21: Render gating now respects pause/game over state at the scene layer.
 - 2026-01-21: Added render buffer to reuse cell state and avoid per-frame allocations.
 - 2026-01-21: Render buffer now reports changed indices to skip node updates for unchanged cells.
+- 2026-01-21: Flash alpha updates now re-render flash cells only (no full board pass).

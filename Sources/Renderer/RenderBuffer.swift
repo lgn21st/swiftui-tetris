@@ -4,6 +4,7 @@ public final class RenderBuffer {
     public let width: Int
     public let height: Int
     public private(set) var cells: [CellRender]
+    public private(set) var flashIndices: [Int]
     private var previousCells: [CellRender]
 
     public init(width: Int = Board.width, height: Int = Board.height) {
@@ -24,10 +25,12 @@ public final class RenderBuffer {
             }
         }
         self.cells = initial
+        self.flashIndices = []
         self.previousCells = initial
     }
 
     public func update(from state: RenderState) -> [Int] {
+        flashIndices.removeAll(keepingCapacity: true)
         for y in 0..<height {
             for x in 0..<width {
                 let index = y * width + x
@@ -40,7 +43,9 @@ public final class RenderBuffer {
 
         for (x, y) in state.flashBlocks {
             guard x >= 0, y >= 0, x < width, y < height else { continue }
-            cells[y * width + x].isFlash = true
+            let index = y * width + x
+            cells[index].isFlash = true
+            flashIndices.append(index)
         }
 
         for (x, y) in state.activeBlocks {

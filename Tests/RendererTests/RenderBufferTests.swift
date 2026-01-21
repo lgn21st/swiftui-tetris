@@ -85,4 +85,22 @@ final class RenderBufferTests: XCTestCase {
         let changed = buffer.update(from: state)
         XCTAssertEqual(changed, [])
     }
+
+    func testUpdateTracksFlashIndices() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [],
+            ghostBlocks: [],
+            activeKind: nil,
+            ghostKind: nil,
+            flashBlocks: [(0, 0), (3, 2)],
+            flashAlpha: 1,
+            isPaused: false,
+            isGameOver: false
+        )
+        let buffer = RenderBuffer()
+        _ = buffer.update(from: state)
+        XCTAssertEqual(buffer.flashIndices, [0, 2 * Board.width + 3])
+    }
 }
