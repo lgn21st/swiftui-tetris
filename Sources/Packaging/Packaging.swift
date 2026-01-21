@@ -6,13 +6,20 @@ public enum Packaging {
         name: String,
         execName: String,
         version: String,
-        build: String
+        build: String,
+        iconFileName: String? = nil
     ) -> String {
         let escapedName = name.replacingOccurrences(of: "&", with: "&amp;")
         let escapedExec = execName.replacingOccurrences(of: "&", with: "&amp;")
         let escapedID = bundleID.replacingOccurrences(of: "&", with: "&amp;")
         let escapedVersion = version.replacingOccurrences(of: "&", with: "&amp;")
         let escapedBuild = build.replacingOccurrences(of: "&", with: "&amp;")
+
+        var iconEntry = ""
+        if let iconFileName {
+            let escapedIcon = iconFileName.replacingOccurrences(of: "&", with: "&amp;")
+            iconEntry = "\n    <key>CFBundleIconFile</key>\n    <string>\(escapedIcon)</string>"
+        }
 
         return """
         <?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -34,7 +41,7 @@ public enum Packaging {
             <key>CFBundlePackageType</key>
             <string>APPL</string>
             <key>LSMinimumSystemVersion</key>
-            <string>13.0</string>
+            <string>13.0</string>\(iconEntry)
         </dict>
         </plist>
         """
@@ -46,15 +53,27 @@ public enum Packaging {
         bundleID: String,
         name: String,
         version: String,
-        build: String
+        build: String,
+        iconPath: URL? = nil,
+        entitlementsPath: URL? = nil
     ) throws {
         let fileManager = FileManager.default
         let contentsURL = outputBundlePath.appendingPathComponent("Contents", isDirectory: true)
         let macosURL = contentsURL.appendingPathComponent("MacOS", isDirectory: true)
+        let resourcesURL = contentsURL.appendingPathComponent("Resources", isDirectory: true)
         try fileManager.createDirectory(at: macosURL, withIntermediateDirectories: true)
+        try fileManager.createDirectory(at: resourcesURL, withIntermediateDirectories: true)
 
         let execName = binaryPath.lastPathComponent
-        let plist = infoPlist(bundleID: bundleID, name: name, execName: execName, version: version, build: build)
+        let iconFileName = iconPath?.lastPathComponent
+        let plist = infoPlist(
+            bundleID: bundleID,
+            name: name,
+            execName: execName,
+            version: version,
+            build: build,
+            iconFileName: iconFileName
+        )
         let plistURL = contentsURL.appendingPathComponent("Info.plist")
         try plist.write(to: plistURL, atomically: true, encoding: .utf8)
 
@@ -63,6 +82,22 @@ public enum Packaging {
             try fileManager.removeItem(at: bundledBinaryURL)
         }
         try fileManager.copyItem(at: binaryPath, to: bundledBinaryURL)
+
+        if let iconPath {
+            let destIconURL = resourcesURL.appendingPathComponent(iconPath.lastPathComponent)
+            if fileManager.fileExists(atPath: destIconURL.path) {
+                try fileManager.removeItem(at: destIconURL)
+            }
+            try fileManager.copyItem(at: iconPath, to: destIconURL)
+        }
+
+        if let entitlementsPath {
+            let destEntitlementsURL = contentsURL.appendingPathComponent("Entitlements.plist")
+            if fileManager.fileExists(atPath: destEntitlementsURL.path) {
+                try fileManager.removeItem(at: destEntitlementsURL)
+            }
+            try fileManager.copyItem(at: entitlementsPath, to: destEntitlementsURL)
+        }
 
         var attributes = try fileManager.attributesOfItem(atPath: bundledBinaryURL.path)
         if let permissions = attributes[.posixPermissions] as? NSNumber {

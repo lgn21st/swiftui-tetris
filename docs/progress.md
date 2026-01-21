@@ -10,3 +10,4 @@
 - 2026-01-21: Classic scoring and level progression with tests.
 - 2026-01-21: Renderer mapping state and tests.
 - 2026-01-21: CLI Packager and Packaging module with tests.
+- 2026-01-21: CLI packager icon + entitlements support with tests.

@@ -17,7 +17,10 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Build (debug): `swift build`
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
-- Package .app (CLI):\n  1) `swift build -c release`\n  2) `swift run Packager --binary-path .build/release/App --output dist/SwiftUITeris.app --bundle-id com.example.swiftui-teris --name SwiftUITeris --version 0.1.0 --build 1`
+- Package .app (CLI):
+  1) `swift build -c release`
+  2) `swift run Packager --binary-path .build/release/App --output dist/SwiftUITeris.app --bundle-id com.example.swiftui-teris --name SwiftUITeris --version 0.1.0 --build 1`
+  3) Optional: add `--icon-path assets/AppIcon.icns` and `--entitlements assets/App.entitlements`
 
 ## Planned Structure
 - `Core/`: rules, timing, scoring, queue, rotation.
