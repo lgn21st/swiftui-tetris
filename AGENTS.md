@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added configurable input repeat settings and per-event SFX toggles.
+- Last update: Added Settings quick reference to README.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

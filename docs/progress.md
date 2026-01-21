@@ -123,3 +123,4 @@
 - 2026-01-21: Added input repeat settings (DAS/ARR/soft drop ARR) with persistence and tests.
 - 2026-01-21: Added per-event SFX toggles in Settings; audio playback honors toggles.
 - 2026-01-21: Added preflight notes to codesign/notarize checklist.
+- 2026-01-21: Added Settings quick reference to README.

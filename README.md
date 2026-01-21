@@ -15,6 +15,11 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
 
+## Settings Quick Reference
+- Input repeat: DAS/ARR sliders plus Soft Drop ARR.
+- Audio: master volume, per-event SFX toggles, per-event gain sliders.
+- Reset restores defaults for volume, SFX, and input timings.
+
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.
 - Packaged apps should include assets and icon metadata.
