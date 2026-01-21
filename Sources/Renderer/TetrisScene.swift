@@ -103,10 +103,17 @@ public final class TetrisScene: SKScene {
             clear(node: node)
             return
         }
+        if cell.isTrail {
+            node.isHidden = false
+            node.alpha = 1
+            node.texture = textureCache.texture(for: .piece(kind: kind, ghost: false, style: .trail))
+            return
+        }
         node.isHidden = false
         node.alpha = 1
         let isGhost = cell.isGhost && !cell.isActive
-        node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost))
+        let style: TextureCache.PieceStyle = cell.isActive ? .highlight : .normal
+        node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost, style: style))
     }
 
     private func buildGrid() {

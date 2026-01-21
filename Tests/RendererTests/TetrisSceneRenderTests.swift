@@ -54,6 +54,8 @@ final class TetrisSceneRenderTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             isPaused: isPaused,

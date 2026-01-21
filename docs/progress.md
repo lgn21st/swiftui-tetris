@@ -139,3 +139,5 @@
 - 2026-01-22: Clarified ARR=0 behavior in feature matrix input repeat row.
 - 2026-01-22: Normalized progress log dates for recent Settings updates.
 - 2026-01-22: Clarified SFX toggle/slider behavior in README settings quick reference.
+- 2026-01-22: Added soft drop trail rendering and active-piece highlight textures for board polish.
+- 2026-01-22: Added lock bar warning pulse logic and HUD tint updates.

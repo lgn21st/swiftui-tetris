@@ -21,7 +21,8 @@ public final class RenderBuffer {
                     kind: nil,
                     isGhost: false,
                     isActive: false,
-                    isFlash: false
+                    isFlash: false,
+                    isTrail: false
                 ))
             }
         }
@@ -41,6 +42,7 @@ public final class RenderBuffer {
                 cells[index].isGhost = false
                 cells[index].isActive = false
                 cells[index].isFlash = false
+                cells[index].isTrail = false
             }
         }
 
@@ -68,6 +70,15 @@ public final class RenderBuffer {
             if cells[index].kind == nil {
                 cells[index].kind = state.ghostKind
             }
+        }
+
+        for (x, y) in state.softDropTrailBlocks {
+            guard x >= 0, y >= 0, x < width, y < height else { continue }
+            let index = y * width + x
+            if cells[index].isActive || cells[index].isGhost || cells[index].isFlash { continue }
+            if cells[index].kind != nil { continue }
+            cells[index].isTrail = true
+            cells[index].kind = state.softDropTrailKind
         }
 
         for index in cells.indices {

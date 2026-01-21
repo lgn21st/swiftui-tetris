@@ -12,6 +12,8 @@ final class RenderComposerTests: XCTestCase {
             ghostBlocks: [(1, 1)],
             activeKind: .t,
             ghostKind: .t,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             isPaused: false,
@@ -33,6 +35,8 @@ final class RenderComposerTests: XCTestCase {
             ghostBlocks: [(2, 2)],
             activeKind: nil,
             ghostKind: .i,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             isPaused: false,
@@ -53,6 +57,8 @@ final class RenderComposerTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
             flashBlocks: [(0, 0)],
             flashAlpha: 1,
             isPaused: false,
@@ -62,5 +68,27 @@ final class RenderComposerTests: XCTestCase {
         let cell = cells.first { $0.x == 0 && $0.y == 0 }
         XCTAssertEqual(cell?.isFlash, true)
         XCTAssertEqual(cell?.kind, nil)
+    }
+
+    @available(*, deprecated, message: "RenderComposer is deprecated; tests assert legacy behavior only.")
+    func testTrailMarksCells() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [],
+            ghostBlocks: [],
+            activeKind: nil,
+            ghostKind: nil,
+            softDropTrailBlocks: [(4, 5)],
+            softDropTrailKind: .s,
+            flashBlocks: [],
+            flashAlpha: 0,
+            isPaused: false,
+            isGameOver: false
+        )
+        let cells = RenderComposer.compose(from: state)
+        let cell = cells.first { $0.x == 4 && $0.y == 5 }
+        XCTAssertEqual(cell?.isTrail, true)
+        XCTAssertEqual(cell?.kind, .s)
     }
 }

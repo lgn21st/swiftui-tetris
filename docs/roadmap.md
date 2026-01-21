@@ -20,7 +20,7 @@
 - Modern ruleset (T-spins, B2B, combo).
 - Audio with per-event gain and settings UI.
 - Gamepad input.
-- Lock delay bar + warning pulse.
+- Lock delay bar + warning pulse (implemented).
 - Fullscreen toggle, settings overlay, diagnostics overlay.
 
 ## Current Status (Snapshot)
@@ -32,6 +32,8 @@
 - Window defaults + scaling: implemented; content stays centered on resize.
 - SwiftUI menu commands: start/restart/pause/settings actions wired.
 - Settings: configurable DAS/ARR/soft drop ARR + per-event SFX toggles.
+- Soft drop trail + active piece highlight for board polish.
+- Lock bar warning pulse in HUD.
 
 ## Best-Practice Alignment
 - Architecture alignment work is complete; details live in `docs/architecture.md`.

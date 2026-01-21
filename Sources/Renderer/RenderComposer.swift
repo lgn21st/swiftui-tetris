@@ -7,6 +7,7 @@ public struct CellRender: Equatable {
     public var isGhost: Bool
     public var isActive: Bool
     public var isFlash: Bool
+    public var isTrail: Bool
 }
 
 @available(*, deprecated, message: "Use RenderBuffer for in-place updates to avoid per-frame allocations.")
@@ -17,13 +18,22 @@ public enum RenderComposer {
         for y in 0..<state.board.count {
             for x in 0..<state.board[y].count {
                 let kind = state.board[y][x]
-                cells.append(CellRender(x: x, y: y, kind: kind, isGhost: false, isActive: false, isFlash: false))
+                cells.append(CellRender(
+                    x: x,
+                    y: y,
+                    kind: kind,
+                    isGhost: false,
+                    isActive: false,
+                    isFlash: false,
+                    isTrail: false
+                ))
             }
         }
 
         let ghostSet = Set(state.ghostBlocks.map { "\($0.0),\($0.1)" })
         let activeSet = Set(state.activeBlocks.map { "\($0.0),\($0.1)" })
         let flashSet = Set(state.flashBlocks.map { "\($0.0),\($0.1)" })
+        let trailSet = Set(state.softDropTrailBlocks.map { "\($0.0),\($0.1)" })
 
         for index in cells.indices {
             let key = "\(cells[index].x),\(cells[index].y)"
@@ -39,6 +49,11 @@ public enum RenderComposer {
                 cells[index].isGhost = true
                 if cells[index].kind == nil {
                     cells[index].kind = state.ghostKind
+                }
+            } else if trailSet.contains(key) {
+                cells[index].isTrail = true
+                if cells[index].kind == nil {
+                    cells[index].kind = state.softDropTrailKind
                 }
             }
         }

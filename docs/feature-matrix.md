@@ -66,7 +66,9 @@ Legend:
 | Overlays | Yes | Title, pause, settings, game over. |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
 | HUD details | Optional | Last input, grounded, lock resets, SFX. |
-| Lock bar | Optional | Visual bar + warning pulse. |
+| Lock bar | Optional | Visual bar + warning pulse (implemented). |
+| Soft drop trail | Optional | Trail between active piece and ghost during soft drop. |
+| Active piece highlight | Optional | Subtle highlight pass for active blocks. |
 | Ghost tint | Yes | Low alpha. |
 | Accessibility labels | Optional | Overlay + Settings sliders labeled. |
 

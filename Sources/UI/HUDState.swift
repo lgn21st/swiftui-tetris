@@ -17,12 +17,16 @@ public struct HUDState: Equatable {
     public var rulesetText: String
     public var lockBarRatio: Double
     public var lockWarningActive: Bool
+    public var lockWarningPulse: Double
     public var hintText: String
     public var holdKind: TetrominoType?
     public var nextKinds: [TetrominoType]
     public var isClassicRuleset: Bool
 
     private static let lockWarningThreshold = 0.85
+    private static let lockWarningPulsePeriodMs = 400
+    private static let lockWarningPulseMin = 0.4
+    private static let lockWarningPulseMax = 1.0
     private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause · S Settings · M Mute"
 
     public static func from(
@@ -54,6 +58,11 @@ public struct HUDState: Equatable {
         let lockResetsText = "Lock resets: \(remainingResets)/\(state.config.lockResetLimit)"
         let lastInputText = "Last input: \(formatLastInput(lastInput))"
         let sfxText = "SFX: \(formatSfx(settings))"
+        let lockWarningActive = clampedRatio >= lockWarningThreshold
+        let lockWarningPulse = lockWarningPulseValue(
+            lockTimerMs: state.lockTimerMs,
+            isWarning: lockWarningActive
+        )
         return HUDState(
             lastInputText: lastInputText,
             scoreText: "Score: \(state.score)",
@@ -69,7 +78,8 @@ public struct HUDState: Equatable {
             statusText: statusText,
             rulesetText: rulesetText,
             lockBarRatio: clampedRatio,
-            lockWarningActive: clampedRatio >= lockWarningThreshold,
+            lockWarningActive: lockWarningActive,
+            lockWarningPulse: lockWarningPulse,
             hintText: defaultHint,
             holdKind: state.hold,
             nextKinds: Array(state.nextQueue.prefix(1)),
@@ -106,5 +116,13 @@ public struct HUDState: Equatable {
             return "Muted"
         }
         return String(format: "%.0f%%", settings.volume * 100.0)
+    }
+
+    private static func lockWarningPulseValue(lockTimerMs: Int, isWarning: Bool) -> Double {
+        guard isWarning else { return 0 }
+        let period = max(lockWarningPulsePeriodMs, 1)
+        let phase = Double(lockTimerMs % period) / Double(period)
+        let triangle = phase < 0.5 ? phase * 2 : (1 - phase) * 2
+        return lockWarningPulseMin + (lockWarningPulseMax - lockWarningPulseMin) * triangle
     }
 }

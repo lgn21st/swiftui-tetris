@@ -28,8 +28,11 @@ public struct SidePanelView: View {
                     }
                 }
             }
+            let warningOpacity = 0.35 + 0.65 * state.lockWarningPulse
+            let warningColor = Color.red.opacity(warningOpacity)
+            let normalColor = Color.green.opacity(0.7)
             ProgressView(value: state.lockBarRatio)
-                .tint(state.lockWarningActive ? .red : .green)
+                .tint(state.lockWarningActive ? warningColor : normalColor)
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
                     .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
