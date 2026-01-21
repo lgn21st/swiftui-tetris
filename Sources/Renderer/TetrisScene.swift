@@ -6,11 +6,16 @@ public final class TetrisScene: SKScene {
     public static let fixedStepMs: Double = 16
     public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = 24
+    private static let activeNodeCount = 4
+    private static let maxScorePopupNodes = 6
     private var cellNodes: [[SKSpriteNode]] = []
     private var activeNodes: [SKSpriteNode] = []
     private var renderBuffer: RenderBuffer
     private var lastFlashAlpha: Double?
     private var lastLineClearAlpha: Double?
+    private var lastActiveOverlayKey: ActiveOverlayKey?
+    private var lastScorePopups: [ScorePopup] = []
+    private var lastTSpinKey: TSpinKey?
     private var clock: FixedStepClock
     private var frameClock: FrameClock
     private var textureCache: TextureCache
@@ -68,6 +73,22 @@ public final class TetrisScene: SKScene {
         lastFlashAlpha = state.flashAlpha
         let lineClearAlphaChanged = lastLineClearAlpha != state.lineClearAlpha
         lastLineClearAlpha = state.lineClearAlpha
+        let overlayKey = ActiveOverlayKey.from(state: state)
+        let tSpinKey = TSpinKey(kind: state.tSpinKind, alpha: state.tSpinAlpha)
+        let overlayChanged = overlayKey != lastActiveOverlayKey
+        let scorePopupsChanged = state.scorePopups != lastScorePopups
+        let tSpinChanged = tSpinKey != lastTSpinKey
+        if renderBuffer.changedIndices.isEmpty
+            && !flashAlphaChanged
+            && !lineClearAlphaChanged
+            && !overlayChanged
+            && !scorePopupsChanged
+            && !tSpinChanged {
+            return
+        }
+        lastActiveOverlayKey = overlayKey
+        lastScorePopups = state.scorePopups
+        lastTSpinKey = tSpinKey
         if flashAlphaChanged || lineClearAlphaChanged {
             for index in renderBuffer.changedIndices {
                 guard index >= 0, index < renderBuffer.cells.count else { continue }
@@ -152,26 +173,6 @@ public final class TetrisScene: SKScene {
     }
 
     private func renderActiveOverlay(_ state: RenderState) {
-        guard !state.activeBlocks.isEmpty, state.activeKind != nil else {
-            for node in activeNodes {
-                node.isHidden = true
-            }
-            return
-        }
-
-        if activeNodes.count != state.activeBlocks.count {
-            for node in activeNodes {
-                node.removeFromParent()
-            }
-            activeNodes = state.activeBlocks.map { _ in
-                let node = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: cellSize, height: cellSize))
-                node.zPosition = 5
-                node.isHidden = true
-                addChild(node)
-                return node
-            }
-        }
-
         for (index, node) in activeNodes.enumerated() {
             guard index < state.activeBlocks.count, let kind = state.activeKind else {
                 node.isHidden = true
@@ -204,13 +205,26 @@ public final class TetrisScene: SKScene {
         scaleMode = .resizeFill
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
+        buildActiveOverlayNodes()
         addGridlines()
         addTSpinBadge()
+        textureCache.prewarm()
+    }
+
+    private func buildActiveOverlayNodes() {
+        activeNodes = (0..<Self.activeNodeCount).map { _ in
+            let node = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: cellSize, height: cellSize))
+            node.zPosition = 5
+            node.isHidden = true
+            addChild(node)
+            return node
+        }
     }
 
     private func renderScorePopups(_ popups: [ScorePopup]) {
-        if popups.count > scorePopupNodes.count {
-            for _ in scorePopupNodes.count..<popups.count {
+        let capped = popups.prefix(Self.maxScorePopupNodes)
+        if capped.count > scorePopupNodes.count {
+            for _ in scorePopupNodes.count..<capped.count {
                 let node = SKLabelNode(fontNamed: "Menlo-Bold")
                 node.fontSize = 16
                 node.fontColor = .white
@@ -221,11 +235,11 @@ public final class TetrisScene: SKScene {
             }
         }
         for (index, node) in scorePopupNodes.enumerated() {
-            guard index < popups.count else {
+            guard index < capped.count else {
                 node.isHidden = true
                 continue
             }
-            let popup = popups[index]
+            let popup = capped[index]
             node.text = popup.text
             node.alpha = CGFloat(popup.alpha)
             node.isHidden = false
@@ -292,4 +306,42 @@ public final class TetrisScene: SKScene {
         if boundsSize.width <= 0 || boundsSize.height <= 0 { return false }
         return true
     }
+}
+
+private struct ActiveOverlayKey: Equatable {
+    let blocks: [(Int, Int)]
+    let kind: TetrominoType?
+    let isGrounded: Bool
+    let pulse: Double
+
+    static func from(state: RenderState) -> ActiveOverlayKey {
+        let roundedPulse = (state.activePulse * 100).rounded() / 100
+        return ActiveOverlayKey(
+            blocks: state.activeBlocks,
+            kind: state.activeKind,
+            isGrounded: state.isGrounded,
+            pulse: roundedPulse
+        )
+    }
+
+    static func == (lhs: ActiveOverlayKey, rhs: ActiveOverlayKey) -> Bool {
+        guard lhs.kind == rhs.kind,
+              lhs.isGrounded == rhs.isGrounded,
+              lhs.pulse == rhs.pulse,
+              lhs.blocks.count == rhs.blocks.count else {
+            return false
+        }
+        for (index, block) in lhs.blocks.enumerated() {
+            let other = rhs.blocks[index]
+            if block.0 != other.0 || block.1 != other.1 {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+private struct TSpinKey: Equatable {
+    let kind: TSpinKind
+    let alpha: Double
 }

@@ -25,6 +25,17 @@ public final class TextureCache {
         self.textures = [:]
     }
 
+    public func prewarm() {
+        let styles: [PieceStyle] = [.normal, .highlight, .ghost, .flashBorder]
+        for kind in TetrominoType.allCases {
+            for style in styles {
+                _ = texture(for: .piece(kind: kind, ghost: style == .ghost, style: style))
+            }
+        }
+        _ = texture(for: .lineClear)
+        _ = texture(for: .flash)
+    }
+
     public func texture(for key: Key) -> SKTexture {
         if let cached = textures[key] {
             return cached

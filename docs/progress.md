@@ -139,3 +139,4 @@
 - 2026-01-22: Restored ghost timing to hide only on ground/lock/line-clear without early or spawn-row suppression.
 - 2026-01-22: Suppressed ghost until the active piece has moved since spawn to avoid lock/board flicker.
 - 2026-01-22: Skipped render calls until the SKView is attached and sized to avoid drawable warnings.
+- 2026-01-22: Added render skipping when nothing changed, capped popup nodes, prewarmed textures, fixed 4-node active overlay, and reduced diagnostics update frequency.

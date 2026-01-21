@@ -21,6 +21,7 @@ public final class SceneDriver: ObservableObject {
     private let focusHandler: FocusPauseHandler
     private let masterVolume: Double
     private var ambientDucked: Bool
+    private var diagnosticsAccumMs: Int
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -51,6 +52,7 @@ public final class SceneDriver: ObservableObject {
         self.focusHandler = FocusPauseHandler()
         self.masterVolume = 0.7
         self.ambientDucked = false
+        self.diagnosticsAccumMs = 0
         self.gamepad = GamepadManager(
             onLeftHeld: { [weak self] held in
                 self?.setGamepadLeftHeld(held)
@@ -71,6 +73,9 @@ public final class SceneDriver: ObservableObject {
         }
         self.scene.onFrame = { [weak self] frameMs in
             guard let self else { return }
+            self.diagnosticsAccumMs += frameMs
+            if self.diagnosticsAccumMs < 200 { return }
+            self.diagnosticsAccumMs = 0
             self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: frameMs)
         }
         self.scene.onRender = { [weak self] in

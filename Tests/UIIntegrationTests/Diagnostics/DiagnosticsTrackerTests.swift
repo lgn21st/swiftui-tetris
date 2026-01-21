@@ -20,6 +20,9 @@ final class DiagnosticsTrackerTests: XCTestCase {
         let driver = SceneDriver()
         driver.scene.update(1.0)
         driver.scene.update(1.05)
+        driver.scene.update(1.10)
+        driver.scene.update(1.15)
+        driver.scene.update(1.20)
         XCTAssertEqual(driver.diagnosticsState.tickText, "Tick: 50ms")
     }
 }
