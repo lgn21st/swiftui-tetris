@@ -76,7 +76,7 @@ Legend:
 | Events | Optional | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver. |
 | Gains | Optional | Per-event gain mapping. |
 | Master volume | Optional | Default 0.7, step 0.1. |
-| Per-event toggles | Optional | Enable/disable each SFX event. |
+| Per-event toggles | Optional | Enable/disable each SFX event (disabled toggles dim sliders). |
 
 ## Diagnostics and Testing
 | Feature | Required | Notes |
