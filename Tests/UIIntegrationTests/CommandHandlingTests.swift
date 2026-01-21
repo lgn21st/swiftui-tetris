@@ -32,4 +32,16 @@ final class CommandHandlingTests: XCTestCase {
         driver.commandToggleSettings()
         XCTAssertFalse(driver.overlayState.isSettings)
     }
+
+    func testCommandRestartClosesSettingsAndClearsPause() {
+        let driver = SceneDriver()
+        driver.commandToggleSettings()
+        driver.commandTogglePause()
+
+        driver.commandRestartGame()
+
+        XCTAssertFalse(driver.overlayState.isSettings)
+        XCTAssertFalse(driver.stateSnapshot().paused)
+        XCTAssertFalse(driver.overlayState.isTitle)
+    }
 }
