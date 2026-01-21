@@ -112,4 +112,15 @@ final class SceneDriverInputTests: XCTestCase {
         XCTAssertFalse(driver.overlayState.isSettings)
         XCTAssertFalse(loop.state.paused)
     }
+
+    func testEscapeClosesSettingsWhenOpen() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+
+        driver.handleKeyDown("s")
+        XCTAssertTrue(driver.overlayState.isSettings)
+
+        driver.handleKeyDown("escape")
+        XCTAssertFalse(driver.overlayState.isSettings)
+    }
 }
