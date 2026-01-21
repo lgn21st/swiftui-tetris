@@ -119,3 +119,4 @@
 - 2026-01-21: Switched SpriteKit rendering to cached textures (TextureCache + sprite nodes).
 - 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.
 - 2026-01-21: Reduced documentation redundancy and refreshed architecture/roadmap summaries.
+- 2026-01-21: Tightened CLI packaging and runtime-differences docs for consistency.
