@@ -6,6 +6,9 @@ public struct GameState {
     public var score: Int
     public var level: Int
     public var lines: Int
+    public var hold: TetrominoType?
+    public var canHold: Bool
+    public var nextQueue: [TetrominoType]
 
     public var dropTimerMs: Int
     public var lockTimerMs: Int
@@ -17,16 +20,23 @@ public struct GameState {
 
     public private(set) var ghostCache: [(Int, Int)]
     public var config: GameConfig
+    public var rng: SimpleRng
 
-    public init(config: GameConfig) {
+    public init(config: GameConfig, seed: UInt64 = 1) {
         self.board = Board()
+        self.rng = SimpleRng(seed: seed)
+        self.nextQueue = []
+        QueueRng.ensureQueue(rng: &self.rng, queue: &self.nextQueue, minimum: 5)
         let spawn = spawnPosition()
-        self.active = Tetromino(kind: .i, x: spawn.x, y: spawn.y)
+        let firstKind = nextQueue.isEmpty ? TetrominoType.i : nextQueue.removeFirst()
+        self.active = Tetromino(kind: firstKind, x: spawn.x, y: spawn.y)
         self.paused = false
         self.gameOver = false
         self.score = 0
         self.level = 0
         self.lines = 0
+        self.hold = nil
+        self.canHold = true
         self.dropTimerMs = 0
         self.lockTimerMs = 0
         self.lineClearTimerMs = 0
@@ -93,6 +103,31 @@ public struct GameState {
         softDropTimeoutMs = config.softDropGraceMs
     }
 
+    @discardableResult
+    public mutating func softDropStep() -> Bool {
+        let moved = tryMove(dx: 0, dy: 1)
+        if moved {
+            score += 1
+        }
+        activateSoftDrop()
+        return moved
+    }
+
+    @discardableResult
+    public mutating func hardDrop() -> Int {
+        var dropped = 0
+        while tryMove(dx: 0, dy: 1) {
+            dropped += 1
+        }
+        if dropped > 0 {
+            score += dropped * 2
+        }
+        lockActivePiece()
+        dropTimerMs = 0
+        lockTimerMs = 0
+        return dropped
+    }
+
     public func canMoveDown() -> Bool {
         board.canPlace(piece: active, x: active.x, y: active.y + 1, rotation: active.rotation)
     }
@@ -123,6 +158,21 @@ public struct GameState {
 
     public func ghostBlocks() -> [(Int, Int)] {
         ghostCache
+    }
+
+    @discardableResult
+    public mutating func holdAction() -> Bool {
+        guard canHold else { return false }
+        let currentKind = active.kind
+        if let held = hold {
+            hold = currentKind
+            active = spawnPiece(kind: held)
+        } else {
+            hold = currentKind
+            spawnNext()
+        }
+        canHold = false
+        return true
     }
 
     @discardableResult
@@ -171,15 +221,28 @@ public struct GameState {
         board.lock(piece: active)
         let cleared = board.clearLines()
         applyLineClear(cleared: cleared)
-        let spawn = spawnPosition()
-        active = Tetromino(kind: .i, x: spawn.x, y: spawn.y)
-        updateGhostCache()
-        if !board.canPlace(piece: active, x: active.x, y: active.y, rotation: active.rotation) {
-            gameOver = true
-        }
+        spawnNext()
     }
 
     private mutating func setLandingFlash() {
         landingFlashTimerMs = 120
+    }
+
+    private mutating func spawnPiece(kind: TetrominoType) -> Tetromino {
+        let spawn = spawnPosition()
+        let piece = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
+        if !board.canPlace(piece: piece, x: piece.x, y: piece.y, rotation: piece.rotation) {
+            gameOver = true
+        }
+        updateGhostCache()
+        lockResetCount = 0
+        return piece
+    }
+
+    public mutating func spawnNext() {
+        QueueRng.ensureQueue(rng: &rng, queue: &nextQueue, minimum: 5)
+        let next = nextQueue.removeFirst()
+        active = spawnPiece(kind: next)
+        canHold = true
     }
 }
