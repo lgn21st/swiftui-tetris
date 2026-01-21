@@ -106,6 +106,33 @@ final class RenderBufferTests: XCTestCase {
         XCTAssertEqual(buffer.changedIndices, [])
     }
 
+    func testLineClearMarksRows() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [],
+            ghostBlocks: [],
+            activeKind: nil,
+            ghostKind: nil,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
+            flashBlocks: [],
+            flashAlpha: 0,
+            lineClearRows: [5],
+            lineClearAlpha: 1,
+            activePulse: 0,
+            isPaused: false,
+            isGameOver: false
+        )
+        let buffer = RenderBuffer()
+        buffer.update(from: state)
+        XCTAssertEqual(buffer.lineClearIndices.count, Board.width)
+        for x in 0..<Board.width {
+            let cell = buffer.cells.first { $0.x == x && $0.y == 5 }
+            XCTAssertEqual(cell?.isLineClear, true)
+        }
+    }
+
     func testUpdateTracksFlashIndices() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(

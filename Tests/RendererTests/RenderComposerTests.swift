@@ -103,4 +103,30 @@ final class RenderComposerTests: XCTestCase {
         XCTAssertEqual(cell?.isTrail, true)
         XCTAssertEqual(cell?.kind, .s)
     }
+
+    @available(*, deprecated, message: "RenderComposer is deprecated; tests assert legacy behavior only.")
+    func testLineClearMarksRows() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [],
+            ghostBlocks: [],
+            activeKind: nil,
+            ghostKind: nil,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
+            flashBlocks: [],
+            flashAlpha: 0,
+            lineClearRows: [6],
+            lineClearAlpha: 1,
+            activePulse: 0,
+            isPaused: false,
+            isGameOver: false
+        )
+        let cells = RenderComposer.compose(from: state)
+        for x in 0..<Board.width {
+            let cell = cells.first { $0.x == x && $0.y == 6 }
+            XCTAssertEqual(cell?.isLineClear, true)
+        }
+    }
 }
