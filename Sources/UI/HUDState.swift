@@ -23,7 +23,7 @@ public struct HUDState: Equatable {
     public var isClassicRuleset: Bool
 
     private static let lockWarningThreshold = 0.85
-    private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
+    private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause · S Settings · M Mute"
 
     public static func from(
         state: GameState,

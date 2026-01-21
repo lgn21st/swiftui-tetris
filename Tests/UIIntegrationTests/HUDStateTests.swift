@@ -38,7 +38,7 @@ final class HUDStateTests: XCTestCase {
     func testHudHintText() {
         let state = GameState(config: GameConfig(), seed: 1)
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
+        XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause · S Settings · M Mute")
     }
 
     func testHudRulesetTextReflectsConfig() {
