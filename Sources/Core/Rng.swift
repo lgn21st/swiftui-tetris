@@ -10,6 +10,11 @@ public struct SimpleRng {
         return UInt32(truncatingIfNeeded: state >> 16)
     }
 
+    public func peekUInt32() -> UInt32 {
+        var temp = self
+        return temp.nextUInt32()
+    }
+
     mutating func nextRange(_ upper: Int) -> Int {
         guard upper > 0 else { return 0 }
         return Int(nextUInt32()) % upper

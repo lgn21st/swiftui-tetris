@@ -16,3 +16,4 @@
 - 2026-01-21: Preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
 - 2026-01-21: T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
 - 2026-01-21: Keyboard input capture, overlay state model, and sound event hooks.
+- 2026-01-21: HUD/overlay views and AVAudioPlayer-based audio playback.

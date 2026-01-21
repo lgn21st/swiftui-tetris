@@ -9,12 +9,18 @@ public final class SceneDriver: ObservableObject {
     private let audio: AudioEngine?
     private var timer: Timer?
     private var lastTick: Date?
+    @Published public private(set) var hudState: HUDState
+    @Published public private(set) var overlayState: OverlayState
+    private var started: Bool
 
     public init(loop: GameLoop = GameLoop(), input: InputEngine = InputEngine(), audio: AudioEngine? = nil) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
         self.input = input
         self.audio = audio
+        self.hudState = HUDState.from(state: loop.state)
+        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
+        self.started = false
     }
 
     public func start() {
@@ -32,6 +38,12 @@ public final class SceneDriver: ObservableObject {
                     audio.play(event)
                 }
             }
+            self.hudState = HUDState.from(state: self.loop.state)
+            self.overlayState = OverlayState(
+                isPaused: self.loop.state.paused,
+                isGameOver: self.loop.state.gameOver,
+                isTitle: !self.started
+            )
             self.scene.render(state: renderState)
         }
     }
@@ -43,6 +55,13 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyDown(_ key: String) {
+        if key == "\n" || key == "\r" {
+            if !started {
+                started = true
+                loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+            }
+            return
+        }
         guard let action = KeyMapper.action(for: key) else { return }
         switch action {
         case .moveLeft:

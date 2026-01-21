@@ -11,6 +11,8 @@ public struct TetrisContainerView: View {
         GeometryReader { proxy in
             ZStack {
                 SpriteView(scene: driver.scene)
+                HUDView(state: driver.hudState)
+                OverlayView(state: driver.overlayState)
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) }
