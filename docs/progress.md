@@ -135,3 +135,4 @@
 - 2026-01-22: Added test coverage for ARR=0 disabling repeats.
 - 2026-01-22: Updated HUD hint text to include Settings and Mute shortcuts.
 - 2026-01-22: Documented SFX toggle behavior in feature matrix.
+- 2026-01-22: Added ARR=0 repeat note to README settings quick reference.

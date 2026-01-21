@@ -16,7 +16,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Run app: `swift run App`
 
 ## Settings Quick Reference
-- Input repeat: DAS/ARR sliders plus Soft Drop ARR.
+- Input repeat: DAS/ARR sliders plus Soft Drop ARR (ARR=0 disables repeat).
 - Audio: master volume, per-event SFX toggles, per-event gain sliders.
 - Reset restores defaults for volume, SFX, and input timings.
 
