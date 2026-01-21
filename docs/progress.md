@@ -72,3 +72,4 @@
 - 2026-01-21: Wired InputEngine repeats into SceneDriver tick (DAS/ARR active during gameplay).
 - 2026-01-21: Removed unused HUDView to reduce dead UI code.
 - 2026-01-21: Key capture now reclaims first responder on window focus changes.
+- 2026-01-21: InputEngine reset clears held repeats on app deactivation to avoid stuck movement.

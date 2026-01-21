@@ -93,6 +93,16 @@ public final class InputEngine {
         }
     }
 
+    public func reset() {
+        leftHeld = false
+        rightHeld = false
+        downHeld = false
+        leftRepeat.release()
+        rightRepeat.release()
+        downRepeat.release()
+        lastDir = nil
+    }
+
     private func syncMovement(state: inout GameState) {
         if leftHeld != leftRepeat.isHeld() {
             if leftHeld {

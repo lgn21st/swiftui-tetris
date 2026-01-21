@@ -122,6 +122,7 @@ public final class SceneDriver: ObservableObject {
     public func handleAppActiveChanged(isActive: Bool) {
         guard !isActive else { return }
         loop.state.paused = true
+        input.reset()
         overlayState = OverlayState(
             isPaused: true,
             isGameOver: loop.state.gameOver,
