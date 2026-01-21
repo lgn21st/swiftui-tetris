@@ -24,6 +24,7 @@ public struct GameState {
     public private(set) var ghostCache: [(Int, Int)]
     public var config: GameConfig
     public var rng: SimpleRng
+    private var soundEvents: [SoundEvent]
 
     public init(config: GameConfig, seed: UInt64 = 1) {
         self.board = Board()
@@ -52,6 +53,7 @@ public struct GameState {
         self.lockResetCount = 0
         self.ghostCache = []
         self.config = config
+        self.soundEvents = []
         updateGhostCache()
     }
 
@@ -121,22 +123,29 @@ public struct GameState {
         case .moveLeft:
             _ = tryMove(dx: -1, dy: 0)
             lastActionRotate = false
+            soundEvents.append(.move)
         case .moveRight:
             _ = tryMove(dx: 1, dy: 0)
             lastActionRotate = false
+            soundEvents.append(.move)
         case .softDrop:
             _ = softDropStep()
             lastActionRotate = false
+            soundEvents.append(.softDrop)
         case .hardDrop:
             _ = hardDrop()
             lastActionRotate = false
+            soundEvents.append(.hardDrop)
         case .rotateCw:
             lastActionRotate = rotate(clockwise: true)
+            soundEvents.append(.rotate)
         case .rotateCcw:
             lastActionRotate = rotate(clockwise: false)
+            soundEvents.append(.rotate)
         case .hold:
             _ = holdAction()
             lastActionRotate = false
+            soundEvents.append(.hold)
         case .pause:
             paused.toggle()
         case .restart:
@@ -271,6 +280,7 @@ public struct GameState {
 
         if cleared > 0 {
             lineClearTimerMs = 180
+            soundEvents.append(.lineClear(cleared))
             lines += cleared
             if config.ruleset == .modern {
                 combo += 1
@@ -312,6 +322,7 @@ public struct GameState {
         let piece = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
         if !board.canPlace(piece: piece, x: piece.x, y: piece.y, rotation: piece.rotation) {
             gameOver = true
+            soundEvents.append(.gameOver)
         }
         updateGhostCache()
         lockResetCount = 0
@@ -365,5 +376,11 @@ public struct GameState {
         }
         let frontFilled = front.filter { board.isOccupied(x: $0.0, y: $0.1) }.count
         return frontFilled == 2 ? .full : .mini
+    }
+
+    public mutating func takeSoundEvents() -> [SoundEvent] {
+        let events = soundEvents
+        soundEvents.removeAll()
+        return events
     }
 }

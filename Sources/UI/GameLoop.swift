@@ -2,7 +2,7 @@ import Core
 import Renderer
 
 public final class GameLoop {
-    public private(set) var state: GameState
+    public var state: GameState
 
     public init(state: GameState = GameState(config: GameConfig(), seed: 1)) {
         self.state = state

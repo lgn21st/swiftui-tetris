@@ -15,3 +15,4 @@
 - 2026-01-21: Action mapping, lock reset limit, and pause/game-over guards with tests.
 - 2026-01-21: Preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
 - 2026-01-21: T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
+- 2026-01-21: Keyboard input capture, overlay state model, and sound event hooks.

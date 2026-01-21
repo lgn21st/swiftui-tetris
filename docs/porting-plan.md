@@ -54,6 +54,7 @@
 - 2026-01-21: Added action mapping, lock reset limit, and pause/game-over guards with tests.
 - 2026-01-21: Added preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
 - 2026-01-21: Added T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
+- 2026-01-21: Added keyboard input capture, overlay state model, and sound event hooks.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

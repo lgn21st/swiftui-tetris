@@ -23,7 +23,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: T-spin detection, render composition, input repeats, and SceneDriver loop added.
+- Last update: keyboard capture, overlay state, and sound event hooks added.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

@@ -54,3 +54,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Action mapping, lock reset limit, and pause/game-over guards with tests.
 - Preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
 - T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
+- Keyboard input capture, overlay state model, and sound event hooks.

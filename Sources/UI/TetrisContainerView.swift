@@ -9,11 +9,18 @@ public struct TetrisContainerView: View {
 
     public var body: some View {
         GeometryReader { proxy in
-            SpriteView(scene: driver.scene)
-                .frame(width: proxy.size.width, height: proxy.size.height)
-                .ignoresSafeArea()
-                .onAppear { driver.start() }
-                .onDisappear { driver.stop() }
+            ZStack {
+                SpriteView(scene: driver.scene)
+                KeyCaptureView(
+                    onKeyDown: { driver.handleKeyDown($0) },
+                    onKeyUp: { driver.handleKeyUp($0) }
+                )
+                .frame(width: 0, height: 0)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .ignoresSafeArea()
+            .onAppear { driver.start() }
+            .onDisappear { driver.stop() }
         }
     }
 }
