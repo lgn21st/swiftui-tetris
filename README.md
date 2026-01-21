@@ -71,3 +71,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Title overlay start hint (“Press Space or Enter to start”).
 - Pause/settings hints, diagnostics overlay toggle, and window defaults.
 - Per-event SFX gain mapping with master volume control.
+- App activation on launch to surface the window when running from CLI.

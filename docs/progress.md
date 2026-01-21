@@ -27,3 +27,4 @@
 - 2026-01-21: Pause/settings hints, diagnostics overlay toggle, and window defaults.
 - 2026-01-21: Per-event SFX gain mapping with master volume control.
 - 2026-01-21: Added CLI run fallback script for sandboxed SwiftPM.
+- 2026-01-21: Added app activation on launch for CLI runs.
