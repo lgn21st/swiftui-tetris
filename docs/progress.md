@@ -1,142 +1,16 @@
 # Progress Log
 
-- 2026-01-21: Core board logic (bounds, placement, locking, line clears) with TDD tests.
-- 2026-01-21: Drop interval timing logic with TDD tests.
-- 2026-01-21: DAS/ARR repeat logic with TDD tests.
-- 2026-01-21: Placement/collision tests for rotations.
-- 2026-01-21: GameState tick order, lock delay, soft drop grace tests and implementation.
-- 2026-01-21: Ghost projection tests and implementation.
-- 2026-01-21: SRS kick tables and rotation tests.
-- 2026-01-21: Classic scoring and level progression with tests.
-- 2026-01-21: Renderer mapping state and tests.
-- 2026-01-21: CLI Packager and Packaging module with tests.
-- 2026-01-21: CLI packager icon + entitlements support with tests.
-- 2026-01-21: RNG 7-bag queue, hold logic, and drop scoring with tests.
-- 2026-01-21: Action mapping, lock reset limit, and pause/game-over guards with tests.
-- 2026-01-21: Preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
-- 2026-01-21: Keyboard input capture, overlay state model, and sound event hooks.
-- 2026-01-21: HUD/overlay views and AVAudioPlayer-based audio playback.
-- 2026-01-21: Asset locator and audio resolution for CLI runs.
-- 2026-01-21: Landing flash rendering with Core + Renderer tests.
-- 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
-- 2026-01-21: Focus-loss auto-pause with UI integration tests.
-- 2026-01-21: Space-to-start, lock bar warning pulse, and landing flash fade.
-- 2026-01-21: Title overlay start hint (“Press Space or Enter to start”).
-- 2026-01-21: Added app activation on launch for CLI runs.
-- 2026-01-21: Implemented proportional layout scaling based on window size.
-- 2026-01-21: Updated roadmap with current status and next milestones.
-- 2026-01-21: Added hold/next preview grids and side panel layout.
-- 2026-01-21: Applied theme polish for panels and overlays.
-- 2026-01-21: Clamped layout scaling to a minimum of 0.6.
-- 2026-01-21: Hid active/ghost pieces during line clear pause in render mapping.
-- 2026-01-21: Displayed ruleset label in HUD with tests.
-- 2026-01-21: Added HUD status label for ready/playing/paused/game over with tests.
-- 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
-- 2026-01-21: Gravity tick now uses level-based drop interval with tests.
-- 2026-01-21: CLI packaging smoke test succeeded locally (release build + Packager).
-- 2026-01-21: Standardized typography constants across UI views with tests.
-- 2026-01-21: Centralized UI spacing constants across views with tests.
-- 2026-01-21: Rebalanced side panel order to group status/ruleset near core stats.
-- 2026-01-21: Mapped arrow key keyCodes to movement actions for CLI runs.
-- 2026-01-21: Centralized HUD view padding/corner radius/background opacity.
-- 2026-01-21: Completed UX polish and optional feature set.
-- 2026-01-21: Added GameController gamepad mapping and input wiring with tests.
-- 2026-01-21: Confirmed optional features are complete.
-- 2026-01-21: Added button press tracking to avoid missed gamepad button events; added tests.
-- 2026-01-21: Asset locator now resolves bundled assets for packaged apps with tests.
-- 2026-01-21: Packager now copies assets folder into app bundle (resources) with tests.
-- 2026-01-21: Added release checklist for final QA and packaging.
-- 2026-01-21: Fixed window size to content (no persistence) and filled background on resize attempts.
-- 2026-01-21: Reduced next preview to a single piece.
-- 2026-01-21: Added bordered frames for playfield and HUD with aligned heights.
-- 2026-01-21: Tuned border color/style for playfield and HUD.
-- 2026-01-21: Tuned layout padding/gap, panel height, and colors.
-- 2026-01-21: Anchored layout scaling and alignment to prevent top clipping after pause.
-- 2026-01-21: Reframed base layout to top-leading with fixed content sizing and overlay framing to stabilize HUD/board alignment.
-- 2026-01-21: Enabled resizable window with centered content group and reset-to-default window sizing on launch.
-- 2026-01-21: Centered content group vertically within the window while keeping scale centered.
-- 2026-01-21: Applied board background color inside SpriteKit rendering.
-- 2026-01-21: Standardized ruleset label ("Rules: Classic/Modern").
-- 2026-01-21: Wired InputEngine repeats into SceneDriver tick (DAS/ARR active during gameplay).
-- 2026-01-21: Removed unused HUDView to reduce dead UI code.
-- 2026-01-21: Key capture now reclaims first responder on window focus changes.
-- 2026-01-21: InputEngine reset clears held repeats on app deactivation to avoid stuck movement.
-- 2026-01-21: Added non-character key mappings (Esc/Tab/keypad +/-) and Esc pause handling.
-- 2026-01-21: Documented runtime differences checklist for CLI vs packaged builds.
-- 2026-01-21: Added gamepad compatibility notes and release checklist item.
-- 2026-01-21: Added tests to ensure held input clears on focus loss and pause.
-- 2026-01-21: Added focus-loss repeat test to cover held key edge cases.
-- 2026-01-21: Added Packager test coverage for missing binary paths and noted packaging tests in docs.
-- 2026-01-21: Documented codesign/notarize steps for release packaging.
-- 2026-01-21: Removed porting references; updated roadmap and feature matrix for a standalone game.
-- 2026-01-21: Added SwiftUI + SpriteKit architecture review and refactor track.
-- 2026-01-21: Added fixed-step clock tests and helper for SpriteKit loop migration.
-- 2026-01-21: Wired TetrisScene fixed-step updates into SceneDriver; removed Timer-based loop.
-- 2026-01-21: Normalized render step naming and diagnostics to align with fixed-step timing.
-- 2026-01-21: Render now occurs per SpriteKit frame via scene render callback.
-- 2026-01-21: Diagnostics now use SpriteKit frame delta (frame clock) for FPS/tick reporting.
-- 2026-01-21: Render gating now respects pause/game over state at the scene layer.
-- 2026-01-21: Added render buffer to reuse cell state and avoid per-frame allocations.
-- 2026-01-21: Render buffer now reports changed indices to skip node updates for unchanged cells.
-- 2026-01-21: Flash alpha updates now re-render flash cells only (no full board pass).
-- 2026-01-21: Render buffer now reuses changed index storage to avoid per-frame allocations.
-- 2026-01-21: Architecture notes updated for render buffer change tracking.
-- 2026-01-21: Architecture gaps updated to reflect loop migration completion.
-- 2026-01-21: Added InputRouter wrapper and tests to centralize key/button mapping.
-- 2026-01-21: Switched mapping tests to use InputRouter while keeping legacy mappers as internal helpers.
-- 2026-01-21: InputRouter now normalizes uppercase key input for gameplay actions.
-- 2026-01-21: Migrated audio playback to AVAudioEngine with preloaded buffers.
-- 2026-01-21: Added overlay accessibility label composition with tests.
-- 2026-01-21: Added overlay fade animation with Reduce Motion support.
-- 2026-01-21: Marked UI polish pass complete in roadmap/architecture docs.
-- 2026-01-21: Clarified codesign verification for icon/entitlements; closed packaging TODO.
-- 2026-01-21: Documented accessibility labels in the feature matrix.
-- 2026-01-21: Switched SpriteKit rendering to cached textures (TextureCache + sprite nodes).
-- 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.
-- 2026-01-21: Reduced documentation redundancy and refreshed architecture/roadmap summaries.
-- 2026-01-21: Tightened CLI packaging and runtime-differences docs for consistency.
-- 2026-01-21: Added preflight notes to codesign/notarize checklist.
-- 2026-01-22: Added soft drop trail rendering and active-piece highlight textures for board polish.
-- 2026-01-22: Added lock bar warning pulse logic and HUD tint updates.
-- 2026-01-22: Added board gridlines and section header typography polish.
-- 2026-01-22: Pausing clears soft drop active state and timeout.
-- 2026-01-22: Added active piece pulse tied to gravity interval.
-- 2026-01-22: Added new UI/UX polish items to TODO backlog.
-- 2026-01-22: Removed Settings system in favor of convention-over-configuration defaults.
-- 2026-01-22: Removed window state persistence, simplified key capture, and minimized menu commands.
-- 2026-01-22: Added ghost outline stroke for clearer landing guidance.
-- 2026-01-22: Added line-clear shimmer overlay during the clear pause.
-- 2026-01-22: Added HUD section dividers to improve side panel scanability.
-- 2026-01-22: Added first-run onboarding hints on the title overlay.
-- 2026-01-22: Added a pulsing start hint on the title overlay.
-- 2026-01-22: Added a gradient + vignette backdrop behind the board and HUD group.
-- 2026-01-22: Added floating score popups during line clear pauses.
-- 2026-01-22: Added ambient loop with line-clear ducking.
-- 2026-01-22: Aligned feature matrix to mark implemented polish and architecture items.
-- 2026-01-22: Added command toggles for diagnostics overlay and fullscreen.
-- 2026-01-22: Packaging verification blocked here by sandboxed SwiftPM manifest (use local CLI with writable cache).
-- 2026-01-22: Trimmed SwiftUI menu commands back to restart/pause only.
-- 2026-01-22: Introduced Core snapshot boundary and switched render mapping to use it.
-- 2026-01-22: Removed deprecated RenderComposer and its legacy tests.
-- 2026-01-22: Consolidated gameplay constants into GameConstants and updated defaults/tests.
-- 2026-01-22: Reorganized test directories by functional domain (Core/Renderer/UIIntegration).
-- 2026-01-22: Added T-Spin badge rendering during line clear pauses.
-- 2026-01-22: Split player HUD from diagnostics overlay.
-- 2026-01-21: Moved Hold/Next previews to the HUD footer and bumped side panel typography for readability.
-- 2026-01-22: Increased HUD typography sizes and switched to default system font for crisper rendering.
-- 2026-01-22: Removed soft drop trail, switched ghost to gridline gray, and changed landing flash to outline only.
-- 2026-01-22: Boosted ghost alpha while keeping gridline-matched gray for better visibility.
-- 2026-01-22: Align ghost + landing flash behavior with gpui: ghost uses solid gray fill with matching border; flash renders as a border on locked cells with filled pieces.
-- 2026-01-22: Re-enabled landing flash visuals (outline only) with timer-based alpha.
-- 2026-01-22: Switched to timing B: hide ghost immediately when grounded and during lock delay.
-- 2026-01-22: Rendered active pieces in an overlay layer so board cells no longer flicker when ghost hides.
-- 2026-01-22: Added grounded rendering mode so active pieces look fully solid on contact.
-- 2026-01-22: Kept ghost visible on contact and render it as a solid piece, while hiding the active overlay.
-- 2026-01-22: Kept active + ghost visible through line-clear pause for lock-timing experiment.
-- 2026-01-22: Kept active overlay visible even when grounded to avoid any hide phase.
-- 2026-01-22: Added diagnostics overlay lines for active position and ghost block count to validate lock timing.
-- 2026-01-22: Re-enabled ghost rendering with hide-on-lock/ground/line-clear rules to avoid visual overlap.
-- 2026-01-22: Restored ghost timing to hide only on ground/lock/line-clear without early or spawn-row suppression.
-- 2026-01-22: Suppressed ghost until the active piece has moved since spawn to avoid lock/board flicker.
-- 2026-01-22: Skipped render calls until the SKView is attached and sized to avoid drawable warnings.
-- 2026-01-22: Added render skipping when nothing changed, capped popup nodes, prewarmed textures, fixed 4-node active overlay, and reduced diagnostics update frequency.
+## 2026-01-22
+- Removed soft drop trail (code + tests) and updated docs.
+- Restored landing flash outline with timer‑based alpha.
+- Ghost guidance now appears only after a successful move since spawn.
+- Line‑clear pause hides active and ghost layers.
+- Added render guard to avoid SKView drawable warnings.
+- Renderer optimizations: incremental buffer updates, render skip on no changes.
+- Prewarmed textures and capped popup nodes; fixed 4‑node active overlay.
+- Diagnostics updates throttled (~5Hz).
+
+## 2026-01-21
+- HUD typography and layout improvements; hold/next in footer.
+- Window defaults and scaling behavior stabilized.
+- Audio loop/ducking and diagnostics overlay refined.
