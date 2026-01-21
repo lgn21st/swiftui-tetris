@@ -98,4 +98,12 @@ final class SettingsStateTests: XCTestCase {
         settings.setSfxEnabled(true, for: .rotate)
         XCTAssertTrue(settings.isSfxControlEnabled(for: .rotate))
     }
+
+    func testGainClamp() {
+        var settings = SettingsState()
+        settings.setGain(2.0, for: .hardDrop)
+        XCTAssertEqual(settings.gainOverrides[.hardDrop], 1.0)
+        settings.setGain(-1.0, for: .hardDrop)
+        XCTAssertEqual(settings.gainOverrides[.hardDrop], 0.0)
+    }
 }
