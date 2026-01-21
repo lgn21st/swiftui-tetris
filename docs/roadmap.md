@@ -54,9 +54,9 @@
 - Kept per-event gain + master volume behavior.
 - Replaced pooled `AVAudioPlayer` interim approach.
 
-### R5: UI Polish (In Progress)
-- Confirm overlay transitions and accessibility.
-- Add any missing UI integration coverage.
+### R5: UI Polish (Done)
+- Confirmed overlay transitions and accessibility coverage.
+- Added UI integration coverage for commands and overlay behaviors.
 - Overlay fade animation and accessibility labels are in place.
 
 ## Validation Checklist
