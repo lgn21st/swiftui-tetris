@@ -1,4 +1,5 @@
 public struct GameState {
+    public static let landingFlashDurationMs = 120
     public var board: Board
     public var active: Tetromino
     public var paused: Bool
@@ -316,7 +317,7 @@ public struct GameState {
     }
 
     private mutating func setLandingFlash() {
-        landingFlashTimerMs = 120
+        landingFlashTimerMs = GameState.landingFlashDurationMs
         landingFlashBlocks = active.blocks(rotation: active.rotation).map { (dx, dy) in
             (active.x + dx, active.y + dy)
         }

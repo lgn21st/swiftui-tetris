@@ -10,4 +10,13 @@ final class SceneDriverInputTests: XCTestCase {
         driver.handleKeyDown("right")
         XCTAssertEqual(loop.state.active.x, startX + 1)
     }
+
+    func testSpaceStartsGameBeforeHardDrop() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        driver.handleKeyDown(" ")
+        let filled = loop.state.board.cells.flatMap { $0 }.contains { $0.filled }
+        XCTAssertFalse(filled)
+        XCTAssertEqual(loop.state.score, 0)
+    }
 }

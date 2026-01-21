@@ -31,8 +31,14 @@ public final class TetrisScene: SKScene {
             guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
             let node = cellNodes[cell.y][cell.x]
             if cell.isFlash {
-                node.fillColor = PiecePalette.flashColor
-                node.strokeColor = PiecePalette.flashColor
+                if state.flashAlpha <= 0 {
+                    node.fillColor = .clear
+                    node.strokeColor = .clear
+                } else {
+                    let flash = PiecePalette.flashColor.withAlphaComponent(CGFloat(state.flashAlpha))
+                    node.fillColor = flash
+                    node.strokeColor = flash
+                }
             } else if cell.kind == nil && !cell.isGhost && !cell.isActive {
                 node.fillColor = .clear
                 node.strokeColor = .clear

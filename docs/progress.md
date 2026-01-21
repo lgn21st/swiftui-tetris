@@ -22,3 +22,4 @@
 - 2026-01-21: Landing flash rendering with Core + Renderer tests.
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
 - 2026-01-21: Focus-loss auto-pause with UI integration tests.
+- 2026-01-21: Space-to-start, lock bar warning pulse, and landing flash fade.

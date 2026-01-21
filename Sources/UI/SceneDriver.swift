@@ -79,7 +79,7 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyDown(_ key: String) {
-        if key == "\n" || key == "\r" {
+        if !started && (key == "\n" || key == "\r" || key == " " || key == "space") {
             if !started {
                 started = true
                 loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))

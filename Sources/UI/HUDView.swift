@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct HUDView: View {
     public let state: HUDState
+    @State private var pulseOn = false
 
     public init(state: HUDState) {
         self.state = state
@@ -17,6 +18,22 @@ public struct HUDView: View {
             Text(state.comboText)
             Text(state.b2bText)
             ProgressView(value: state.lockBarRatio)
+                .tint(state.lockWarningActive ? .red : .green)
+                .opacity(state.lockWarningActive ? (pulseOn ? 1.0 : 0.4) : 1.0)
+                .onAppear {
+                    if state.lockWarningActive {
+                        pulseOn = true
+                    }
+                }
+                .onChange(of: state.lockWarningActive) { active in
+                    pulseOn = active
+                }
+                .animation(
+                    state.lockWarningActive
+                    ? .easeInOut(duration: 0.4).repeatForever(autoreverses: true)
+                    : .default,
+                    value: pulseOn
+                )
         }
         .font(.system(size: 12, weight: .medium, design: .monospaced))
         .padding(8)

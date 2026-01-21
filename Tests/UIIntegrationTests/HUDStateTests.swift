@@ -20,4 +20,18 @@ final class HUDStateTests: XCTestCase {
         let hud = HUDState.from(state: state)
         XCTAssertEqual(hud.holdText, "Hold: Ready")
     }
+
+    func testHudLockWarningActivatesNearLock() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.lockTimerMs = 400
+        let hud = HUDState.from(state: state)
+        XCTAssertTrue(hud.lockWarningActive)
+    }
+
+    func testHudLockWarningInactiveEarly() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.lockTimerMs = 100
+        let hud = HUDState.from(state: state)
+        XCTAssertFalse(hud.lockWarningActive)
+    }
 }

@@ -61,6 +61,7 @@
 - 2026-01-21: Added landing flash rendering with Core + Renderer tests.
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
 - 2026-01-21: Added focus-loss auto-pause with UI integration tests.
+- 2026-01-21: Added space-to-start, lock bar warning pulse, and landing flash fade.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

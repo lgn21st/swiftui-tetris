@@ -23,7 +23,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: focus-loss auto-pause with UI integration tests.
+- Last update: space-to-start, lock bar warning pulse, and landing flash fade.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

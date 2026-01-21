@@ -28,4 +28,12 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertEqual(renderState.flashBlocks[0].0, 4)
         XCTAssertEqual(renderState.flashBlocks[0].1, 10)
     }
+
+    func testRenderMappingComputesFlashAlpha() {
+        var state = GameState(config: GameConfig())
+        state.landingFlashTimerMs = 60
+        state.landingFlashBlocks = [(4, 10)]
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertEqual(renderState.flashAlpha, 0.5, accuracy: 0.01)
+    }
 }

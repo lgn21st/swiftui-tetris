@@ -7,6 +7,7 @@ public struct RenderState {
     public var activeKind: TetrominoType?
     public var ghostKind: TetrominoType?
     public var flashBlocks: [(Int, Int)]
+    public var flashAlpha: Double
 
     public init(
         board: [[TetrominoType?]],
@@ -14,7 +15,8 @@ public struct RenderState {
         ghostBlocks: [(Int, Int)],
         activeKind: TetrominoType?,
         ghostKind: TetrominoType?,
-        flashBlocks: [(Int, Int)]
+        flashBlocks: [(Int, Int)],
+        flashAlpha: Double
     ) {
         self.board = board
         self.activeBlocks = activeBlocks
@@ -22,6 +24,7 @@ public struct RenderState {
         self.activeKind = activeKind
         self.ghostKind = ghostKind
         self.flashBlocks = flashBlocks
+        self.flashAlpha = flashAlpha
     }
 }
 
@@ -35,13 +38,17 @@ public enum RenderMapper {
         }
         let ghostBlocks = state.ghostBlocks()
         let flashBlocks = state.landingFlashTimerMs > 0 ? state.landingFlashBlocks : []
+        let flashAlpha = state.landingFlashTimerMs > 0
+        ? min(max(Double(state.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
+        : 0
         return RenderState(
             board: board,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
             activeKind: state.active.kind,
             ghostKind: state.active.kind,
-            flashBlocks: flashBlocks
+            flashBlocks: flashBlocks,
+            flashAlpha: flashAlpha
         )
     }
 }

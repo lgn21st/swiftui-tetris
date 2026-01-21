@@ -64,7 +64,7 @@ Legend:
 | Scaling | Uniform scale with min 0.6 | Yes | Use GeometryReader + scale clamp. |
 | Overlays | Title, pause, settings, game over | Yes | SwiftUI ZStack overlays. |
 | HUD labels | Score/Level/Lines/Status/Ruleset | Yes | Bind to GameState. |
-| Lock bar | Visual bar + warning pulse | Optional | Implement in SwiftUI. |
+| Lock bar | Visual bar + warning pulse | Optional | Implemented in SwiftUI HUD. |
 | Ghost tint | Separate color | Yes | Use low alpha. |
 
 ## Audio
