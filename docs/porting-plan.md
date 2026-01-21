@@ -79,6 +79,7 @@
 - 2026-01-21: Clamped layout scaling to a minimum of 0.6 for parity.
 - 2026-01-21: Render mapping hides active/ghost during line clear pause.
 - 2026-01-21: HUD shows ruleset label for parity.
+- 2026-01-21: HUD shows status label for parity.
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**

@@ -31,14 +31,15 @@ public final class SceneDriver: ObservableObject {
         self.loop = loop
         self.input = input
         self.audio = audio
-        self.hudState = HUDState.from(state: loop.state)
+        let startedValue = false
+        self.started = startedValue
+        self.showSettings = false
+        self.hudState = HUDState.from(state: loop.state, started: startedValue)
         self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
         self.settingsStore = settingsStore
         self.settings = settingsStore.load()
         self.diagnosticsState = DiagnosticsState.empty
         self.diagnosticsVisible = false
-        self.started = false
-        self.showSettings = false
         self.diagnosticsTracker = DiagnosticsTracker()
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
@@ -65,7 +66,7 @@ public final class SceneDriver: ObservableObject {
                     )
                 }
             }
-            self.hudState = HUDState.from(state: self.loop.state)
+            self.hudState = HUDState.from(state: self.loop.state, started: self.started)
             self.overlayState = OverlayState(
                 isPaused: self.loop.state.paused || self.showSettings,
                 isGameOver: self.loop.state.gameOver,

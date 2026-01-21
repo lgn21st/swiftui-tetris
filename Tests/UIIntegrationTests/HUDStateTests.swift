@@ -48,4 +48,21 @@ final class HUDStateTests: XCTestCase {
         let modern = GameState(config: GameConfig(ruleset: .modern), seed: 1)
         XCTAssertEqual(HUDState.from(state: modern).rulesetText, "Ruleset: Modern")
     }
+
+    func testHudStatusText() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Playing")
+
+        state.paused = true
+        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Paused")
+
+        state.paused = false
+        state.gameOver = true
+        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Game Over")
+    }
+
+    func testHudStatusTextBeforeStart() {
+        let state = GameState(config: GameConfig(), seed: 1)
+        XCTAssertEqual(HUDState.from(state: state, started: false).statusText, "Status: Ready")
+    }
 }

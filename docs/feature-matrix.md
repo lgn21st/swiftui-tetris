@@ -63,7 +63,7 @@ Legend:
 | Layout | Board + right panel | Yes | SpriteKit board, SwiftUI side panel. |
 | Scaling | Uniform scale with min 0.6 | Yes | Implemented layout scale based on window size. |
 | Overlays | Title, pause, settings, game over | Yes | SwiftUI ZStack overlays. |
-| HUD labels | Score/Level/Lines/Status/Ruleset | Yes | Bound to GameState; shown in side panel (includes ruleset). |
+| HUD labels | Score/Level/Lines/Status/Ruleset | Yes | Bound to GameState; shown in side panel (includes status + ruleset). |
 | Lock bar | Visual bar + warning pulse | Optional | Implemented in SwiftUI HUD. |
 | Ghost tint | Separate color | Yes | Use low alpha. |
 

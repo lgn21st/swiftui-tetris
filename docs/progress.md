@@ -36,3 +36,4 @@
 - 2026-01-21: Clamped layout scaling to a minimum of 0.6 for parity.
 - 2026-01-21: Hid active/ghost pieces during line clear pause in render mapping (parity).
 - 2026-01-21: Displayed ruleset label in HUD with tests.
+- 2026-01-21: Added HUD status label for ready/playing/paused/game over with tests.

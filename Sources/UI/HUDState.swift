@@ -8,6 +8,7 @@ public struct HUDState: Equatable {
     public var nextText: String
     public var comboText: String
     public var b2bText: String
+    public var statusText: String
     public var rulesetText: String
     public var lockBarRatio: Double
     public var lockWarningActive: Bool
@@ -18,11 +19,21 @@ public struct HUDState: Equatable {
     private static let lockWarningThreshold = 0.85
     private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
 
-    public static func from(state: GameState) -> HUDState {
+    public static func from(state: GameState, started: Bool = true) -> HUDState {
         let holdStatus = state.canHold ? "Ready" : "Used"
         let nextKind = state.nextQueue.first.map { "\($0)" } ?? "-"
         let comboText = state.combo >= 0 ? "Combo: \(state.combo)" : "Combo: -"
         let b2bText = "B2B: \(state.backToBack ? "Yes" : "No")"
+        let statusText: String
+        if state.gameOver {
+            statusText = "Status: Game Over"
+        } else if state.paused {
+            statusText = "Status: Paused"
+        } else if !started {
+            statusText = "Status: Ready"
+        } else {
+            statusText = "Status: Playing"
+        }
         let rulesetText = "Ruleset: \(state.config.ruleset == .classic ? "Classic" : "Modern")"
         let ratio = state.config.lockDelayMs == 0 ? 0 : Double(state.lockTimerMs) / Double(state.config.lockDelayMs)
         let clampedRatio = min(max(ratio, 0), 1)
@@ -34,6 +45,7 @@ public struct HUDState: Equatable {
             nextText: "Next: \(nextKind)",
             comboText: comboText,
             b2bText: b2bText,
+            statusText: statusText,
             rulesetText: rulesetText,
             lockBarRatio: clampedRatio,
             lockWarningActive: clampedRatio >= lockWarningThreshold,

@@ -33,6 +33,7 @@ public struct SidePanelView: View {
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
             Text(state.comboText)
             Text(state.b2bText)
+            Text(state.statusText)
             Text(state.rulesetText)
             ProgressView(value: state.lockBarRatio)
                 .tint(state.lockWarningActive ? .red : .green)
