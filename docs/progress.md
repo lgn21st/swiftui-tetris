@@ -29,12 +29,12 @@
 - 2026-01-21: Added app activation on launch for CLI runs.
 - 2026-01-21: Implemented proportional layout scaling based on window size.
 - 2026-01-21: Added per-event SFX sliders in Settings UI.
-- 2026-01-21: Revised porting plan with current status and next milestones.
+- 2026-01-21: Updated roadmap with current status and next milestones.
 - 2026-01-21: Added hold/next preview grids and side panel layout.
 - 2026-01-21: Added settings persistence with UserDefaults store.
 - 2026-01-21: Applied theme polish for panels and overlays.
-- 2026-01-21: Clamped layout scaling to a minimum of 0.6 for parity.
-- 2026-01-21: Hid active/ghost pieces during line clear pause in render mapping (parity).
+- 2026-01-21: Clamped layout scaling to a minimum of 0.6.
+- 2026-01-21: Hid active/ghost pieces during line clear pause in render mapping.
 - 2026-01-21: Displayed ruleset label in HUD with tests.
 - 2026-01-21: Added HUD status label for ready/playing/paused/game over with tests.
 - 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
@@ -49,26 +49,26 @@
 - 2026-01-21: Mapped arrow key keyCodes to movement actions for CLI runs.
 - 2026-01-21: Centralized HUD view padding/corner radius/background opacity.
 - 2026-01-21: Hid overlay text while Settings overlay is open.
-- 2026-01-21: Marked M5 (parity + UX polish) complete; moved focus to optional M6 items.
+- 2026-01-21: Completed UX polish and optional feature set.
 - 2026-01-21: Added window state persistence and Cmd+Ctrl+F fullscreen toggle with tests.
 - 2026-01-21: Added GameController gamepad mapping and input wiring with tests.
-- 2026-01-21: Marked M6 optional features complete.
+- 2026-01-21: Confirmed optional features are complete.
 - 2026-01-21: Added button press tracking to avoid missed gamepad button events; added tests.
 - 2026-01-21: Asset locator now resolves bundled assets for packaged apps with tests.
 - 2026-01-21: Packager now copies assets folder into app bundle (resources) with tests.
 - 2026-01-21: Added release checklist for final QA and packaging.
 - 2026-01-21: Fixed window size to content (no persistence) and filled background on resize attempts.
-- 2026-01-21: Reduced next preview to a single piece to match gpui-tetris.
+- 2026-01-21: Reduced next preview to a single piece.
 - 2026-01-21: Added bordered frames for playfield and HUD with aligned heights.
-- 2026-01-21: Matched gpui-tetris border color/style for playfield and HUD.
-- 2026-01-21: Matched gpui layout padding/gap, panel height, and colors.
+- 2026-01-21: Tuned border color/style for playfield and HUD.
+- 2026-01-21: Tuned layout padding/gap, panel height, and colors.
 - 2026-01-21: Anchored layout scaling and alignment to prevent top clipping after pause.
 - 2026-01-21: Reframed base layout to top-leading with fixed content sizing and overlay framing to stabilize HUD/board alignment.
 - 2026-01-21: Enabled resizable window with centered content group and reset-to-default window sizing on launch.
 - 2026-01-21: Centered content group vertically within the window while keeping scale centered.
-- 2026-01-21: Applied gpui-matched board background color inside SpriteKit rendering.
-- 2026-01-21: Added gpui panel labels (last input, grounded, lock resets, SFX) and reordered HUD stats to match gpui.
-- 2026-01-21: Ruleset label now matches gpui ("Rules: Classic/Modern").
+- 2026-01-21: Applied board background color inside SpriteKit rendering.
+- 2026-01-21: Added panel labels (last input, grounded, lock resets, SFX) and reordered HUD stats.
+- 2026-01-21: Standardized ruleset label ("Rules: Classic/Modern").
 - 2026-01-21: Wired InputEngine repeats into SceneDriver tick (DAS/ARR active during gameplay).
 - 2026-01-21: Removed unused HUDView to reduce dead UI code.
 - 2026-01-21: Key capture now reclaims first responder on window focus changes.
@@ -86,3 +86,4 @@
 - 2026-01-21: Added Packager test coverage for missing binary paths and noted packaging tests in docs.
 - 2026-01-21: Added Settings close action via button/Esc and clarified Settings overlay hint copy.
 - 2026-01-21: Documented codesign/notarize steps for release packaging.
+- 2026-01-21: Removed porting references; updated roadmap and feature matrix for a standalone game.

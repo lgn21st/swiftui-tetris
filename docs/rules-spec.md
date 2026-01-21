@@ -1,6 +1,6 @@
-# Rules Spec (gpui-tetris baseline)
+# Rules Spec
 
-This document captures the current gpui-tetris rules and timing so the SwiftUI/SpriteKit port can match behavior.
+This document captures the game rules and timing constants used by this project.
 
 ## Core Constants
 - Board: width=10, height=20
@@ -59,12 +59,12 @@ L:
 
 ## Rotation and Kicks (SRS)
 - O: kick table is all zeros.
-- I and JLSTZ: use SRS kick tables in gpui `src/game/state/kicks.rs`.
+- I and JLSTZ: use standard SRS kick tables.
 - Try kicks in order; first valid placement wins.
 
 ## RNG and Queue
 - 7-bag shuffle (Fisher-Yates) fills queue.
-- LCG RNG (Numerical Recipes constants) used in gpui.
+- LCG RNG (Numerical Recipes constants) for deterministic tests.
 - Queue is kept at length >= 1 by refilling bags.
 
 ## Actions
@@ -141,6 +141,5 @@ Order per tick:
 - Line clear pause hides active/ghost (render rule).
 - Landing flash uses last locked cell positions.
 
-## Sound Events (optional port)
+## Sound Events (optional)
 - Move, Rotate, SoftDrop, HardDrop, Hold, LineClear(n), GameOver.
-- Sound mapping/gains in gpui `src/audio.rs`.

@@ -1,14 +1,14 @@
 # AGENTS
 
 ## Project Intent
-- Port gpui-tetris to SwiftUI + SpriteKit on macOS.
+- Build a standalone SwiftUI + SpriteKit Tetris on macOS.
 - Preserve gameplay rules and timing; improve UI only when it does not change core behavior.
 - Keep logic testable and UI-agnostic.
 
 ## Key Docs
 - `docs/rules-spec.md`: authoritative rules/timing constants.
-- `docs/feature-matrix.md`: parity checklist.
-- `docs/porting-plan.md`: milestones and exit criteria.
+- `docs/feature-matrix.md`: feature checklist.
+- `docs/roadmap.md`: goals and validation checklist.
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Architecture Expectations
@@ -23,10 +23,9 @@
 - Avoid mixing SpriteKit state mutations with Core rule logic.
 
 ## Progress Updates
-- Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: Added Packager failure-path coverage and documented packaging tests.
+- Keep `README.md` and `docs/roadmap.md` updated after each phase.
+- Last update: Documentation refreshed for the standalone game.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
   - Skill file: `~/.codex/skills/swiftui-spritekit-tetris-dev/SKILL.md`
-- Use skill `gpui-tetris-dev` only when analyzing or referencing gpui source behavior.

@@ -31,7 +31,7 @@ Use this checklist before cutting a release build.
   ```
 - Open `dist/SwiftUITeris.app` and re-run QA checks for audio, input, fullscreen.
 - Verify icon in Finder (may require `touch` + `killall Finder`).
-- Confirm CLI vs packaged parity (see `docs/runtime-differences.md`).
+- Confirm CLI vs packaged behavior (see `docs/runtime-differences.md`).
 - Codesign + notarize for distribution (see `docs/codesign-notarize.md`).
 
 ## Notes

@@ -1,9 +1,8 @@
 # swiftui-teris
 
-macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority is rules and feel parity, then platform-appropriate improvements.
+macOS native Tetris built with SwiftUI + SpriteKit. The priority is solid rules, crisp input feel, and clean UI.
 
 ## Goals
-- Match gpui-tetris rules and timing (see `docs/`).
 - SwiftUI for UI/overlays, SpriteKit for board rendering.
 - Keep logic and rendering decoupled; Core must be unit-testable.
 - Enforce strict TDD: every feature, improvement, or refactor must be protected by tests.
@@ -39,9 +38,9 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Skills live under `~/.codex/skills` (see `AGENTS.md`).
 
 ## Docs
-- `docs/feature-matrix.md`: parity checklist.
+- `docs/feature-matrix.md`: feature checklist.
 - `docs/rules-spec.md`: rules and timing constants.
-- `docs/porting-plan.md`: milestones and exit criteria.
+- `docs/roadmap.md`: goals, scope, and validation checklist.
 - `docs/progress.md`: consolidated progress log.
 - `docs/cli-packaging.md`: CLI packaging instructions.
 - `docs/codesign-notarize.md`: codesign + notarization steps.
@@ -49,10 +48,10 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Near-term Plan
-See `docs/porting-plan.md` for the current milestone plan and next steps.
+See `docs/roadmap.md` for goals and validation.
 
 ## Progress
 See `docs/progress.md` for the consolidated progress log.
 
 ## Current Milestone
-M6 (optional features) complete. Core parity and optional feature set are done.
+Core and optional feature sets are complete.

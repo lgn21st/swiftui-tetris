@@ -1,92 +1,91 @@
-# Feature Matrix (gpui-tetris -> SwiftUI + SpriteKit)
+# Feature Matrix
 
 Legend:
-- Required = parity with gpui version
-- Optional = nice to have
-- SwiftUI/SpriteKit notes = adaptation or improvement ideas
+- Required = must-have for a shippable core experience.
+- Optional = nice-to-have polish or extra modes.
 
 ## Gameplay Core
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Board size | 10x20 grid | Yes | Use fixed logical grid; render scaling independent of logic. |
-| Tetromino set | I O T S Z J L | Yes | Same shapes and rotations (see rules-spec). |
-| Spawn position | (x=3, y=0) | Yes | Maintain top-center spawn for parity. |
-| Rotation system | SRS kicks for I/J/L/S/T/Z, O no kicks | Yes | Port kicks table verbatim. |
-| Ghost piece | Cached landing positions | Yes | SpriteKit: separate node layer with alpha. |
-| Hold | Once per spawn; swap or store | Yes | Keep hold gating and can_hold flag. |
-| Next queue | 1-piece preview | Yes | Queue filled by 7-bag shuffle. |
-| RNG | 7-bag with LCG shuffle | Yes | Use 7-bag; RNG impl can differ if deterministic tests are not required. |
-| Line clear | Classic row clear | Yes | Keep clear order from bottom up. |
-| Line clear pause | 180 ms freeze | Yes | Freeze gravity and hide active/ghost during pause. |
-| Landing flash | 120 ms on lock | Yes | Render flash overlay on last locked cells. |
-| Game over | Spawn blocked | Yes | Trigger on spawn if cannot place. |
-| Pause | Toggle; blocks game input | Yes | SwiftUI overlay; tick halted. |
-| Restart | Resets state | Yes | Keeps started=true after restart. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Board size | Yes | 10x20 logical grid. |
+| Tetromino set | Yes | I O T S Z J L with SRS rotations. |
+| Spawn position | Yes | (x=3, y=0). |
+| Rotation system | Yes | SRS kick tables. |
+| Ghost piece | Yes | Separate render layer with alpha. |
+| Hold | Yes | Once per spawn; swap or store. |
+| Next queue | Yes | 1-piece preview. |
+| RNG | Yes | 7-bag shuffle. |
+| Line clear | Yes | Classic row clear. |
+| Line clear pause | Yes | 180 ms freeze; hide active/ghost. |
+| Landing flash | Yes | 120 ms flash on lock. |
+| Game over | Yes | Spawn blocked. |
+| Pause | Yes | Toggle; blocks game input. |
+| Restart | Yes | Resets state; keeps started=true. |
 
 ## Timing and Movement
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Tick rate | 16 ms (60 Hz) | Yes | Use CADisplayLink or SKView preferredFramesPerSecond. |
-| Drop intervals | [1000,800,650,500,400,320,250,200,160] ms, then 120 ms floor | Yes | Same table; clamp to [100, base_drop_ms]. |
-| Soft drop | Multiplier=10, grace=150 ms | Yes | Maintain grace after input release. |
-| Lock delay | 450 ms default | Yes | Maintain lock timer and reset rules. |
-| Lock reset limit | 15 resets | Yes | Reset rules per grounded move/rotate. |
-| DAS/ARR | DAS 150 ms, ARR 50 ms | Yes | Implement repeat with timers. |
-| Soft drop repeat | DAS 0, ARR 50 ms | Yes | Down repeat should generate SoftDrop actions. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Tick rate | Yes | 16 ms (60 Hz). |
+| Drop intervals | Yes | [1000,800,650,500,400,320,250,200,160] ms, floor 120 ms. |
+| Soft drop | Yes | Multiplier=10, grace=150 ms. |
+| Lock delay | Yes | 450 ms default. |
+| Lock reset limit | Yes | 15 resets. |
+| DAS/ARR | Yes | DAS 150 ms, ARR 50 ms. |
+| Soft drop repeat | Yes | DAS 0, ARR 50 ms. |
 
 ## Scoring and Levels
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Classic scoring | 40/100/300/1200 * (level+1) | Yes | Default ruleset is Classic. |
-| Soft drop score | +1 per cell | Yes | On successful soft drop step. |
-| Hard drop score | +2 per cell | Yes | On hard drop before lock. |
-| Leveling | +1 per 10 lines | Yes | Level = lines / 10. |
-| Modern ruleset | T-spin, B2B, combo | Optional | Keep if easy; default still Classic. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Classic scoring | Yes | 40/100/300/1200 * (level+1). |
+| Soft drop score | Yes | +1 per cell. |
+| Hard drop score | Yes | +2 per cell. |
+| Leveling | Yes | +1 per 10 lines. |
+| Modern ruleset | Optional | T-spins, B2B, combo. |
 
 ## Input and UX
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Keyboard mapping | Left/Right/Down/Up/Space/C | Yes | Map to Move/Soft/Rotate/Hard/Hold. |
-| Start | Enter/Return; also Space in UI hint | Yes | Accept Enter and Space to start. |
-| Pause | P | Yes | Toggle pause. |
-| Settings | S | Optional | Keep settings overlay if easy. |
-| Mute | M | Optional | Toggle SFX muted. |
-| Volume | +/- adjust; 0 reset | Optional | Use 0.1 steps from default 0.7. |
-| Fullscreen | Cmd+Ctrl+F | Optional | Key capture maps Cmd+Ctrl+F to NSWindow toggle. |
-| Focus loss | Auto-pause | Yes | On window resign key / app inactive. |
-| Gamepad | Xbox mapping via gilrs | Optional | GameController: dpad left/right/down, A/B rotate, X hard drop, Y hold, menu pause, options restart. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Keyboard mapping | Yes | Left/Right/Down/Up/Space/C. |
+| Start | Yes | Enter/Return/Space. |
+| Pause | Yes | P. |
+| Settings | Optional | Toggle with S. |
+| Mute | Optional | M. |
+| Volume | Optional | +/- adjust; 0 reset. |
+| Fullscreen | Optional | Cmd+Ctrl+F. |
+| Focus loss | Yes | Auto-pause on app inactive. |
+| Gamepad | Optional | GameController mapping. |
 
 ## UI and Layout
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Base size | 480x720, cell=24 | Yes | Keep logical base for scaling. |
-| Layout | Board + right panel | Yes | SpriteKit board, SwiftUI side panel. |
-| Scaling | Uniform scale with min 0.6 | Yes | Implemented layout scale based on window size. |
-| Overlays | Title, pause, settings, game over | Yes | SwiftUI ZStack overlays. |
-| HUD labels | Score/Level/Lines/Status/Ruleset | Yes | Bound to GameState; shown in side panel (includes status + ruleset). |
-| HUD details | Last input, grounded, lock resets, SFX | Optional | Added for gpui panel parity. |
-| Lock bar | Visual bar + warning pulse | Optional | Implemented in SwiftUI HUD. |
-| Ghost tint | Separate color | Yes | Use low alpha. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Base size | Yes | 480x720, cell=24. |
+| Layout | Yes | Board + right panel. |
+| Scaling | Yes | Uniform scale with min 0.6. |
+| Overlays | Yes | Title, pause, settings, game over. |
+| HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
+| HUD details | Optional | Last input, grounded, lock resets, SFX. |
+| Lock bar | Optional | Visual bar + warning pulse. |
+| Ghost tint | Yes | Low alpha. |
 
 ## Audio
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Events | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver | Optional | Implement with AVAudioEngine or SKAction. |
-| Gains | Per-event gain mapping | Optional | Implemented in UI SoundEventMapper. |
-| Master volume | Default 0.7, step 0.1 | Optional | Implemented in settings UI. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Events | Optional | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver. |
+| Gains | Optional | Per-event gain mapping. |
+| Master volume | Optional | Default 0.7, step 0.1. |
 
 ## Diagnostics and Testing
-| Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |
-| --- | --- | --- | --- |
-| Rule tests | Board, actions, timing, scoring | Yes | Mirror tests in Swift unit tests. |
-| Input repeat tests | DAS/ARR | Optional | Add logic-level tests for repeat behavior. |
-| Preview cache | 4x4 mask | Optional | Precompute masks to simplify UI. |
+| Feature | Required | Notes |
+| --- | --- | --- |
+| Rule tests | Yes | Board, actions, timing, scoring. |
+| Input repeat tests | Optional | DAS/ARR repeat behavior. |
+| Preview cache | Optional | 4x4 mask cache for UI. |
 
-## Parity Checklist (MVP)
+## Core Checklist
 - Board + tetromino rules + SRS rotation.
 - Tick/lock/line clear pause with correct timings.
 - Classic scoring and level curve.
 - Keyboard input + DAS/ARR + soft drop grace.
 - Hold + next queue + ghost.
 - Title/pause/game over overlays.
-- Basic HUD (score/level/lines/hold/next) with preview grids.
+- HUD (score/level/lines/hold/next) with preview grids.
