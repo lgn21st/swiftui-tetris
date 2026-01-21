@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct SettingsView: View {
     @Binding public var settings: SettingsState
+    @FocusState private var focusedField: SettingsFocusField?
 
     public init(settings: Binding<SettingsState>) {
         self._settings = settings
@@ -15,6 +16,7 @@ public struct SettingsView: View {
                 get: { settings.muted },
                 set: { _ in settings.toggleMute() }
             ))
+            .focused($focusedField, equals: SettingsFocusPolicy.defaultField)
             HStack {
                 Text("Volume")
                 Slider(value: Binding(
@@ -49,5 +51,8 @@ public struct SettingsView: View {
             y: 4
         )
         .frame(maxWidth: LayoutConstants.settingsMaxWidth)
+        .onAppear {
+            focusedField = SettingsFocusPolicy.defaultField
+        }
     }
 }

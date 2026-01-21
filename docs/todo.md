@@ -9,7 +9,7 @@ None.
 - Verify icon/entitlements flow for signed builds.
 
 ## UI / UX
-- Consider default focus for Settings controls on open (Tab/arrow navigation).
+None.
 
 ## Diagnostics / Tooling
 - Validate diagnostics overlay usefulness and key toggles during gameplay.
