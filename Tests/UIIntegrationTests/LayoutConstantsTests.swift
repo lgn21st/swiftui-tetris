@@ -11,5 +11,7 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.settingsMaxWidth, 260)
         XCTAssertEqual(LayoutConstants.panelCornerRadius, 8)
         XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
+        XCTAssertEqual(LayoutConstants.settingsEnterScale, 0.96)
+        XCTAssertEqual(LayoutConstants.settingsAnimationDuration, 0.18)
     }
 }

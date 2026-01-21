@@ -25,6 +25,9 @@ public struct TetrisContainerView: View {
                         get: { driver.settings },
                         set: { driver.settings = $0 }
                     ))
+                    .transition(
+                        .scale(scale: LayoutConstants.settingsEnterScale).combined(with: .opacity)
+                    )
                 }
                 if driver.diagnosticsVisible {
                     DiagnosticsView(state: driver.diagnosticsState)
@@ -37,6 +40,10 @@ public struct TetrisContainerView: View {
             }
             .frame(width: LayoutConstants.baseSize.width, height: LayoutConstants.baseSize.height)
             .scaleEffect(scale)
+            .animation(
+                .easeOut(duration: LayoutConstants.settingsAnimationDuration),
+                value: driver.overlayState.isSettings
+            )
             .frame(width: proxy.size.width, height: proxy.size.height)
             .frame(minWidth: WindowConfig.minWidth, minHeight: WindowConfig.minHeight)
             .ignoresSafeArea()

@@ -16,4 +16,6 @@ public enum LayoutConstants {
     public static let settingsMaxWidth: CGFloat = 260
     public static let panelCornerRadius: CGFloat = 8
     public static let panelShadowRadius: CGFloat = 10
+    public static let settingsEnterScale: CGFloat = 0.96
+    public static let settingsAnimationDuration: Double = 0.18
 }
