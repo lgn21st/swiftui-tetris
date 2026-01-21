@@ -16,6 +16,17 @@ public struct TetrisCommands: Commands {
                 actions?.togglePause()
             }
             .disabled(actions == nil)
+
+            Button("Toggle Diagnostics") {
+                actions?.toggleDiagnostics()
+            }
+            .disabled(actions == nil)
+
+            Button("Toggle Full Screen") {
+                actions?.toggleFullScreen()
+            }
+            .disabled(actions == nil)
+            .keyboardShortcut("f", modifiers: [.control, .command])
         }
     }
 }

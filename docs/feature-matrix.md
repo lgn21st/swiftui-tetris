@@ -49,7 +49,7 @@ Legend:
 | Keyboard mapping | Yes | Left/Right/Down/Up/Space/C. |
 | Start | Yes | Enter/Return/Space. |
 | Pause | Yes | P. |
-| Fullscreen | Optional | Cmd+Ctrl+F. |
+| Fullscreen | Optional | Cmd+Ctrl+F (implemented). |
 | Menu commands | Optional | Minimal menu for restart/pause. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
@@ -95,6 +95,7 @@ Legend:
 | Rule tests | Yes | Board, actions, timing, scoring. |
 | Input repeat tests | Optional | DAS/ARR repeat behavior. |
 | Preview cache | Optional | 4x4 mask cache for UI. |
+| Diagnostics overlay | Optional | FPS + tick overlay (implemented). |
 
 ## Engine Architecture
 | Feature | Required | Notes |

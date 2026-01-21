@@ -46,3 +46,4 @@ swift run Packager \
 - If `dist/SwiftUITeris.app` already exists, delete it before re-running (or use a versioned output path).
 - Audio assets are expected under `assets/sfx/` (see `assets/README.md`).
 - See `docs/runtime-differences.md` for CLI vs packaged runtime checks.
+- If you see `sandbox-exec: sandbox_apply: Operation not permitted` or SwiftPM cache permission errors, run the packaging steps on a local machine with a writable module cache (see the `CLANG_MODULE_CACHE_PATH` workaround above).

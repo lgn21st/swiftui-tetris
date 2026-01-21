@@ -113,3 +113,5 @@
 - 2026-01-22: Added floating score popups during line clear pauses.
 - 2026-01-22: Added ambient loop with line-clear ducking.
 - 2026-01-22: Aligned feature matrix to mark implemented polish and architecture items.
+- 2026-01-22: Added command toggles for diagnostics overlay and fullscreen.
+- 2026-01-22: Packaging verification blocked here by sandboxed SwiftPM manifest (use local CLI with writable cache).

@@ -9,6 +9,7 @@ public final class SceneDriver: ObservableObject {
     private let input: InputEngine
     private let audio: AudioPlaying?
     private var gamepad: GamepadManager?
+    private let fullScreenHandler: FullScreenHandling
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
     @Published public private(set) var diagnosticsState: DiagnosticsState
@@ -24,12 +25,14 @@ public final class SceneDriver: ObservableObject {
     public init(
         loop: GameLoop = GameLoop(),
         input: InputEngine = InputEngine(),
-        audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory())
+        audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
+        fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler()
     ) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
         self.input = input
         self.audio = audio
+        self.fullScreenHandler = fullScreenHandler
         let startedValue = false
         self.started = startedValue
         self.hudState = HUDState.from(state: loop.state, started: startedValue)
@@ -174,9 +177,7 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func toggleFullScreen() {
-        DispatchQueue.main.async {
-            NSApp.keyWindow?.toggleFullScreen(nil)
-        }
+        fullScreenHandler.toggleFullScreen()
     }
 
     public func commandStartGame() {
@@ -196,6 +197,14 @@ public final class SceneDriver: ObservableObject {
         input.releaseMovementHolds()
         input.apply(action: .pause, to: &loop.state)
         refreshDerivedState()
+    }
+
+    public func commandToggleDiagnostics() {
+        diagnosticsVisible.toggle()
+    }
+
+    public func commandToggleFullScreen() {
+        fullScreenHandler.toggleFullScreen()
     }
 
     private func handleGamepadAction(_ action: GameAction) {

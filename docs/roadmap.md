@@ -21,7 +21,7 @@
 - Audio with per-event gain.
 - Gamepad input.
 - Lock delay bar + warning pulse (implemented).
-- Fullscreen toggle, diagnostics overlay.
+- Fullscreen toggle, diagnostics overlay (implemented).
 - Board gridlines and HUD typography polish (implemented).
 - Line-clear shimmer overlay (implemented).
 - Onboarding hints on the title overlay (implemented).
