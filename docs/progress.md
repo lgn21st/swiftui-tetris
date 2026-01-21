@@ -128,3 +128,4 @@
 - 2026-01-21: Documented input repeat defaults and ranges in rules spec.
 - 2026-01-22: Clamped decoded Settings values on load with tests.
 - 2026-01-22: Documented ARR=0 behavior (disables repeat) in rules spec.
+- 2026-01-22: Added tests for repeat config helpers and SFX event toggles.

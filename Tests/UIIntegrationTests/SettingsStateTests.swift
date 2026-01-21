@@ -1,5 +1,6 @@
 import XCTest
 @testable import UI
+@testable import Core
 
 final class SettingsStateTests: XCTestCase {
     func testToggleMute() {
@@ -45,6 +46,15 @@ final class SettingsStateTests: XCTestCase {
         XCTAssertEqual(settings.softDropArrMs, 50)
     }
 
+    func testRepeatConfigsReflectSettings() {
+        var settings = SettingsState()
+        settings.setInputDas(120)
+        settings.setInputArr(40)
+        settings.setSoftDropArr(30)
+        XCTAssertEqual(settings.repeatConfig(), RepeatConfig(dasMs: 120, arrMs: 40))
+        XCTAssertEqual(settings.softDropRepeatConfig(), RepeatConfig(dasMs: 0, arrMs: 30))
+    }
+
     func testSfxDefaultsEnabled() {
         let settings = SettingsState()
         XCTAssertTrue(settings.isSfxEnabled(for: SoundEventKind.hardDrop))
@@ -56,5 +66,11 @@ final class SettingsStateTests: XCTestCase {
         XCTAssertFalse(settings.isSfxEnabled(for: .lineClear))
         settings.reset()
         XCTAssertTrue(settings.isSfxEnabled(for: .lineClear))
+    }
+
+    func testSfxToggleAppliesToEvents() {
+        var settings = SettingsState()
+        settings.setSfxEnabled(false, for: .lineClear)
+        XCTAssertFalse(settings.isSfxEnabled(for: SoundEvent.lineClear(2)))
     }
 }
