@@ -14,6 +14,7 @@ final class GameStateSnapshotTests: XCTestCase {
         state.landingFlashTimerMs = 60
         state.landingFlashBlocks = [(4, 10)]
         state.softDropActive = true
+        state.activeMovedSinceSpawn = true
 
         let snapshot = state.snapshot()
 
@@ -30,6 +31,7 @@ final class GameStateSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.landingFlashTimerMs, 60)
         assertBlocksEqual(snapshot.landingFlashBlocks, [(4, 10)])
         XCTAssertTrue(snapshot.softDropActive)
+        XCTAssertTrue(snapshot.activeMovedSinceSpawn)
     }
 
     func testSnapshotIncludesGhostBlocks() {

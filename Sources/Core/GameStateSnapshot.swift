@@ -20,6 +20,7 @@ public struct GameStateSnapshot {
     public let softDropActive: Bool
     public let softDropTimeoutMs: Int
     public let lockResetCount: Int
+    public let activeMovedSinceSpawn: Bool
     public let ghostBlocks: [(Int, Int)]
     public let config: GameConfig
 
@@ -45,6 +46,7 @@ public struct GameStateSnapshot {
         softDropActive: Bool,
         softDropTimeoutMs: Int,
         lockResetCount: Int,
+        activeMovedSinceSpawn: Bool,
         ghostBlocks: [(Int, Int)],
         config: GameConfig
     ) {
@@ -69,7 +71,33 @@ public struct GameStateSnapshot {
         self.softDropActive = softDropActive
         self.softDropTimeoutMs = softDropTimeoutMs
         self.lockResetCount = lockResetCount
+        self.activeMovedSinceSpawn = activeMovedSinceSpawn
         self.ghostBlocks = ghostBlocks
         self.config = config
+    }
+
+    public func canMoveDown() -> Bool {
+        canMoveDown(afterSteps: 0)
+    }
+
+    public func canMoveDown(afterSteps steps: Int) -> Bool {
+        let offset = max(steps, 0)
+        for (dx, dy) in active.blocks(rotation: active.rotation) {
+            let nx = active.x + dx
+            let ny = active.y + dy + 1 + offset
+            if isOccupied(x: nx, y: ny) {
+                return false
+            }
+        }
+        return true
+    }
+
+    public func willBeGroundedNextStep() -> Bool {
+        canMoveDown() && !canMoveDown(afterSteps: 1)
+    }
+
+    private func isOccupied(x: Int, y: Int) -> Bool {
+        guard x >= 0, x < Board.width, y >= 0, y < Board.height else { return true }
+        return boardCells[y][x].filled
     }
 }

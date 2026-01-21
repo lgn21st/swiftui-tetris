@@ -49,4 +49,5 @@ final class GameTickTests: XCTestCase {
         state.tick(elapsedMs: 800, softDrop: false)
         XCTAssertEqual(state.active.y, startY + 1)
     }
+
 }

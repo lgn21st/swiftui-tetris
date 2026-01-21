@@ -24,6 +24,7 @@ public struct GameState {
     public var softDropActive: Bool
     public var softDropTimeoutMs: Int
     public var lockResetCount: Int
+    public var activeMovedSinceSpawn: Bool
 
     public private(set) var ghostCache: [(Int, Int)]
     public var config: GameConfig
@@ -59,6 +60,7 @@ public struct GameState {
         self.softDropActive = false
         self.softDropTimeoutMs = 0
         self.lockResetCount = 0
+        self.activeMovedSinceSpawn = false
         self.ghostCache = []
         self.config = config
         self.soundEvents = []
@@ -206,6 +208,7 @@ public struct GameState {
             active.y = ny
             updateGhostCache()
             handleLockReset()
+            activeMovedSinceSpawn = true
             return true
         }
         return false
@@ -253,6 +256,7 @@ public struct GameState {
                 active.rotation = nextRotation
                 updateGhostCache()
                 handleLockReset()
+                activeMovedSinceSpawn = true
                 return true
             }
         }
@@ -351,6 +355,7 @@ public struct GameState {
         updateGhostCache()
         lockResetCount = 0
         lastActionRotate = false
+        activeMovedSinceSpawn = false
         return piece
     }
 
@@ -431,6 +436,7 @@ public struct GameState {
             softDropActive: softDropActive,
             softDropTimeoutMs: softDropTimeoutMs,
             lockResetCount: lockResetCount,
+            activeMovedSinceSpawn: activeMovedSinceSpawn,
             ghostBlocks: ghostCache,
             config: config
         )

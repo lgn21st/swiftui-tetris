@@ -45,6 +45,27 @@ final class TetrisSceneRenderTests: XCTestCase {
         XCTAssertEqual(renderCalls, 2)
     }
 
+    func testSceneRendersActiveOverlayWithoutBoardCells() {
+        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        let activeBlocks = [(4, 0), (5, 0), (4, 1), (5, 1)]
+        let renderState = Self.emptyRenderState(
+            activeBlocks: activeBlocks,
+            activeKind: .o
+        )
+
+        scene.render(state: renderState)
+
+        let activeNodes = scene.debugActiveNodes()
+        XCTAssertEqual(activeNodes.count, activeBlocks.count)
+        for node in activeNodes {
+            XCTAssertFalse(node.isHidden)
+            XCTAssertNotNil(node.texture)
+        }
+        for (x, y) in activeBlocks {
+            XCTAssertTrue(scene.debugCellNode(atX: x, y: y).isHidden)
+        }
+    }
+
     private static func emptyRenderState(isPaused: Bool = false, isGameOver: Bool = false) -> RenderState {
         let row = Array<TetrominoType?>(repeating: nil, count: Board.width)
         let board = Array(repeating: row, count: Board.height)
@@ -64,8 +85,37 @@ final class TetrisSceneRenderTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: isPaused,
             isGameOver: isGameOver
+        )
+    }
+
+    private static func emptyRenderState(
+        activeBlocks: [(Int, Int)],
+        activeKind: TetrominoType?
+    ) -> RenderState {
+        let row = Array<TetrominoType?>(repeating: nil, count: Board.width)
+        let board = Array(repeating: row, count: Board.height)
+        return RenderState(
+            board: board,
+            activeBlocks: activeBlocks,
+            ghostBlocks: [],
+            activeKind: activeKind,
+            ghostKind: nil,
+            softDropTrailBlocks: [],
+            softDropTrailKind: nil,
+            flashBlocks: [],
+            flashAlpha: 0,
+            lineClearRows: [],
+            lineClearAlpha: 0,
+            scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
+            activePulse: 0,
+            isGrounded: false,
+            isPaused: false,
+            isGameOver: false
         )
     }
 }

@@ -13,6 +13,13 @@ public enum RenderTheme {
         blue: 54.0 / 255.0,
         alpha: 0.35
     )
+    public static let ghostColor = SKColor(
+        red: 42.0 / 255.0,
+        green: 42.0 / 255.0,
+        blue: 42.0 / 255.0,
+        alpha: 1.0
+    )
+    public static let flashBorderColor = SKColor(white: 1.0, alpha: 0.9)
     public static let gridlineWidth: CGFloat = 1
     public static let gridlineZ: CGFloat = -1
 }

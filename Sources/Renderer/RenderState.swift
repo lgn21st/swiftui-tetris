@@ -16,6 +16,7 @@ public struct RenderState {
     public var tSpinKind: TSpinKind
     public var tSpinAlpha: Double
     public var activePulse: Double
+    public var isGrounded: Bool
     public var isPaused: Bool
     public var isGameOver: Bool
 
@@ -35,6 +36,7 @@ public struct RenderState {
         tSpinKind: TSpinKind,
         tSpinAlpha: Double,
         activePulse: Double,
+        isGrounded: Bool,
         isPaused: Bool,
         isGameOver: Bool
     ) {
@@ -53,6 +55,7 @@ public struct RenderState {
         self.tSpinKind = tSpinKind
         self.tSpinAlpha = tSpinAlpha
         self.activePulse = activePulse
+        self.isGrounded = isGrounded
         self.isPaused = isPaused
         self.isGameOver = isGameOver
     }
@@ -77,16 +80,24 @@ public enum RenderMapper {
         let board = snapshot.boardCells.map { row in
             row.map { $0.filled ? $0.kind : nil }
         }
+        let isGrounded = !snapshot.canMoveDown()
         let hideActive = snapshot.lineClearTimerMs > 0
-        let activeBlocks = hideActive ? [] : snapshot.active.blocks(rotation: snapshot.active.rotation).map { (dx, dy) in
+        let activeBlocks = hideActive
+        ? []
+        : snapshot.active.blocks(rotation: snapshot.active.rotation).map { (dx, dy) in
             (snapshot.active.x + dx, snapshot.active.y + dy)
         }
-        let ghostBlocks = hideActive ? [] : snapshot.ghostBlocks
+        let hideGhost = snapshot.lineClearTimerMs > 0
+            || snapshot.lockTimerMs > 0
+            || isGrounded
+            || !snapshot.activeMovedSinceSpawn
+        let ghostBlocks = hideGhost ? [] : snapshot.ghostBlocks
         let flashBlocks = snapshot.landingFlashTimerMs > 0 ? snapshot.landingFlashBlocks : []
         let flashAlpha = snapshot.landingFlashTimerMs > 0
         ? min(max(Double(snapshot.landingFlashTimerMs) / Double(GameConstants.landingFlashDurationMs), 0), 1)
         : 0
-        let activePulse = hideActive ? 0 : activePulseValue(
+        let suppressPulse = snapshot.lineClearTimerMs > 0
+        let activePulse = suppressPulse ? 0 : activePulseValue(
             dropTimerMs: snapshot.dropTimerMs,
             intervalMs: Timing.dropInterval(
                 level: snapshot.level,
@@ -106,17 +117,13 @@ public enum RenderMapper {
             lineClearAlpha: lineClearAlpha,
             lineClearScore: snapshot.lineClearScore
         )
-        let trailBlocks = hideActive ? [] : softDropTrailBlocks(
-            activeBlocks: activeBlocks,
-            ghostBlocks: ghostBlocks,
-            isSoftDropActive: snapshot.softDropActive
-        )
+        let trailBlocks: [(Int, Int)] = []
         return RenderState(
             board: board,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
             activeKind: hideActive ? nil : snapshot.active.kind,
-            ghostKind: hideActive ? nil : snapshot.active.kind,
+            ghostKind: hideGhost ? nil : snapshot.active.kind,
             softDropTrailBlocks: trailBlocks,
             softDropTrailKind: trailBlocks.isEmpty ? nil : snapshot.active.kind,
             flashBlocks: flashBlocks,
@@ -127,6 +134,7 @@ public enum RenderMapper {
             tSpinKind: tSpinKind,
             tSpinAlpha: tSpinAlpha,
             activePulse: activePulse,
+            isGrounded: isGrounded,
             isPaused: snapshot.paused,
             isGameOver: snapshot.gameOver
         )
@@ -138,36 +146,6 @@ public enum RenderMapper {
         let progress = Double(remainder) / Double(intervalMs)
         let triangle = progress < 0.5 ? progress * 2 : (1 - progress) * 2
         return min(max(triangle, 0), 1)
-    }
-
-    private static func softDropTrailBlocks(
-        activeBlocks: [(Int, Int)],
-        ghostBlocks: [(Int, Int)],
-        isSoftDropActive: Bool
-    ) -> [(Int, Int)] {
-        guard isSoftDropActive, !activeBlocks.isEmpty, activeBlocks.count == ghostBlocks.count else {
-            return []
-        }
-        let dx = ghostBlocks[0].0 - activeBlocks[0].0
-        let dy = ghostBlocks[0].1 - activeBlocks[0].1
-        guard dy > 1, dx == 0 else { return [] }
-        struct GridPoint: Hashable {
-            let x: Int
-            let y: Int
-        }
-        var unique: Set<GridPoint> = []
-        unique.reserveCapacity(activeBlocks.count * dy)
-        for (ax, ay) in activeBlocks {
-            for step in 1..<dy {
-                unique.insert(GridPoint(x: ax, y: ay + step))
-            }
-        }
-        return unique
-            .map { ($0.x, $0.y) }
-            .sorted { lhs, rhs in
-                if lhs.1 == rhs.1 { return lhs.0 < rhs.0 }
-                return lhs.1 < rhs.1
-            }
     }
 
     private static func mapScorePopups(

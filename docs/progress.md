@@ -124,3 +124,17 @@
 - 2026-01-22: Split player HUD from diagnostics overlay.
 - 2026-01-21: Moved Hold/Next previews to the HUD footer and bumped side panel typography for readability.
 - 2026-01-22: Increased HUD typography sizes and switched to default system font for crisper rendering.
+- 2026-01-22: Removed soft drop trail, switched ghost to gridline gray, and changed landing flash to outline only.
+- 2026-01-22: Boosted ghost alpha while keeping gridline-matched gray for better visibility.
+- 2026-01-22: Align ghost + landing flash behavior with gpui: ghost uses solid gray fill with matching border; flash renders as a border on locked cells with filled pieces.
+- 2026-01-22: Re-enabled landing flash visuals (outline only) with timer-based alpha.
+- 2026-01-22: Switched to timing B: hide ghost immediately when grounded and during lock delay.
+- 2026-01-22: Rendered active pieces in an overlay layer so board cells no longer flicker when ghost hides.
+- 2026-01-22: Added grounded rendering mode so active pieces look fully solid on contact.
+- 2026-01-22: Kept ghost visible on contact and render it as a solid piece, while hiding the active overlay.
+- 2026-01-22: Kept active + ghost visible through line-clear pause for lock-timing experiment.
+- 2026-01-22: Kept active overlay visible even when grounded to avoid any hide phase.
+- 2026-01-22: Added diagnostics overlay lines for active position and ghost block count to validate lock timing.
+- 2026-01-22: Re-enabled ghost rendering with hide-on-lock/ground/line-clear rules to avoid visual overlap.
+- 2026-01-22: Restored ghost timing to hide only on ground/lock/line-clear without early or spawn-row suppression.
+- 2026-01-22: Suppressed ghost until the active piece has moved since spawn to avoid lock/board flicker.

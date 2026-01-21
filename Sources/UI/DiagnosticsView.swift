@@ -21,6 +21,9 @@ public struct DiagnosticsView: View {
                     Text(hudState.lastInputText)
                     Text(hudState.groundedText)
                     Text(hudState.lockResetsText)
+                    Text(hudState.activeText)
+                    Text(hudState.ghostText)
+                    Text(hudState.ghostBoundsText)
                     if !hudState.isClassicRuleset {
                         Text(hudState.comboText)
                         Text(hudState.b2bText)

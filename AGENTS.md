@@ -27,7 +27,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Increased HUD typography sizes and switched to default system font for sharper rendering.
+- Last update: Line-clear pause now hides active/ghost render layers.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

@@ -8,6 +8,8 @@ public final class TextureCache {
         case highlight
         case trail
         case ghost
+        case flashOutline
+        case flashBorder
     }
 
     public enum Key: Hashable {
@@ -36,7 +38,7 @@ public final class TextureCache {
             style = pieceStyle
         case .flash:
             color = SKColor(white: 1.0, alpha: 1.0)
-            style = .normal
+            style = .flashOutline
         case .lineClear:
             color = SKColor(white: 0.95, alpha: 1.0)
             style = .normal
@@ -57,11 +59,15 @@ public final class TextureCache {
         switch style {
         case .trail:
             baseColor = color.withAlphaComponent(0.35)
-        case .highlight, .normal, .ghost:
+        case .highlight, .normal, .ghost, .flashBorder:
             baseColor = color
+        case .flashOutline:
+            baseColor = color.withAlphaComponent(0)
         }
-        baseColor.setFill()
-        NSBezierPath(rect: rect).fill()
+        if style != .flashOutline {
+            baseColor.setFill()
+            NSBezierPath(rect: rect).fill()
+        }
 
         switch style {
         case .highlight:
@@ -89,14 +95,28 @@ public final class TextureCache {
             path.lineWidth = 1
             path.stroke()
         case .ghost:
-            let outline = rect.insetBy(dx: 0.6, dy: 0.6)
-            let strokeColor = color.blended(withFraction: 0.7, of: .white) ?? color
-            strokeColor.withAlphaComponent(0.8).setStroke()
+            let outline = rect.insetBy(dx: 0.5, dy: 0.5)
+            let strokeColor = color
+            strokeColor.setStroke()
             let path = NSBezierPath(rect: outline)
-            path.lineWidth = 1.2
+            path.lineWidth = 1
             path.stroke()
         case .normal:
             break
+        case .flashOutline:
+            let outline = rect.insetBy(dx: 0.7, dy: 0.7)
+            let strokeColor = RenderTheme.flashBorderColor
+            strokeColor.setStroke()
+            let path = NSBezierPath(rect: outline)
+            path.lineWidth = 1.4
+            path.stroke()
+        case .flashBorder:
+            let outline = rect.insetBy(dx: 0.7, dy: 0.7)
+            let strokeColor = RenderTheme.flashBorderColor
+            strokeColor.setStroke()
+            let path = NSBezierPath(rect: outline)
+            path.lineWidth = 1.4
+            path.stroke()
         }
         image.unlockFocus()
         return SKTexture(image: image)

@@ -18,6 +18,32 @@ final class HUDDiagnosticsStateTests: XCTestCase {
         XCTAssertEqual(diag.groundedText, "Grounded: No")
     }
 
+    func testDiagnosticsStateReportsActiveAndGhost() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.active = Tetromino(kind: .i, x: 1, y: 2)
+        state.updateGhostCache()
+        let diag = HUDDiagnosticsState.from(state: state)
+        let ghostBlocks = state.ghostBlocks()
+        XCTAssertEqual(diag.activeText, "Active: i @ (1, 2)")
+        XCTAssertEqual(diag.ghostText, "Ghost blocks: \(ghostBlocks.count)")
+        XCTAssertEqual(diag.ghostBoundsText, ghostBoundsDescription(ghostBlocks))
+    }
+
+    private func ghostBoundsDescription(_ blocks: [(Int, Int)]) -> String {
+        guard let first = blocks.first else { return "Ghost bounds: -" }
+        var minX = first.0
+        var maxX = first.0
+        var minY = first.1
+        var maxY = first.1
+        for (x, y) in blocks.dropFirst() {
+            minX = min(minX, x)
+            maxX = max(maxX, x)
+            minY = min(minY, y)
+            maxY = max(maxY, y)
+        }
+        return "Ghost bounds: x[\(minX)..\(maxX)] y[\(minY)..\(maxY)]"
+    }
+
     func testDiagnosticsStateShowsComboAndB2BForModernRules() {
         var config = GameConfig()
         config.ruleset = .modern

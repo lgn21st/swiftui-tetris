@@ -100,6 +100,9 @@ public struct HUDDiagnosticsState: Equatable {
     public var lastInputText: String
     public var groundedText: String
     public var lockResetsText: String
+    public var activeText: String
+    public var ghostText: String
+    public var ghostBoundsText: String
     public var comboText: String
     public var b2bText: String
     public var hintText: String
@@ -111,6 +114,10 @@ public struct HUDDiagnosticsState: Equatable {
         let groundedText = "Grounded: \(state.canMoveDown() ? "No" : "Yes")"
         let remainingResets = max(state.config.lockResetLimit - state.lockResetCount, 0)
         let lockResetsText = "Lock resets: \(remainingResets)/\(state.config.lockResetLimit)"
+        let activeText = "Active: \(state.active.kind) @ (\(state.active.x), \(state.active.y))"
+        let ghostBlocks = state.ghostBlocks()
+        let ghostText = "Ghost blocks: \(ghostBlocks.count)"
+        let ghostBoundsText = ghostBoundsDescription(ghostBlocks)
         let comboText = state.combo >= 0 ? "Combo: \(state.combo)" : "Combo: -"
         let b2bText = "B2B: \(state.backToBack ? "Yes" : "No")"
         let lastInputText = "Last input: \(formatLastInput(lastInput))"
@@ -119,6 +126,9 @@ public struct HUDDiagnosticsState: Equatable {
             lastInputText: lastInputText,
             groundedText: groundedText,
             lockResetsText: lockResetsText,
+            activeText: activeText,
+            ghostText: ghostText,
+            ghostBoundsText: ghostBoundsText,
             comboText: comboText,
             b2bText: b2bText,
             hintText: defaultHint,
@@ -148,5 +158,20 @@ public struct HUDDiagnosticsState: Equatable {
         case .restart:
             return "Restart"
         }
+    }
+
+    private static func ghostBoundsDescription(_ blocks: [(Int, Int)]) -> String {
+        guard let first = blocks.first else { return "Ghost bounds: -" }
+        var minX = first.0
+        var maxX = first.0
+        var minY = first.1
+        var maxY = first.1
+        for (x, y) in blocks.dropFirst() {
+            minX = min(minX, x)
+            maxX = max(maxX, x)
+            minY = min(minY, y)
+            maxY = max(maxY, y)
+        }
+        return "Ghost bounds: x[\(minX)..\(maxX)] y[\(minY)..\(maxY)]"
     }
 }

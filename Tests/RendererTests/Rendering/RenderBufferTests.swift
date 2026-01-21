@@ -21,6 +21,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -29,7 +30,7 @@ final class RenderBufferTests: XCTestCase {
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 1 }
         XCTAssertEqual(cell?.isActive, true)
         XCTAssertEqual(cell?.isGhost, false)
-        XCTAssertEqual(cell?.kind, .t)
+        XCTAssertNil(cell?.kind)
         XCTAssertEqual(buffer.changedIndices, [1 * Board.width + 1])
     }
 
@@ -51,6 +52,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -80,6 +82,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -109,6 +112,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -136,6 +140,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -166,6 +171,7 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
@@ -175,7 +181,7 @@ final class RenderBufferTests: XCTestCase {
         XCTAssertEqual(buffer.changedIndices, [0, 2 * Board.width + 3])
     }
 
-    func testTrailMarksEmptyCells() {
+    func testTrailIsIgnoredEvenWhenProvided() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -193,42 +199,14 @@ final class RenderBufferTests: XCTestCase {
             tSpinKind: .none,
             tSpinAlpha: 0,
             activePulse: 0,
+            isGrounded: false,
             isPaused: false,
             isGameOver: false
         )
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 2 }
-        XCTAssertEqual(cell?.isTrail, true)
-        XCTAssertEqual(cell?.kind, .t)
-    }
-
-    func testTrailDoesNotOverrideActive() {
-        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
-        let state = RenderState(
-            board: board,
-            activeBlocks: [(1, 1)],
-            ghostBlocks: [],
-            activeKind: .i,
-            ghostKind: nil,
-            softDropTrailBlocks: [(1, 1)],
-            softDropTrailKind: .t,
-            flashBlocks: [],
-            flashAlpha: 0,
-            lineClearRows: [],
-            lineClearAlpha: 0,
-            scorePopups: [],
-            tSpinKind: .none,
-            tSpinAlpha: 0,
-            activePulse: 0,
-            isPaused: false,
-            isGameOver: false
-        )
-        let buffer = RenderBuffer()
-        buffer.update(from: state)
-        let cell = buffer.cells.first { $0.x == 1 && $0.y == 1 }
-        XCTAssertEqual(cell?.isActive, true)
         XCTAssertEqual(cell?.isTrail, false)
-        XCTAssertEqual(cell?.kind, .i)
+        XCTAssertNil(cell?.kind)
     }
 }

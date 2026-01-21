@@ -7,6 +7,7 @@ public final class TetrisScene: SKScene {
     public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = 24
     private var cellNodes: [[SKSpriteNode]] = []
+    private var activeNodes: [SKSpriteNode] = []
     private var renderBuffer: RenderBuffer
     private var lastFlashAlpha: Double?
     private var lastLineClearAlpha: Double?
@@ -89,6 +90,7 @@ public final class TetrisScene: SKScene {
                 let node = cellNodes[cell.y][cell.x]
                 applyRender(cell: cell, state: state, node: node)
             }
+            renderActiveOverlay(state)
             renderScorePopups(state.scorePopups)
             renderTSpinBadge(state)
             return
@@ -100,6 +102,7 @@ public final class TetrisScene: SKScene {
             let node = cellNodes[cell.y][cell.x]
             applyRender(cell: cell, state: state, node: node)
         }
+        renderActiveOverlay(state)
         renderScorePopups(state.scorePopups)
         renderTSpinBadge(state)
     }
@@ -115,16 +118,6 @@ public final class TetrisScene: SKScene {
             }
             return
         }
-        if cell.isFlash {
-            if state.flashAlpha <= 0 {
-                clear(node: node)
-            } else {
-                node.isHidden = false
-                node.texture = textureCache.texture(for: .flash)
-                node.alpha = CGFloat(state.flashAlpha)
-            }
-            return
-        }
         guard let kind = cell.kind else {
             clear(node: node)
             return
@@ -137,14 +130,16 @@ public final class TetrisScene: SKScene {
         }
         node.isHidden = false
         let isGhost = cell.isGhost && !cell.isActive
-        let style: TextureCache.PieceStyle = cell.isActive ? .highlight : (isGhost ? .ghost : .normal)
-        node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost, style: style))
-        if cell.isActive {
-            let pulse = max(0, min(state.activePulse, 1))
-            node.alpha = CGFloat(0.85 + 0.15 * pulse)
+        let style: TextureCache.PieceStyle
+        if cell.isFlash {
+            style = .flashBorder
+        } else if isGhost {
+            style = .ghost
         } else {
-            node.alpha = 1
+            style = .normal
         }
+        node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost, style: style))
+        node.alpha = 1
     }
 
     private func buildGrid() {
@@ -160,6 +155,55 @@ public final class TetrisScene: SKScene {
                 cellNodes[y][x] = node
             }
         }
+    }
+
+    private func renderActiveOverlay(_ state: RenderState) {
+        guard !state.activeBlocks.isEmpty, state.activeKind != nil else {
+            for node in activeNodes {
+                node.isHidden = true
+            }
+            return
+        }
+
+        if activeNodes.count != state.activeBlocks.count {
+            for node in activeNodes {
+                node.removeFromParent()
+            }
+            activeNodes = state.activeBlocks.map { _ in
+                let node = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: cellSize, height: cellSize))
+                node.zPosition = 5
+                node.isHidden = true
+                addChild(node)
+                return node
+            }
+        }
+
+        for (index, node) in activeNodes.enumerated() {
+            guard index < state.activeBlocks.count, let kind = state.activeKind else {
+                node.isHidden = true
+                continue
+            }
+            let (x, y) = state.activeBlocks[index]
+            let originX = CGFloat(x) * cellSize + cellSize / 2
+            let originY = CGFloat(Board.height - 1 - y) * cellSize + cellSize / 2
+            node.position = CGPoint(x: originX, y: originY)
+            if state.isGrounded {
+                node.texture = textureCache.texture(for: .piece(kind: kind, ghost: false, style: .normal))
+                node.alpha = 1
+            } else {
+                node.texture = textureCache.texture(for: .piece(kind: kind, ghost: false, style: .highlight))
+                let pulse = max(0, min(state.activePulse, 1))
+                node.alpha = CGFloat(0.85 + 0.15 * pulse)
+            }
+            node.isHidden = false
+        }
+    }
+    internal func debugCellNode(atX x: Int, y: Int) -> SKSpriteNode {
+        cellNodes[y][x]
+    }
+
+    internal func debugActiveNodes() -> [SKSpriteNode] {
+        activeNodes
     }
 
     private func commonInit() {

@@ -3,13 +3,25 @@ import XCTest
 @testable import Core
 
 final class RenderMappingTests: XCTestCase {
-    func testRenderMappingIncludesActiveAndGhost() {
+    func testRenderMappingIncludesActiveAndGhostAfterMove() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
+        state.activeMovedSinceSpawn = true
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertFalse(renderState.activeBlocks.isEmpty)
         XCTAssertFalse(renderState.ghostBlocks.isEmpty)
+        XCTAssertEqual(renderState.ghostKind, .t)
+    }
+
+    func testRenderMappingHidesGhostUntilActiveMoves() {
+        var state = GameState(config: GameConfig())
+        state.active = Tetromino(kind: .t, x: 3, y: 0)
+        state.updateGhostCache()
+        state.activeMovedSinceSpawn = false
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
+        XCTAssertNil(renderState.ghostKind)
     }
 
     func testRenderMappingIncludesLockedCells() {
@@ -19,7 +31,7 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertEqual(renderState.board[19][0], .i)
     }
 
-    func testRenderMappingIncludesLandingFlash() {
+    func testRenderMappingIncludesLandingFlashBlocks() {
         var state = GameState(config: GameConfig())
         state.landingFlashTimerMs = GameConstants.landingFlashDurationMs
         state.landingFlashBlocks = [(4, 10)]
@@ -27,9 +39,10 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertEqual(renderState.flashBlocks.count, 1)
         XCTAssertEqual(renderState.flashBlocks[0].0, 4)
         XCTAssertEqual(renderState.flashBlocks[0].1, 10)
+        XCTAssertEqual(renderState.flashAlpha, 1, accuracy: 0.01)
     }
 
-    func testRenderMappingComputesFlashAlpha() {
+    func testRenderMappingComputesFlashAlphaFromTimer() {
         var state = GameState(config: GameConfig())
         state.landingFlashTimerMs = GameConstants.landingFlashDurationMs / 2
         state.landingFlashBlocks = [(4, 10)]
@@ -79,21 +92,11 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertTrue(renderState.isGameOver)
     }
 
-    func testRenderMappingIncludesSoftDropTrailWhenActive() {
+    func testRenderMappingOmitsSoftDropTrailEvenWhenActive() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
         state.softDropActive = true
-        let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertFalse(renderState.softDropTrailBlocks.isEmpty)
-        XCTAssertEqual(renderState.softDropTrailKind, .t)
-    }
-
-    func testRenderMappingOmitsSoftDropTrailWhenInactive() {
-        var state = GameState(config: GameConfig(), seed: 1)
-        state.active = Tetromino(kind: .t, x: 3, y: 0)
-        state.updateGhostCache()
-        state.softDropActive = false
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertTrue(renderState.softDropTrailBlocks.isEmpty)
         XCTAssertNil(renderState.softDropTrailKind)
@@ -111,5 +114,35 @@ final class RenderMappingTests: XCTestCase {
         state.dropTimerMs = 500
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.activePulse, 1, accuracy: 0.001)
+    }
+
+    func testRenderMappingHidesGhostDuringLockDelay() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.active = Tetromino(kind: .l, x: 4, y: 0)
+        state.updateGhostCache()
+        state.lockTimerMs = GameConstants.lockDelayMs / 2
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
+        XCTAssertNil(renderState.ghostKind)
+    }
+
+    func testRenderMappingHidesGhostWhenGroundedBeforeLockTimer() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.active = Tetromino(kind: .o, x: 4, y: Board.height - 2)
+        state.updateGhostCache()
+        state.lockTimerMs = 0
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
+        XCTAssertNil(renderState.ghostKind)
+    }
+
+
+
+    func testRenderMappingFlagsGroundedWhenActiveCannotMoveDown() {
+        var state = GameState(config: GameConfig())
+        state.active = Tetromino(kind: .o, x: 4, y: Board.height - 2)
+        state.updateGhostCache()
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+        XCTAssertTrue(renderState.isGrounded)
     }
 }

@@ -142,7 +142,8 @@ Order per tick:
 - Focus loss auto-pauses (if started and not game over).
 - Pausing clears soft drop active state and timeout.
 - Line clear pause hides active/ghost (render rule).
-- Landing flash uses last locked cell positions.
+- Ghost guidance hides while grounded, during lock delay, during line clear pause, and until the active piece has successfully moved since spawn.
+- Landing flash uses last locked cell positions and fades by remaining timer ratio.
 
 ## Sound Events (optional)
 - Move, Rotate, SoftDrop, HardDrop, Hold, LineClear(n), GameOver.

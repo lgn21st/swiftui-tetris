@@ -73,7 +73,7 @@ Legend:
 | Line-clear shimmer | Optional | Shimmer overlay on cleared rows (implemented). |
 | T-Spin marker | Optional | T-Spin badge during line clear (implemented). |
 | Score popups | Optional | Floating score popup on line clears (implemented). |
-| Soft drop trail | Optional | Trail between active piece and ghost during soft drop (implemented). |
+| Soft drop trail | Optional | Trail between active piece and ghost during soft drop (removed). |
 | Active piece highlight | Optional | Subtle highlight pass for active blocks (implemented). |
 | Board gridlines | Optional | Subtle gridline overlay behind board cells (implemented). |
 | HUD section typography | Optional | Distinct header sizing for Hold/Next sections (implemented). |

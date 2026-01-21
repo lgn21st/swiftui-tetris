@@ -19,7 +19,7 @@ public enum PiecePalette {
         case .l: base = SKColor(red: 0.96, green: 0.68, blue: 0.33, alpha: 1)
         }
         if ghost {
-            return base.withAlphaComponent(0.25)
+            return RenderTheme.ghostColor
         }
         return base
     }
