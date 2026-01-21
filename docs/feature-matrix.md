@@ -81,6 +81,14 @@ Legend:
 | Input repeat tests | Optional | DAS/ARR repeat behavior. |
 | Preview cache | Optional | 4x4 mask cache for UI. |
 
+## Engine Architecture
+| Feature | Required | Notes |
+| --- | --- | --- |
+| SpriteKit-driven loop | Optional | Migrate to `SKScene.update(_:)` fixed timestep. |
+| Render node reuse | Optional | Pre-allocate nodes; avoid per-frame allocation. |
+| Input router | Optional | Unified keyboard/gamepad mapping layer. |
+| Audio engine | Optional | AVAudioEngine buffers for low-latency SFX. |
+
 ## Core Checklist
 - Board + tetromino rules + SRS rotation.
 - Tick/lock/line clear pause with correct timings.

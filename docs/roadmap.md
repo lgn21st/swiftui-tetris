@@ -4,6 +4,7 @@
 - Deliver a polished macOS-native Tetris built with SwiftUI + SpriteKit.
 - Keep rules, timing, and input feel consistent and testable.
 - Enforce strict TDD: every feature, improvement, or refactor must be protected by tests.
+- Align architecture with SwiftUI + SpriteKit best practices (see `docs/architecture.md`).
 
 ## Scope
 ### Core (must-have)
@@ -29,6 +30,27 @@
 - HUD/overlays and settings: complete with tests.
 - Audio: per-event gain + settings + persistence.
 - Window defaults + scaling: implemented; content stays centered on resize.
+
+## Refactor Track (Best Practices Alignment)
+### R1: Loop Ownership (Planned)
+- Move timing from `SceneDriver.Timer` to `TetrisScene.update(_:)`.
+- Introduce fixed timestep accumulator for deterministic ticks.
+
+### R2: Render Pipeline (Planned)
+- Pre-allocate node grids and texture cache.
+- Avoid per-frame allocations and node churn.
+
+### R3: Input Router (Planned)
+- Consolidate keyboard/gamepad mapping into a single router.
+- Keep UI focus handling separate from gameplay input.
+
+### R4: Audio Engine (Planned)
+- Migrate to `AVAudioEngine` with preloaded buffers.
+- Keep per-event gain + master volume behavior.
+
+### R5: UI Polish (Planned)
+- Confirm overlay transitions and accessibility.
+- Add any missing UI integration coverage.
 
 ## Validation Checklist
 - Movement and rotation: SRS tables verified by tests.

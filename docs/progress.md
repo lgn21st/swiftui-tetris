@@ -87,3 +87,4 @@
 - 2026-01-21: Added Settings close action via button/Esc and clarified Settings overlay hint copy.
 - 2026-01-21: Documented codesign/notarize steps for release packaging.
 - 2026-01-21: Removed porting references; updated roadmap and feature matrix for a standalone game.
+- 2026-01-21: Added SwiftUI + SpriteKit architecture review and refactor track.

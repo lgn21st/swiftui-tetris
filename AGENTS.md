@@ -9,6 +9,7 @@
 - `docs/rules-spec.md`: authoritative rules/timing constants.
 - `docs/feature-matrix.md`: feature checklist.
 - `docs/roadmap.md`: goals and validation checklist.
+- `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment plan.
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Architecture Expectations
