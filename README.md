@@ -84,3 +84,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - CLI packaging smoke test succeeded locally (release build + Packager).
 - Standardized typography constants across UI views.
 - Centralized layout spacing constants across UI views.
+- Side panel layout reordered to group status/ruleset near core stats.

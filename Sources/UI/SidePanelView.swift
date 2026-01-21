@@ -17,6 +17,13 @@ public struct SidePanelView: View {
             }
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                Text(state.statusText)
+                    .foregroundColor(.white.opacity(0.85))
+                Text(state.rulesetText)
+                    .foregroundColor(.white.opacity(0.85))
+            }
+            Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
+            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
                 Text(state.holdText)
@@ -33,8 +40,6 @@ public struct SidePanelView: View {
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
             Text(state.comboText)
             Text(state.b2bText)
-            Text(state.statusText)
-            Text(state.rulesetText)
             ProgressView(value: state.lockBarRatio)
                 .tint(state.lockWarningActive ? .red : .green)
             Text(state.hintText)
