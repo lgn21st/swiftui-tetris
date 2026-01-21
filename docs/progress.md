@@ -100,3 +100,4 @@
 - 2026-01-21: Render buffer now reuses changed index storage to avoid per-frame allocations.
 - 2026-01-21: Architecture notes updated for render buffer change tracking.
 - 2026-01-21: Architecture gaps updated to reflect loop migration completion.
+- 2026-01-21: Added pooled audio playback to allow overlapping SFX with AVAudioPlayer.

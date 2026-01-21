@@ -28,7 +28,7 @@
 - Input repeat + pause/focus handling: complete with tests.
 - SpriteKit board rendering + landing flash: complete with tests.
 - HUD/overlays and settings: complete with tests.
-- Audio: per-event gain + settings + persistence.
+- Audio: per-event gain + settings + persistence; pooled playback for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
 
 ## Refactor Track (Best Practices Alignment)
@@ -50,6 +50,7 @@
 ### R4: Audio Engine (Planned)
 - Migrate to `AVAudioEngine` with preloaded buffers.
 - Keep per-event gain + master volume behavior.
+- Pooled `AVAudioPlayer` playback is the current interim approach.
 
 ### R5: UI Polish (Planned)
 - Confirm overlay transitions and accessibility.
