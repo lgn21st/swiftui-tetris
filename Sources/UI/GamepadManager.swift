@@ -104,7 +104,7 @@ public final class GamepadManager {
     }
 
     private func handleButton(_ button: GamepadButton) {
-        guard let action = GamepadMapping.action(for: button) else { return }
+        guard let action = InputRouter.action(forButton: button) else { return }
         onAction(action)
     }
 

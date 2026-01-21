@@ -175,7 +175,7 @@ public final class SceneDriver: ObservableObject {
         if showSettings {
             return
         }
-        guard let action = KeyMapper.action(for: key) else { return }
+        guard let action = InputRouter.action(forKey: key) else { return }
         recordLastInput(action)
         switch action {
         case .moveLeft:
@@ -196,7 +196,7 @@ public final class SceneDriver: ObservableObject {
         if showSettings {
             return
         }
-        guard let action = KeyMapper.action(for: key) else { return }
+        guard let action = InputRouter.action(forKey: key) else { return }
         switch action {
         case .moveLeft:
             input.setLeftHeld(false, state: &loop.state)
