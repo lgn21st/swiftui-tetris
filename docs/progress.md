@@ -44,3 +44,4 @@
 - 2026-01-21: Centralized UI spacing constants across views with tests.
 - 2026-01-21: Rebalanced side panel order to group status/ruleset near core stats.
 - 2026-01-21: Added panel sizing constants and applied them to Settings + side panel.
+- 2026-01-21: Added panel shadow constants for Settings and side panel.

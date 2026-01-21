@@ -42,6 +42,12 @@ public struct SettingsView: View {
         .background(.black.opacity(ThemeConstants.panelOpacity))
         .foregroundColor(.white)
         .cornerRadius(LayoutConstants.panelCornerRadius)
+        .shadow(
+            color: .black.opacity(ThemeConstants.panelShadowOpacity),
+            radius: LayoutConstants.panelShadowRadius,
+            x: 0,
+            y: 4
+        )
         .frame(maxWidth: LayoutConstants.settingsMaxWidth)
     }
 }

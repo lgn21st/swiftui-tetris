@@ -8,5 +8,6 @@ final class ThemeConstantsTests: XCTestCase {
         XCTAssertEqual(ThemeConstants.previewOpacity, 0.45)
         XCTAssertEqual(ThemeConstants.overlayOpacity, 0.55)
         XCTAssertEqual(ThemeConstants.dividerOpacity, 0.3)
+        XCTAssertEqual(ThemeConstants.panelShadowOpacity, 0.35)
     }
 }

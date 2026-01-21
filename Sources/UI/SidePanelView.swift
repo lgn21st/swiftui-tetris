@@ -53,5 +53,11 @@ public struct SidePanelView: View {
         .frame(width: LayoutConstants.panelWidth, height: LayoutConstants.baseSize.height)
         .background(Color.black.opacity(ThemeConstants.panelOpacity))
         .cornerRadius(LayoutConstants.panelCornerRadius)
+        .shadow(
+            color: .black.opacity(ThemeConstants.panelShadowOpacity),
+            radius: LayoutConstants.panelShadowRadius,
+            x: 0,
+            y: 4
+        )
     }
 }

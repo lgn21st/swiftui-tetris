@@ -10,5 +10,6 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.hudSpacing, 6)
         XCTAssertEqual(LayoutConstants.settingsMaxWidth, 260)
         XCTAssertEqual(LayoutConstants.panelCornerRadius, 8)
+        XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
     }
 }
