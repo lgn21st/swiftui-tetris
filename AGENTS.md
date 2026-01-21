@@ -23,7 +23,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: DAS/ARR repeat tests added.
+- Last update: GameState tick/lock/ghost logic added with tests.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

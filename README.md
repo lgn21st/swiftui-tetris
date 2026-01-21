@@ -22,6 +22,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/feature-matrix.md`: parity checklist.
 - `docs/rules-spec.md`: rules and timing constants.
 - `docs/porting-plan.md`: milestones and exit criteria.
+- `docs/progress.md`: consolidated progress log.
 
 ## Near-term Plan
 - Implement Core module and unit tests.
@@ -32,3 +33,6 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Core board logic (bounds, placement, locking, line clears) with tests.
 - Drop interval timing logic with tests.
 - DAS/ARR repeat logic with tests.
+- Placement/collision tests for rotations.
+- GameState tick order, lock delay, soft drop grace with tests.
+- Ghost projection with tests.

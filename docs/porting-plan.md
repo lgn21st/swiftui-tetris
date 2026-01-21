@@ -42,6 +42,9 @@
 - 2026-01-21: Added Core board logic (bounds, placement, locking, line clears) with TDD tests.
 - 2026-01-21: Added drop interval timing logic with TDD tests.
 - 2026-01-21: Added DAS/ARR repeat logic with TDD tests.
+- 2026-01-21: Added placement/collision tests for rotations.
+- 2026-01-21: Added GameState tick order, lock delay, soft drop grace tests and implementation.
+- 2026-01-21: Added ghost projection tests and implementation.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**
