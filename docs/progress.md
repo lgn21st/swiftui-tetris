@@ -46,3 +46,4 @@
 - 2026-01-21: Added panel sizing constants and applied them to Settings + side panel.
 - 2026-01-21: Added panel shadow constants for Settings and side panel.
 - 2026-01-21: Added settings overlay enter animation constants.
+- 2026-01-21: Mapped arrow key keyCodes to movement actions for CLI runs.

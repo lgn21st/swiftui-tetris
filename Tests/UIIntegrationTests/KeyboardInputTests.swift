@@ -13,4 +13,11 @@ final class KeyboardInputTests: XCTestCase {
         XCTAssertEqual(KeyMapper.action(for: " "), .hardDrop)
         XCTAssertEqual(KeyMapper.action(for: "c"), .hold)
     }
+
+    func testKeyCodeMapperArrows() {
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 123), "left")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 124), "right")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 125), "down")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 126), "up")
+    }
 }

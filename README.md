@@ -40,6 +40,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/porting-plan.md`: milestones and exit criteria.
 - `docs/progress.md`: consolidated progress log.
 - `docs/cli-packaging.md`: CLI packaging instructions.
+- `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Near-term Plan
 See `docs/porting-plan.md` for the current milestone plan and next steps.

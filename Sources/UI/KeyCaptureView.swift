@@ -35,10 +35,18 @@ public final class KeyCaptureNSView: NSView {
     }
 
     public override func keyDown(with event: NSEvent) {
-        onKeyDown?(event.charactersIgnoringModifiers ?? "")
+        if let mapped = KeyCodeMapper.keyString(for: event.keyCode) {
+            onKeyDown?(mapped)
+        } else if let chars = event.charactersIgnoringModifiers {
+            onKeyDown?(chars)
+        }
     }
 
     public override func keyUp(with event: NSEvent) {
-        onKeyUp?(event.charactersIgnoringModifiers ?? "")
+        if let mapped = KeyCodeMapper.keyString(for: event.keyCode) {
+            onKeyUp?(mapped)
+        } else if let chars = event.charactersIgnoringModifiers {
+            onKeyUp?(chars)
+        }
     }
 }
