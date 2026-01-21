@@ -22,6 +22,7 @@
 - Gamepad input.
 - Lock delay bar + warning pulse (implemented).
 - Fullscreen toggle, settings overlay, diagnostics overlay.
+- Board gridlines and HUD typography polish (implemented).
 
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.
@@ -34,6 +35,10 @@
 - Settings: configurable DAS/ARR/soft drop ARR + per-event SFX toggles.
 - Soft drop trail + active piece highlight for board polish.
 - Lock bar warning pulse in HUD.
+- Board gridlines and section header typography in HUD.
+- Overlay hints include settings shortcut on title/pause/game over screens.
+- Settings volume slider shows percent value.
+- Pausing clears soft drop active state.
 
 ## Best-Practice Alignment
 - Architecture alignment work is complete; details live in `docs/architecture.md`.

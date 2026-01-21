@@ -7,4 +7,12 @@ public enum RenderTheme {
         blue: 28.0 / 255.0,
         alpha: 1.0
     )
+    public static let gridlineColor = SKColor(
+        red: 54.0 / 255.0,
+        green: 54.0 / 255.0,
+        blue: 54.0 / 255.0,
+        alpha: 0.35
+    )
+    public static let gridlineWidth: CGFloat = 1
+    public static let gridlineZ: CGFloat = -1
 }

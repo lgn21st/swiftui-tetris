@@ -135,6 +135,17 @@ public final class TetrisScene: SKScene {
         scaleMode = .resizeFill
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
+        addGridlines()
+    }
+
+    private func addGridlines() {
+        let gridPath = BoardGrid.path(cellSize: cellSize)
+        let gridNode = SKShapeNode(path: gridPath)
+        gridNode.strokeColor = RenderTheme.gridlineColor
+        gridNode.lineWidth = RenderTheme.gridlineWidth
+        gridNode.zPosition = RenderTheme.gridlineZ
+        gridNode.isAntialiased = false
+        addChild(gridNode)
     }
 
     private func clear(node: SKSpriteNode) {

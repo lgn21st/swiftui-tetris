@@ -151,6 +151,10 @@ public struct GameState {
             soundEvents.append(.hold)
         case .pause:
             paused.toggle()
+            if paused {
+                softDropActive = false
+                softDropTimeoutMs = 0
+            }
         case .restart:
             restart(seed: rngSeed())
         }

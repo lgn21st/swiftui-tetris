@@ -26,6 +26,8 @@ public struct SettingsView: View {
                     set: { settings.volume = $0 }
                 ), in: 0...1)
                 .accessibilityLabel(SettingsAccessibility.volumeLabel)
+                Text(settings.volumePercentText)
+                    .frame(width: 50, alignment: .trailing)
             }
             Divider().background(Color.white.opacity(0.4))
             Text("Input Repeat")

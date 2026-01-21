@@ -20,6 +20,7 @@ Legend:
 | Landing flash | Yes | 120 ms flash on lock. |
 | Game over | Yes | Spawn blocked. |
 | Pause | Yes | Toggle; blocks game input. |
+| Pause behavior | Optional | Pausing clears soft drop active state. |
 | Restart | Yes | Resets state; keeps started=true. |
 
 ## Timing and Movement
@@ -51,6 +52,7 @@ Legend:
 | Settings | Optional | Toggle with S. |
 | Mute | Optional | M. |
 | Volume | Optional | +/- adjust; 0 reset. |
+| Settings volume label | Optional | Display volume as percent next to slider. |
 | Fullscreen | Optional | Cmd+Ctrl+F. |
 | Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
 | Focus loss | Yes | Auto-pause on app inactive. |
@@ -64,11 +66,14 @@ Legend:
 | Layout | Yes | Board + right panel. |
 | Scaling | Yes | Uniform scale with min 0.6. |
 | Overlays | Yes | Title, pause, settings, game over. |
+| Overlay hints | Optional | Title/pause/game over messages include settings shortcut. |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
 | HUD details | Optional | Last input, grounded, lock resets, SFX. |
 | Lock bar | Optional | Visual bar + warning pulse (implemented). |
 | Soft drop trail | Optional | Trail between active piece and ghost during soft drop. |
 | Active piece highlight | Optional | Subtle highlight pass for active blocks. |
+| Board gridlines | Optional | Subtle gridline overlay behind board cells. |
+| HUD section typography | Optional | Distinct header sizing for Hold/Next sections. |
 | Ghost tint | Yes | Low alpha. |
 | Accessibility labels | Optional | Overlay + Settings sliders labeled. |
 

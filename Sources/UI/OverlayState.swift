@@ -13,10 +13,10 @@ public struct OverlayState: Equatable {
     }
 
     public var message: String {
-        if isGameOver { return "Press R to restart" }
+        if isGameOver { return "Press R to restart · S Settings" }
         if isSettings { return "S or Esc to close" }
-        if isPaused { return "Press P to resume, R to restart" }
-        if isTitle { return "Press Space or Enter to start" }
+        if isPaused { return "Press P to resume · R to restart · S Settings" }
+        if isTitle { return "Press Space or Enter to start · S Settings" }
         return ""
     }
 }

@@ -82,6 +82,10 @@ public struct SettingsState: Equatable, Codable {
         volume = min(1.0, max(0.0, volume + delta))
     }
 
+    public var volumePercentText: String {
+        String(format: "%.0f%%", volume * 100.0)
+    }
+
     public mutating func reset() {
         muted = false
         volume = 0.7

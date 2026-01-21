@@ -146,6 +146,7 @@ Order per tick:
 - Started flag gates gameplay until start.
 - show_settings pauses game when opened (if not game over).
 - Focus loss auto-pauses (if started and not game over).
+- Pausing clears soft drop active state and timeout.
 - Line clear pause hides active/ghost (render rule).
 - Landing flash uses last locked cell positions.
 

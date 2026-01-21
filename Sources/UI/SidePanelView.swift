@@ -35,12 +35,12 @@ public struct SidePanelView: View {
                 .tint(state.lockWarningActive ? warningColor : normalColor)
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
-                    .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
+                    .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
             }
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Next")
-                    .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
+                    .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
                 ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
                     PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
                 }

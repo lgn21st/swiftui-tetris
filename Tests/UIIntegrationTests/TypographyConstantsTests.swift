@@ -4,6 +4,7 @@ import XCTest
 final class TypographyConstantsTests: XCTestCase {
     func testTypographyDefaults() {
         XCTAssertEqual(TypographyConstants.sidePanelFontSize, 12)
+        XCTAssertEqual(TypographyConstants.sidePanelSectionFontSize, 11)
         XCTAssertEqual(TypographyConstants.sidePanelHintFontSize, 10)
         XCTAssertEqual(TypographyConstants.overlayTitleSize, 24)
         XCTAssertEqual(TypographyConstants.overlayMessageSize, 14)

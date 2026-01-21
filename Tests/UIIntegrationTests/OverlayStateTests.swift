@@ -19,17 +19,17 @@ final class OverlayStateTests: XCTestCase {
 
     func testOverlayShowsStartHintOnTitle() {
         let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press Space or Enter to start")
+        XCTAssertEqual(overlay.message, "Press Space or Enter to start · S Settings")
     }
 
     func testOverlayShowsPausedHint() {
         let overlay = OverlayState(isPaused: true, isGameOver: false, isTitle: false, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press P to resume, R to restart")
+        XCTAssertEqual(overlay.message, "Press P to resume · R to restart · S Settings")
     }
 
     func testOverlayShowsGameOverHint() {
         let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press R to restart")
+        XCTAssertEqual(overlay.message, "Press R to restart · S Settings")
     }
 
     func testOverlayShowsSettingsHint() {

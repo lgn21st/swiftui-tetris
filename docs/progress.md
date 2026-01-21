@@ -141,3 +141,7 @@
 - 2026-01-22: Clarified SFX toggle/slider behavior in README settings quick reference.
 - 2026-01-22: Added soft drop trail rendering and active-piece highlight textures for board polish.
 - 2026-01-22: Added lock bar warning pulse logic and HUD tint updates.
+- 2026-01-22: Added board gridlines and section header typography polish.
+- 2026-01-22: Updated overlay hints to include settings shortcut on title/pause/game over screens.
+- 2026-01-22: Added volume percent label next to Settings slider.
+- 2026-01-22: Pausing clears soft drop active state and timeout.

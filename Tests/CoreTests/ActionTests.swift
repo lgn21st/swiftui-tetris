@@ -24,4 +24,14 @@ final class ActionTests: XCTestCase {
         state.apply(action: .pause)
         XCTAssertFalse(state.paused)
     }
+
+    func testPauseClearsSoftDropState() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.softDropActive = true
+        state.softDropTimeoutMs = 120
+        state.apply(action: .pause)
+        XCTAssertTrue(state.paused)
+        XCTAssertFalse(state.softDropActive)
+        XCTAssertEqual(state.softDropTimeoutMs, 0)
+    }
 }

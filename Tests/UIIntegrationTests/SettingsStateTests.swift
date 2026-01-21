@@ -106,4 +106,14 @@ final class SettingsStateTests: XCTestCase {
         settings.setGain(-1.0, for: .hardDrop)
         XCTAssertEqual(settings.gainOverrides[.hardDrop], 0.0)
     }
+
+    func testVolumePercentTextFormatsValue() {
+        var settings = SettingsState()
+        settings.volume = 0.7
+        XCTAssertEqual(settings.volumePercentText, "70%")
+        settings.volume = 1.0
+        XCTAssertEqual(settings.volumePercentText, "100%")
+        settings.volume = 0.0
+        XCTAssertEqual(settings.volumePercentText, "0%")
+    }
 }
