@@ -14,7 +14,7 @@
 - Classic scoring and leveling.
 - Keyboard input with DAS/ARR and soft drop grace.
 - Title, pause, game over overlays.
-- HUD: score/level/lines/next/hold.
+- HUD with visual previews: score/level/lines + hold/next preview grids.
 
 ### Optional (post-MVP)
 - Modern ruleset (T-spins, B2B, combo).
@@ -23,9 +23,17 @@
 - Lock delay bar + warning pulse.
 - Fullscreen toggle, settings overlay.
 
+## Current Status (Snapshot)
+- Core rules, timing, scoring, RNG, hold/queue: complete with tests.
+- Input repeat + pause/focus handling: complete with tests.
+- SpriteKit board rendering + landing flash: complete with tests.
+- HUD/overlays: functional (text-based), needs visual parity for hold/next previews.
+- Audio: implemented with per-event gain + settings controls.
+- Window defaults + scaling: implemented.
+
 ## Milestones
 
-### M1: Core Rules Engine (logic-only)
+### M1: Core Rules Engine (logic-only) — Done
 **Deliverables**
 - `Core` module with board, pieces, rotation, RNG, queue, scoring, and timing.
 - Unit tests mirroring gpui behavior.
@@ -69,7 +77,7 @@
 - 2026-01-21: Added proportional layout scaling based on window size.
 - 2026-01-21: Added per-event SFX sliders in Settings UI.
 
-### M2: SpriteKit Board Rendering
+### M2: SpriteKit Board Rendering — Done
 **Deliverables**
 - `SKScene` rendering board, active piece, ghost piece, landing flash.
 - Scaled layout based on logical board size.
@@ -81,17 +89,18 @@
 **Notes**
 - Separate SKNode layers: board, active, ghost, effects, overlays.
 
-### M3: SwiftUI UI Layer + Overlays
+### M3: SwiftUI UI Layer + Overlays — In Progress
 **Deliverables**
 - SwiftUI container with side panel and overlays.
 - Title, pause, game over screens.
-- HUD: score/level/lines, hold, next preview.
+- HUD: score/level/lines, hold/next preview grids, compact key hints.
 
 **Exit Criteria**
 - Keyboard input triggers correct actions.
 - UI updates are consistent with Core state (no stale HUD).
+- Hold/next previews match gpui layout proportions.
 
-### M4: Input Timing and Repeat Behavior
+### M4: Input Timing and Repeat Behavior — Done
 **Deliverables**
 - DAS/ARR repeat logic for left/right.
 - Soft drop repeat and grace window.
@@ -101,10 +110,11 @@
 - Repeat behavior matches gpui tests (DAS 150ms, ARR 50ms).
 - Soft drop grace behaves correctly without input spam.
 
-### M5: Parity Pass + UX polish
+### M5: Parity Pass + UX polish — Next
 **Deliverables**
 - Parity checklist completed.
 - Visual polish (colors, overlays, subtle animations).
+- Settings persistence (volume/mute/SFX gains).
 
 **Exit Criteria**
 - Feature parity for MVP checklist.
