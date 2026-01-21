@@ -102,5 +102,6 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         _ = buffer.update(from: state)
         XCTAssertEqual(buffer.flashIndices, [0, 2 * Board.width + 3])
+        XCTAssertEqual(buffer.changedIndices, [0, 2 * Board.width + 3])
     }
 }

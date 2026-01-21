@@ -97,3 +97,4 @@
 - 2026-01-21: Added render buffer to reuse cell state and avoid per-frame allocations.
 - 2026-01-21: Render buffer now reports changed indices to skip node updates for unchanged cells.
 - 2026-01-21: Flash alpha updates now re-render flash cells only (no full board pass).
+- 2026-01-21: Render buffer now reuses changed index storage to avoid per-frame allocations.
