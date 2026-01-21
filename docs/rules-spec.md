@@ -20,8 +20,8 @@ This document captures the game rules and timing constants used by this project.
 
 ## Input Settings Ranges
 - DAS range: 0..300 ms
-- ARR range: 0..100 ms
-- Soft drop ARR range: 0..100 ms
+- ARR range: 0..100 ms (0 disables repeat)
+- Soft drop ARR range: 0..100 ms (0 disables repeat)
 
 ## Tetromino Shapes (Offsets)
 Rotation order: North, East, South, West.
