@@ -18,22 +18,14 @@ public enum LayoutConstants {
     public static let panelSectionSpacing: CGFloat = 9.6
     public static let panelItemSpacing: CGFloat = 3.2
     public static let overlaySpacing: CGFloat = 8
-    public static let settingsSpacing: CGFloat = 8
     public static let hudSpacing: CGFloat = 6
-    public static let settingsMaxWidth: CGFloat = 260
     public static let panelCornerRadius: CGFloat = 8
     public static let panelShadowRadius: CGFloat = 10
     public static let panelBorderWidth: CGFloat = 1
     public static let boardBorderWidth: CGFloat = 1
-    public static let settingsEnterScale: CGFloat = 0.96
-    public static let settingsAnimationDuration: Double = 0.18
     public static let overlayAnimationDuration: Double = 0.12
     public static let hudPadding: CGFloat = 8
     public static let hudCornerRadius: CGFloat = 6
-
-    public static func settingsAnimation(reduceMotion: Bool) -> Animation? {
-        reduceMotion ? nil : .easeOut(duration: settingsAnimationDuration)
-    }
 
     public static func overlayAnimation(reduceMotion: Bool) -> Animation? {
         reduceMotion ? nil : .easeOut(duration: overlayAnimationDuration)

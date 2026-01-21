@@ -3,37 +3,27 @@ import XCTest
 
 final class OverlayStateTests: XCTestCase {
     func testOverlayShowsPaused() {
-        let overlay = OverlayState(isPaused: true, isGameOver: false, isTitle: false, isSettings: false)
+        let overlay = OverlayState(isPaused: true, isGameOver: false, isTitle: false)
         XCTAssertEqual(overlay.title, "Paused")
     }
 
     func testOverlayShowsGameOver() {
-        let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false, isSettings: false)
+        let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false)
         XCTAssertEqual(overlay.title, "Game Over")
     }
 
-    func testOverlayShowsSettings() {
-        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: false, isSettings: true)
-        XCTAssertEqual(overlay.title, "Settings")
-    }
-
     func testOverlayShowsStartHintOnTitle() {
-        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press Space or Enter to start · S Settings")
+        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
+        XCTAssertEqual(overlay.message, "Press Space or Enter to start")
     }
 
     func testOverlayShowsPausedHint() {
-        let overlay = OverlayState(isPaused: true, isGameOver: false, isTitle: false, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press P to resume · R to restart · S Settings")
+        let overlay = OverlayState(isPaused: true, isGameOver: false, isTitle: false)
+        XCTAssertEqual(overlay.message, "Press P to resume · R to restart")
     }
 
     func testOverlayShowsGameOverHint() {
-        let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false, isSettings: false)
-        XCTAssertEqual(overlay.message, "Press R to restart · S Settings")
-    }
-
-    func testOverlayShowsSettingsHint() {
-        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: false, isSettings: true)
-        XCTAssertEqual(overlay.message, "S or Esc to close")
+        let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false)
+        XCTAssertEqual(overlay.message, "Press R to restart")
     }
 }

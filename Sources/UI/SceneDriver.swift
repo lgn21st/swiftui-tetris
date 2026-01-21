@@ -1,6 +1,5 @@
 import Foundation
 import AppKit
-import Combine
 import Renderer
 import Core
 
@@ -12,23 +11,19 @@ public final class SceneDriver: ObservableObject {
     private var gamepad: GamepadManager?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
-    @Published public var settings: SettingsState
     @Published public private(set) var diagnosticsState: DiagnosticsState
     @Published public private(set) var diagnosticsVisible: Bool
     private var started: Bool
-    private var showSettings: Bool
     private var diagnosticsTracker: DiagnosticsTracker
-    private let settingsStore: SettingsStoring
-    private var settingsCancellable: AnyCancellable?
     private var lastInputAction: GameAction?
     private var latestRenderState: RenderState
     private let focusHandler: FocusPauseHandler
+    private let masterVolume: Double
 
     public init(
         loop: GameLoop = GameLoop(),
         input: InputEngine = InputEngine(),
-        audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
-        settingsStore: SettingsStoring = UserDefaultsSettingsStore()
+        audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory())
     ) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
@@ -36,28 +31,15 @@ public final class SceneDriver: ObservableObject {
         self.audio = audio
         let startedValue = false
         self.started = startedValue
-        self.showSettings = false
         self.hudState = HUDState.from(state: loop.state, started: startedValue)
-        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
-        self.settingsStore = settingsStore
-        self.settings = settingsStore.load()
+        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
         self.diagnosticsState = DiagnosticsState.empty
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
         self.latestRenderState = RenderMapper.map(state: loop.state)
         self.focusHandler = FocusPauseHandler()
-        self.input.updateConfig(
-            repeatConfig: settings.repeatConfig(),
-            softDropRepeatConfig: settings.softDropRepeatConfig()
-        )
-        self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
-            self?.settingsStore.save(updated)
-            self?.input.updateConfig(
-                repeatConfig: updated.repeatConfig(),
-                softDropRepeatConfig: updated.softDropRepeatConfig()
-            )
-        }
+        self.masterVolume = 0.7
         self.gamepad = GamepadManager(
             onLeftHeld: { [weak self] held in
                 self?.setGamepadLeftHeld(held)
@@ -96,15 +78,12 @@ public final class SceneDriver: ObservableObject {
         let renderState = loop.stepFrame(elapsedMs: elapsed)
         latestRenderState = renderState
         let events = loop.state.takeSoundEvents()
-        if let audio = audio, !settings.muted {
+        if let audio = audio {
             for event in events {
-                if !settings.isSfxEnabled(for: event) {
-                    continue
-                }
                 audio.play(
                     event,
-                    masterVolume: settings.volume,
-                    gainOverride: settings.gainOverride(for: event)
+                    masterVolume: masterVolume,
+                    gainOverride: nil
                 )
             }
         }
@@ -125,13 +104,11 @@ public final class SceneDriver: ObservableObject {
             isActive: isActive,
             state: &loop.state,
             input: input,
-            started: started,
-            showSettings: showSettings
+            started: started
         )
         hudState = HUDState.from(
             state: loop.state,
             started: started,
-            settings: settings,
             lastInput: lastInputAction
         )
     }
@@ -142,40 +119,13 @@ public final class SceneDriver: ObservableObject {
             return
         }
         if key == "escape" {
-            if showSettings {
-                closeSettings()
-            } else {
-                recordLastInput(.pause)
-                input.releaseMovementHolds()
-                input.apply(action: .pause, to: &loop.state)
-            }
-            return
-        }
-        if key == "s" {
-            setSettingsVisible(!showSettings)
-            return
-        }
-        if key == "m" {
-            settings.toggleMute()
-            return
-        }
-        if key == "+" || key == "=" {
-            settings.adjustVolume(by: 0.1)
-            return
-        }
-        if key == "-" {
-            settings.adjustVolume(by: -0.1)
-            return
-        }
-        if key == "0" {
-            settings.reset()
+            recordLastInput(.pause)
+            input.releaseMovementHolds()
+            input.apply(action: .pause, to: &loop.state)
             return
         }
         if key == "d" {
             diagnosticsVisible.toggle()
-            return
-        }
-        if showSettings {
             return
         }
         guard let action = InputRouter.action(forKey: key) else { return }
@@ -196,9 +146,6 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyUp(_ key: String) {
-        if showSettings {
-            return
-        }
         guard let action = InputRouter.action(forKey: key) else { return }
         switch action {
         case .moveLeft:
@@ -218,10 +165,6 @@ public final class SceneDriver: ObservableObject {
         }
     }
 
-    public func closeSettings() {
-        setSettingsVisible(false)
-    }
-
     public func commandStartGame() {
         startIfNeeded()
         refreshDerivedState()
@@ -230,29 +173,18 @@ public final class SceneDriver: ObservableObject {
     public func commandRestartGame() {
         started = true
         loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
-        showSettings = false
         input.reset()
         refreshDerivedState()
     }
 
     public func commandTogglePause() {
-        if showSettings {
-            return
-        }
         recordLastInput(.pause)
         input.releaseMovementHolds()
         input.apply(action: .pause, to: &loop.state)
         refreshDerivedState()
     }
 
-    public func commandToggleSettings() {
-        setSettingsVisible(!showSettings)
-    }
-
     private func handleGamepadAction(_ action: GameAction) {
-        if showSettings {
-            return
-        }
         if !started, action == .pause || action == .restart {
             startIfNeeded()
             return
@@ -262,25 +194,16 @@ public final class SceneDriver: ObservableObject {
     }
 
     private func setGamepadLeftHeld(_ held: Bool) {
-        if showSettings {
-            return
-        }
         if held { recordLastInput(.moveLeft) }
         input.setLeftHeld(held, state: &loop.state)
     }
 
     private func setGamepadRightHeld(_ held: Bool) {
-        if showSettings {
-            return
-        }
         if held { recordLastInput(.moveRight) }
         input.setRightHeld(held, state: &loop.state)
     }
 
     private func setGamepadDownHeld(_ held: Bool) {
-        if showSettings {
-            return
-        }
         if held { recordLastInput(.softDrop) }
         input.setDownHeld(held, state: &loop.state)
     }
@@ -289,25 +212,16 @@ public final class SceneDriver: ObservableObject {
         lastInputAction = action
     }
 
-    private func setSettingsVisible(_ visible: Bool) {
-        showSettings = visible
-        loop.state.paused = visible
-        input.releaseMovementHolds()
-        refreshDerivedState()
-    }
-
     private func refreshDerivedState() {
         hudState = HUDState.from(
             state: loop.state,
             started: started,
-            settings: settings,
             lastInput: lastInputAction
         )
         overlayState = OverlayState(
-            isPaused: loop.state.paused || showSettings,
+            isPaused: loop.state.paused,
             isGameOver: loop.state.gameOver,
-            isTitle: !started,
-            isSettings: showSettings
+            isTitle: !started
         )
     }
 

@@ -13,8 +13,7 @@ final class FocusPauseHandlerTests: XCTestCase {
             isActive: false,
             state: &state,
             input: input,
-            started: true,
-            showSettings: false
+            started: true
         )
 
         XCTAssertTrue(state.paused)

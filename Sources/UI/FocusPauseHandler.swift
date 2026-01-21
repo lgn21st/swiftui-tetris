@@ -7,15 +7,13 @@ public struct FocusPauseHandler {
         isActive: Bool,
         state: inout GameState,
         input: InputEngine,
-        started: Bool,
-        showSettings: Bool
+        started: Bool
     ) -> OverlayState {
         guard !isActive else {
             return OverlayState(
-                isPaused: state.paused || showSettings,
+                isPaused: state.paused,
                 isGameOver: state.gameOver,
-                isTitle: !started,
-                isSettings: showSettings
+                isTitle: !started
             )
         }
         state.paused = true
@@ -23,8 +21,7 @@ public struct FocusPauseHandler {
         return OverlayState(
             isPaused: true,
             isGameOver: state.gameOver,
-            isTitle: !started,
-            isSettings: showSettings
+            isTitle: !started
         )
     }
 }

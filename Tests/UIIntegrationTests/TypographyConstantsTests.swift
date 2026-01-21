@@ -8,8 +8,6 @@ final class TypographyConstantsTests: XCTestCase {
         XCTAssertEqual(TypographyConstants.sidePanelHintFontSize, 10)
         XCTAssertEqual(TypographyConstants.overlayTitleSize, 24)
         XCTAssertEqual(TypographyConstants.overlayMessageSize, 14)
-        XCTAssertEqual(TypographyConstants.settingsTitleSize, 18)
-        XCTAssertEqual(TypographyConstants.settingsSectionSize, 14)
         XCTAssertEqual(TypographyConstants.hudFontSize, 12)
         XCTAssertEqual(TypographyConstants.hudHintFontSize, 10)
     }

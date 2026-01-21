@@ -4,18 +4,15 @@ public struct CommandActions {
     public let startGame: () -> Void
     public let restartGame: () -> Void
     public let togglePause: () -> Void
-    public let toggleSettings: () -> Void
 
     public init(
         startGame: @escaping () -> Void,
         restartGame: @escaping () -> Void,
-        togglePause: @escaping () -> Void,
-        toggleSettings: @escaping () -> Void
+        togglePause: @escaping () -> Void
     ) {
         self.startGame = startGame
         self.restartGame = restartGame
         self.togglePause = togglePause
-        self.toggleSettings = toggleSettings
     }
 }
 

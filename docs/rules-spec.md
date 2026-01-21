@@ -18,11 +18,6 @@ This document captures the game rules and timing constants used by this project.
 - Input ARR: 50 ms (default)
 - Soft drop ARR: 50 ms (default)
 
-## Input Settings Ranges
-- DAS range: 0..300 ms
-- ARR range: 0..100 ms (0 disables repeat)
-- Soft drop ARR range: 0..100 ms (0 disables repeat)
-
 ## Tetromino Shapes (Offsets)
 Rotation order: North, East, South, West.
 
@@ -144,7 +139,6 @@ Order per tick:
 
 ## Visual/UX-Driven State
 - Started flag gates gameplay until start.
-- show_settings pauses game when opened (if not game over).
 - Focus loss auto-pauses (if started and not game over).
 - Pausing clears soft drop active state and timeout.
 - Line clear pause hides active/ghost (render rule).

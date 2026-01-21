@@ -4,7 +4,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ## Principles
 - **SpriteKit owns the game loop**: use `SKScene.update(_:)` with a fixed timestep accumulator.
-- **SwiftUI owns composition**: overlays, settings, HUD, and window behaviors should be SwiftUI-first.
+- **SwiftUI owns composition**: overlays, HUD, and window behaviors should be SwiftUI-first.
 - **Core is deterministic**: all rule changes are test-first and isolated from rendering/input.
 - **No per-frame allocations**: reuse nodes, buffers, and arrays to keep frame pacing stable.
 - **Assets are bundled**: load audio/textures via `Bundle.module` (SwiftPM) for packaged parity.
@@ -18,7 +18,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
   - Maintain `accumulatorMs` + `fixedStepMs` (16ms).
   - Call `Core.GameState.tick` in fixed steps; render once per frame.
 - `SceneDriver` becomes a coordinator:
-  - Owns Core state, input engine, and settings.
+  - Owns Core state and input engine.
   - Exposes a `RenderState` snapshot for the scene to consume.
 
 ### Rendering
@@ -29,7 +29,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ### Input
 - Create a single `InputRouter` that maps keyboard/gamepad to `GameAction`.
-- Support SwiftUI `Commands` for menu shortcuts (Pause, Restart, Settings).
+- Support SwiftUI `Commands` for menu shortcuts (Pause, Restart).
 - Keep key capture and gamepad handling decoupled from gameplay logic.
 
 ### Audio
@@ -39,7 +39,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ### SwiftUI Composition
 - Keep `SpriteView` fixed-size in logical coordinates and scale via SwiftUI.
-- Overlay HUD/Settings with `ZStack` and `FocusState`.
+- Overlay HUD with `ZStack`.
 - Provide accessibility: reduce motion, keyboard focus order, and legible text sizes.
 
 ## Alignment Summary (Complete)
@@ -51,7 +51,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.
-- UI integration tests cover input routing, overlay state, and settings.
+- UI integration tests cover input routing and overlay state.
 - Renderer tests validate mapping logic and resource reuse.
 
 ## Risks

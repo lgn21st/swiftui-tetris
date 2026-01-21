@@ -61,22 +61,6 @@ public struct TetrisContainerView: View {
                         LayoutConstants.overlayAnimation(reduceMotion: reduceMotion),
                         value: driver.overlayState
                     )
-                if driver.overlayState.isSettings {
-                    SettingsView(settings: Binding(
-                        get: { driver.settings },
-                        set: { driver.settings = $0 }
-                    ), onClose: {
-                        driver.closeSettings()
-                    })
-                    .transition(
-                        .scale(scale: LayoutConstants.settingsEnterScale).combined(with: .opacity)
-                    )
-                    .frame(
-                        width: LayoutConstants.baseSize.width,
-                        height: LayoutConstants.baseSize.height,
-                        alignment: .center
-                    )
-                }
                 if driver.diagnosticsVisible {
                     DiagnosticsView(state: driver.diagnosticsState)
                         .frame(
@@ -88,8 +72,7 @@ public struct TetrisContainerView: View {
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) },
-                    onToggleFullScreen: { driver.toggleFullScreen() },
-                    isEnabled: !driver.overlayState.isSettings
+                    onToggleFullScreen: { driver.toggleFullScreen() }
                 )
                 .frame(width: 0, height: 0)
                 WindowStateView { window in
@@ -103,8 +86,8 @@ public struct TetrisContainerView: View {
             )
             .scaleEffect(scale, anchor: LayoutConstants.scaleAnchor)
             .animation(
-                LayoutConstants.settingsAnimation(reduceMotion: reduceMotion),
-                value: driver.overlayState.isSettings
+                LayoutConstants.overlayAnimation(reduceMotion: reduceMotion),
+                value: driver.overlayState
             )
             .frame(
                 width: proxy.size.width,
@@ -124,8 +107,7 @@ public struct TetrisContainerView: View {
                 CommandActions(
                     startGame: { driver.commandStartGame() },
                     restartGame: { driver.commandRestartGame() },
-                    togglePause: { driver.commandTogglePause() },
-                    toggleSettings: { driver.commandToggleSettings() }
+                    togglePause: { driver.commandTogglePause() }
                 )
             )
             .onAppear { driver.start() }

@@ -1,5 +1,16 @@
 import Foundation
 
+public protocol KeyValueStoring {
+    func data(forKey key: String) -> Data?
+    func setData(_ data: Data?, forKey key: String)
+}
+
+extension UserDefaults: KeyValueStoring {
+    public func setData(_ data: Data?, forKey key: String) {
+        set(data, forKey: key)
+    }
+}
+
 public protocol WindowStateStoring {
     func load() -> WindowState?
     func save(_ state: WindowState)

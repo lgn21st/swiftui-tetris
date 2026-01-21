@@ -20,7 +20,6 @@ public struct SidePanelView: View {
                 Text(state.holdText)
                 Text(state.groundedText)
                 Text(state.lockResetsText)
-                Text(state.sfxText)
                 if !state.isClassicRuleset {
                     VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                         Text(state.comboText)

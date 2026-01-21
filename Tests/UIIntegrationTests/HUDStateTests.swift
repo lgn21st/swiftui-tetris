@@ -38,7 +38,7 @@ final class HUDStateTests: XCTestCase {
     func testHudHintText() {
         let state = GameState(config: GameConfig(), seed: 1)
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause · S Settings · M Mute")
+        XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
     }
 
     func testHudRulesetTextReflectsConfig() {
@@ -68,16 +68,10 @@ final class HUDStateTests: XCTestCase {
 
     func testHudLastInputAndSfxLabels() {
         let state = GameState(config: GameConfig(), seed: 1)
-        var settings = SettingsState()
-        settings.volume = 0.7
-        let hud = HUDState.from(state: state, settings: settings, lastInput: .rotateCw)
+        let hud = HUDState.from(state: state, lastInput: .rotateCw)
         XCTAssertEqual(hud.lastInputText, "Last input: Rotate CW")
-        XCTAssertEqual(hud.sfxText, "SFX: 70%")
-
-        settings.muted = true
-        let mutedHud = HUDState.from(state: state, settings: settings, lastInput: nil)
+        let mutedHud = HUDState.from(state: state, lastInput: nil)
         XCTAssertEqual(mutedHud.lastInputText, "Last input: None")
-        XCTAssertEqual(mutedHud.sfxText, "SFX: Muted")
     }
 
     func testHudGroundedAndLockResetsText() {

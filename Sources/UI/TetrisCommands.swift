@@ -24,12 +24,6 @@ public struct TetrisCommands: Commands {
             }
             .keyboardShortcut("p", modifiers: [.command])
             .disabled(actions == nil)
-
-            Button("Settings") {
-                actions?.toggleSettings()
-            }
-            .keyboardShortcut(",", modifiers: [.command])
-            .disabled(actions == nil)
         }
     }
 }

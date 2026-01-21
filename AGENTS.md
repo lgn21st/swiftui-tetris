@@ -15,7 +15,7 @@
 ## Architecture Expectations
 - `Core` owns board, pieces, RNG, scoring, timing, and actions.
 - `Renderer` renders state from Core; no game logic inside SpriteKit nodes.
-- `UI` is SwiftUI-only: panels, overlays, settings, and window behaviors.
+- `UI` is SwiftUI-only: panels, overlays, and window behaviors.
 - Rendering should reuse preallocated buffers and nodes to minimize per-frame allocations.
 
 ## Working Agreements
@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added UI/UX polish items to TODO backlog.
+- Last update: Removed Settings system in favor of convention-over-configuration defaults.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

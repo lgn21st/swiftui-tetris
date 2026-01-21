@@ -18,28 +18,25 @@
 
 ### Optional (nice-to-have)
 - Modern ruleset (T-spins, B2B, combo).
-- Audio with per-event gain and settings UI.
+- Audio with per-event gain.
 - Gamepad input.
 - Lock delay bar + warning pulse (implemented).
-- Fullscreen toggle, settings overlay, diagnostics overlay.
+- Fullscreen toggle, diagnostics overlay.
 - Board gridlines and HUD typography polish (implemented).
 
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.
 - Input repeat + pause/focus handling: complete with tests.
+- Convention-over-configuration defaults: settings UI removed; fixed input/audio defaults.
 - SpriteKit board rendering + landing flash + texture cache: complete with tests.
-- HUD/overlays and settings: complete with tests.
-- Audio: per-event gain + settings + persistence; AVAudioEngine buffers for overlapping SFX.
+- HUD/overlays: complete with tests.
+- Audio: per-event gain defaults; AVAudioEngine buffers for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
-- SwiftUI menu commands: start/restart/pause/settings actions wired.
-- Settings: configurable DAS/ARR/soft drop ARR + per-event SFX toggles.
+- SwiftUI menu commands: start/restart/pause actions wired.
 - Soft drop trail + active piece highlight for board polish.
 - Lock bar warning pulse in HUD.
 - Board gridlines and section header typography in HUD.
-- Overlay hints include settings shortcut on title/pause/game over screens.
-- Settings volume slider shows percent value.
 - Active piece pulse tied to gravity interval.
-- Settings input section includes summary line.
 - Pausing clears soft drop active state.
 
 ## Best-Practice Alignment

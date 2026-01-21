@@ -49,16 +49,11 @@ Legend:
 | Keyboard mapping | Yes | Left/Right/Down/Up/Space/C. |
 | Start | Yes | Enter/Return/Space. |
 | Pause | Yes | P. |
-| Settings | Optional | Toggle with S. |
-| Mute | Optional | M. |
-| Volume | Optional | +/- adjust; 0 reset. |
-| Settings volume label | Optional | Display volume as percent next to slider. |
-| Settings input summary | Optional | Display DAS/ARR/Soft ARR summary under input section. |
 | Fullscreen | Optional | Cmd+Ctrl+F. |
-| Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
+| Menu commands | Optional | Cmd+ shortcuts for start/restart/pause. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
-| Input repeat settings | Optional | Configurable DAS/ARR/soft drop ARR in Settings (ARR=0 disables repeat). |
+| Input repeat | Yes | Fixed DAS/ARR/soft drop ARR defaults. |
 
 ## UI and Layout
 | Feature | Required | Notes |
@@ -66,10 +61,10 @@ Legend:
 | Base size | Yes | 480x720, cell=24. |
 | Layout | Yes | Board + right panel. |
 | Scaling | Yes | Uniform scale with min 0.6. |
-| Overlays | Yes | Title, pause, settings, game over. |
-| Overlay hints | Optional | Title/pause/game over messages include settings shortcut. |
+| Overlays | Yes | Title, pause, game over. |
+| Overlay hints | Optional | Title/pause/game over messages. |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
-| HUD details | Optional | Last input, grounded, lock resets, SFX. |
+| HUD details | Optional | Last input, grounded, lock resets. |
 | Lock bar | Optional | Visual bar + warning pulse (implemented). |
 | Soft drop trail | Optional | Trail between active piece and ghost during soft drop. |
 | Active piece highlight | Optional | Subtle highlight pass for active blocks. |
@@ -77,15 +72,14 @@ Legend:
 | HUD section typography | Optional | Distinct header sizing for Hold/Next sections. |
 | Active drop pulse | Optional | Subtle alpha pulse tied to gravity interval. |
 | Ghost tint | Yes | Low alpha. |
-| Accessibility labels | Optional | Overlay + Settings sliders labeled. |
+| Accessibility labels | Optional | Overlay labels for title + message. |
 
 ## Audio
 | Feature | Required | Notes |
 | --- | --- | --- |
 | Events | Optional | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver. |
-| Gains | Optional | Per-event gain mapping. |
-| Master volume | Optional | Default 0.7, step 0.1. |
-| Per-event toggles | Optional | Enable/disable each SFX event (disabled toggles dim sliders). |
+| Gains | Optional | Per-event gain mapping (defaults). |
+| Master volume | Optional | Fixed default 0.7. |
 
 ## Diagnostics and Testing
 | Feature | Required | Notes |

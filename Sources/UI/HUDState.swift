@@ -10,7 +10,6 @@ public struct HUDState: Equatable {
     public var nextText: String
     public var groundedText: String
     public var lockResetsText: String
-    public var sfxText: String
     public var comboText: String
     public var b2bText: String
     public var statusText: String
@@ -27,12 +26,11 @@ public struct HUDState: Equatable {
     private static let lockWarningPulsePeriodMs = 400
     private static let lockWarningPulseMin = 0.4
     private static let lockWarningPulseMax = 1.0
-    private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause · S Settings · M Mute"
+    private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
 
     public static func from(
         state: GameState,
         started: Bool = true,
-        settings: SettingsState = SettingsState(),
         lastInput: GameAction? = nil
     ) -> HUDState {
         let holdStatus = state.canHold ? "Ready" : "Used"
@@ -57,7 +55,6 @@ public struct HUDState: Equatable {
         let remainingResets = max(state.config.lockResetLimit - state.lockResetCount, 0)
         let lockResetsText = "Lock resets: \(remainingResets)/\(state.config.lockResetLimit)"
         let lastInputText = "Last input: \(formatLastInput(lastInput))"
-        let sfxText = "SFX: \(formatSfx(settings))"
         let lockWarningActive = clampedRatio >= lockWarningThreshold
         let lockWarningPulse = lockWarningPulseValue(
             lockTimerMs: state.lockTimerMs,
@@ -72,7 +69,6 @@ public struct HUDState: Equatable {
             nextText: "Next: \(nextKind)",
             groundedText: groundedText,
             lockResetsText: lockResetsText,
-            sfxText: sfxText,
             comboText: comboText,
             b2bText: b2bText,
             statusText: statusText,
@@ -109,13 +105,6 @@ public struct HUDState: Equatable {
         case .restart:
             return "Restart"
         }
-    }
-
-    private static func formatSfx(_ settings: SettingsState) -> String {
-        if settings.muted {
-            return "Muted"
-        }
-        return String(format: "%.0f%%", settings.volume * 100.0)
     }
 
     private static func lockWarningPulseValue(lockTimerMs: Int, isWarning: Bool) -> Double {

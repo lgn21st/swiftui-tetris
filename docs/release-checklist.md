@@ -9,7 +9,6 @@ Use this checklist before cutting a release build.
 ## Manual QA (CLI-run)
 - `swift run App` launches a window immediately.
 - Keyboard: arrows, rotate, hard drop, hold, pause, restart.
-- Settings overlay: toggle, adjust volume/mute, input repeat sliders, per-event SFX toggles, close.
 - Audio: confirm move/rotate/line clear events audible; verify per-event toggles mute correctly.
 - Fullscreen: Cmd+Ctrl+F toggles correctly.
 - Window size: fixed to content size (no resize persistence).
