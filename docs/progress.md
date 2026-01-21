@@ -50,3 +50,6 @@
 - 2026-01-21: Centralized HUD view padding/corner radius/background opacity.
 - 2026-01-21: Hid overlay text while Settings overlay is open.
 - 2026-01-21: Marked M5 (parity + UX polish) complete; moved focus to optional M6 items.
+- 2026-01-21: Added window state persistence and Cmd+Ctrl+F fullscreen toggle with tests.
+- 2026-01-21: Added GameController gamepad mapping and input wiring with tests.
+- 2026-01-21: Marked M6 optional features complete.

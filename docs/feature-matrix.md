@@ -52,9 +52,9 @@ Legend:
 | Settings | S | Optional | Keep settings overlay if easy. |
 | Mute | M | Optional | Toggle SFX muted. |
 | Volume | +/- adjust; 0 reset | Optional | Use 0.1 steps from default 0.7. |
-| Fullscreen | Cmd+Ctrl+F | Optional | SwiftUI can map to NSWindow toggle. |
+| Fullscreen | Cmd+Ctrl+F | Optional | Key capture maps Cmd+Ctrl+F to NSWindow toggle; window frame persisted. |
 | Focus loss | Auto-pause | Yes | On window resign key / app inactive. |
-| Gamepad | Xbox mapping via gilrs | Optional | Defer or map via GameController. |
+| Gamepad | Xbox mapping via gilrs | Optional | GameController: dpad left/right/down, A/B rotate, X hard drop, Y hold, menu pause, options restart. |
 
 ## UI and Layout
 | Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |

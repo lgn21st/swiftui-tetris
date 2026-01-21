@@ -92,11 +92,11 @@ See `docs/progress.md` for the chronological log.
 - Feature parity for MVP checklist.
 - No known regressions vs gpui baseline.
 
-### M6: Optional Features (if desired)
-- Audio engine and settings.
-- Modern ruleset.
-- Gamepad support.
-- Fullscreen toggle and window state persistence.
+### M6: Optional Features — Done
+- Audio engine and settings — Done.
+- Modern ruleset — Done.
+- Gamepad support — Done.
+- Fullscreen toggle and window state persistence — Done.
 
 ## Validation Checklist
 - Movement and rotation: all kicks match SRS tables.

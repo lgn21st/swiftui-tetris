@@ -5,6 +5,7 @@ import AppKit
 
 public struct TetrisContainerView: View {
     @StateObject private var driver = SceneDriver()
+    @StateObject private var windowCoordinator = WindowStateCoordinator()
 
     public init() {}
 
@@ -32,9 +33,14 @@ public struct TetrisContainerView: View {
                 if driver.diagnosticsVisible {
                     DiagnosticsView(state: driver.diagnosticsState)
                 }
+                WindowStateView { window in
+                    windowCoordinator.attach(to: window)
+                }
+                .frame(width: 0, height: 0)
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
-                    onKeyUp: { driver.handleKeyUp($0) }
+                    onKeyUp: { driver.handleKeyUp($0) },
+                    onToggleFullScreen: { windowCoordinator.toggleFullScreen() }
                 )
                 .frame(width: 0, height: 0)
             }

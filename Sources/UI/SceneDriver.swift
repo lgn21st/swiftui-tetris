@@ -8,6 +8,7 @@ public final class SceneDriver: ObservableObject {
     private let loop: GameLoop
     private let input: InputEngine
     private let audio: AudioEngine?
+    private var gamepad: GamepadManager?
     private var timer: Timer?
     private var lastTick: Date?
     @Published public private(set) var hudState: HUDState
@@ -44,11 +45,26 @@ public final class SceneDriver: ObservableObject {
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
         }
+        self.gamepad = GamepadManager(
+            onLeftHeld: { [weak self] held in
+                self?.setGamepadLeftHeld(held)
+            },
+            onRightHeld: { [weak self] held in
+                self?.setGamepadRightHeld(held)
+            },
+            onDownHeld: { [weak self] held in
+                self?.setGamepadDownHeld(held)
+            },
+            onAction: { [weak self] action in
+                self?.handleGamepadAction(action)
+            }
+        )
     }
 
     public func start() {
         guard timer == nil else { return }
         lastTick = Date()
+        gamepad?.start()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
             guard let self else { return }
             let now = Date()
@@ -81,6 +97,7 @@ public final class SceneDriver: ObservableObject {
         timer?.invalidate()
         timer = nil
         lastTick = nil
+        gamepad?.stop()
     }
 
     func stateSnapshot() -> GameState {
@@ -156,5 +173,26 @@ public final class SceneDriver: ObservableObject {
         default:
             break
         }
+    }
+
+    private func handleGamepadAction(_ action: GameAction) {
+        if !started, action == .pause || action == .restart {
+            started = true
+            loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+            return
+        }
+        input.apply(action: action, to: &loop.state)
+    }
+
+    private func setGamepadLeftHeld(_ held: Bool) {
+        input.setLeftHeld(held, state: &loop.state)
+    }
+
+    private func setGamepadRightHeld(_ held: Bool) {
+        input.setRightHeld(held, state: &loop.state)
+    }
+
+    private func setGamepadDownHeld(_ held: Bool) {
+        input.setDownHeld(held, state: &loop.state)
     }
 }
