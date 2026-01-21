@@ -119,3 +119,4 @@
 - 2026-01-22: Introduced Core snapshot boundary and switched render mapping to use it.
 - 2026-01-22: Removed deprecated RenderComposer and its legacy tests.
 - 2026-01-22: Consolidated gameplay constants into GameConstants and updated defaults/tests.
+- 2026-01-22: Reorganized test directories by functional domain (Core/Renderer/UIIntegration).
