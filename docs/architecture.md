@@ -11,7 +11,6 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ## Gaps in Current Implementation
 - Rendering still uses `SKShapeNode` fill/stroke instead of cached textures.
-- Audio is `AVAudioPlayer`-based and not optimized for rapid, overlapping SFX.
 - Input mapping is centralized, but focus/state handling still lives in `SceneDriver`.
 
 ## Target Architecture
@@ -48,16 +47,16 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 1) **Loop Migration (Done)**
    - Add tests around loop tick cadence.
    - Move timing from `SceneDriver.Timer` to `TetrisScene.update`.
-2) **Render Pipeline (In Progress)**
+2) **Render Pipeline (Done)**
    - Add renderer tests to verify node reuse and color mapping.
    - Add render buffer change tracking to avoid full-board updates.
    - Switch to texture caching when node updates are no longer the bottleneck.
 3) **Input Router**
    - Add tests for keyboard/gamepad mappings in a unified router.
    - Route all inputs through a single action pipeline.
-4) **Audio Engine**
-   - Add tests for gain mixing and mute behavior.
-   - Replace `AVAudioPlayer` with `AVAudioEngine` buffers.
+4) **Audio Engine (Done)**
+   - Added tests for pooled playback behavior.
+   - Replaced `AVAudioPlayer` with `AVAudioEngine` buffers.
 5) **UI Polish Pass**
    - Add snapshot-style UI tests where feasible.
    - Confirm Settings focus, overlay transitions, and reduced motion behavior.

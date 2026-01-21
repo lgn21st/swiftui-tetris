@@ -36,7 +36,7 @@
 - Move timing from `SceneDriver.Timer` to `TetrisScene.update(_:)`.
 - Introduce fixed timestep accumulator for deterministic ticks.
 
-### R2: Render Pipeline (In Progress)
+### R2: Render Pipeline (Done)
 - Pre-allocate node grids and render buffers.
 - Avoid per-frame allocations and node churn.
 - Add texture cache if needed after profiling.
@@ -48,10 +48,10 @@
 - Keep UI focus handling separate from gameplay input.
 - Added an `InputRouter` wrapper to centralize key/button mapping.
 
-### R4: Audio Engine (Planned)
-- Migrate to `AVAudioEngine` with preloaded buffers.
-- Keep per-event gain + master volume behavior.
-- Pooled `AVAudioPlayer` playback is the current interim approach.
+### R4: Audio Engine (Done)
+- Migrated to `AVAudioEngine` with preloaded buffers.
+- Kept per-event gain + master volume behavior.
+- Replaced pooled `AVAudioPlayer` interim approach.
 
 ### R5: UI Polish (Planned)
 - Confirm overlay transitions and accessibility.

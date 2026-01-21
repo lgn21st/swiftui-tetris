@@ -8,7 +8,7 @@ macOS native Tetris built with SwiftUI + SpriteKit. The priority is solid rules,
 - Enforce strict TDD: every feature, improvement, or refactor must be protected by tests.
 - Embrace SwiftUI + SpriteKit best practices for timing, rendering, and input.
 - Prefer render pipelines that reuse buffers/nodes to avoid per-frame allocations.
-- Use pooled audio playback for overlapping SFX; AVAudioEngine migration remains on the roadmap.
+- Use AVAudioEngine with preloaded buffers for low-latency overlapping SFX.
 
 ## Run (CLI-first)
 - Requires macOS + Xcode toolchain (no Xcode UI required).

@@ -87,7 +87,7 @@ Legend:
 | SpriteKit-driven loop | Optional | Migrate to `SKScene.update(_:)` fixed timestep. |
 | Render node reuse | Optional | Pre-allocate nodes; avoid per-frame allocation. |
 | Input router | Optional | Unified keyboard/gamepad mapping layer. |
-| Audio engine | Optional | AVAudioEngine buffers for low-latency SFX. |
+| Audio engine | Optional | AVAudioEngine buffers for low-latency SFX (implemented). |
 
 ## Core Checklist
 - Board + tetromino rules + SRS rotation.

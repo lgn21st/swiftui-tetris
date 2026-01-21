@@ -1,68 +1,137 @@
 import Core
 import AVFoundation
 
-public protocol AudioPlayer {
+public protocol SoundBuffer {
+    var format: AVAudioFormat { get }
+    var pcmBuffer: AVAudioPCMBuffer { get }
+}
+
+public protocol AudioPlaybackNode {
     var volume: Float { get set }
-    var currentTime: TimeInterval { get set }
     var isPlaying: Bool { get }
-    func prepareToPlay()
+    func schedule(_ buffer: SoundBuffer)
     func play()
 }
 
-private final class AVAudioPlayerAdapter: AudioPlayer {
-    private let player: AVAudioPlayer
+public protocol AudioEngineBackend {
+    func loadBuffer(from url: URL) -> SoundBuffer?
+    func makePlayerNode() -> AudioPlaybackNode
+    func attach(_ node: AudioPlaybackNode)
+    func connect(_ node: AudioPlaybackNode, format: AVAudioFormat)
+    func startIfNeeded()
+}
 
-    init(player: AVAudioPlayer) {
-        self.player = player
+private final class AVAudioBufferAdapter: SoundBuffer {
+    let pcmBuffer: AVAudioPCMBuffer
+
+    init(buffer: AVAudioPCMBuffer) {
+        self.pcmBuffer = buffer
+    }
+
+    var format: AVAudioFormat { pcmBuffer.format }
+}
+
+private final class AVAudioPlayerNodeAdapter: AudioPlaybackNode {
+    fileprivate let node: AVAudioPlayerNode
+
+    init(node: AVAudioPlayerNode) {
+        self.node = node
     }
 
     var volume: Float {
-        get { player.volume }
-        set { player.volume = newValue }
+        get { node.volume }
+        set { node.volume = newValue }
     }
 
-    var currentTime: TimeInterval {
-        get { player.currentTime }
-        set { player.currentTime = newValue }
-    }
+    var isPlaying: Bool { node.isPlaying }
 
-    var isPlaying: Bool { player.isPlaying }
-
-    func prepareToPlay() {
-        player.prepareToPlay()
+    func schedule(_ buffer: SoundBuffer) {
+        node.scheduleBuffer(buffer.pcmBuffer, at: nil, options: .interrupts, completionHandler: nil)
     }
 
     func play() {
-        player.play()
+        node.play()
+    }
+}
+
+private final class AVAudioEngineBackend: AudioEngineBackend {
+    private let engine: AVAudioEngine
+    private var isStarted: Bool
+
+    init(engine: AVAudioEngine = AVAudioEngine()) {
+        self.engine = engine
+        self.isStarted = false
+    }
+
+    func loadBuffer(from url: URL) -> SoundBuffer? {
+        guard let file = try? AVAudioFile(forReading: url) else { return nil }
+        let frameCapacity = AVAudioFrameCount(file.length)
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: frameCapacity) else { return nil }
+        do {
+            try file.read(into: buffer)
+        } catch {
+            return nil
+        }
+        return AVAudioBufferAdapter(buffer: buffer)
+    }
+
+    func makePlayerNode() -> AudioPlaybackNode {
+        AVAudioPlayerNodeAdapter(node: AVAudioPlayerNode())
+    }
+
+    func attach(_ node: AudioPlaybackNode) {
+        guard let adapter = node as? AVAudioPlayerNodeAdapter else { return }
+        engine.attach(adapter.node)
+    }
+
+    func connect(_ node: AudioPlaybackNode, format: AVAudioFormat) {
+        guard let adapter = node as? AVAudioPlayerNodeAdapter else { return }
+        engine.connect(adapter.node, to: engine.mainMixerNode, format: format)
+    }
+
+    func startIfNeeded() {
+        guard !isStarted else { return }
+        engine.prepare()
+        do {
+            try engine.start()
+            isStarted = true
+        } catch {
+            isStarted = false
+        }
     }
 }
 
 public final class AudioEngine {
     private let baseURL: URL?
     private let maxPlayersPerSound: Int
-    private let playerFactory: (URL) -> AudioPlayer?
-    private var players: [String: [AudioPlayer]]
+    private let backend: AudioEngineBackend
+    private var buffers: [String: SoundBuffer]
+    private var players: [String: [AudioPlaybackNode]]
 
     public init(
         baseURL: URL? = nil,
         maxPlayersPerSound: Int = 4,
-        playerFactory: @escaping (URL) -> AudioPlayer? = AudioEngine.defaultFactory
+        backend: AudioEngineBackend? = nil
     ) {
         self.baseURL = baseURL
         self.maxPlayersPerSound = max(1, maxPlayersPerSound)
-        self.playerFactory = playerFactory
+        self.backend = backend ?? AVAudioEngineBackend()
+        self.buffers = [:]
         self.players = [:]
+        preloadBuffers()
     }
 
     public func play(_ event: SoundEvent, masterVolume: Double = 1.0, gainOverride: Double? = nil) {
         guard let fileName = SoundEventMapper.fileName(for: event) else { return }
-        let soundURL = resolveURL(for: event, fileName: fileName)
+        guard let buffer = buffers[fileName] ?? loadBuffer(fileName: fileName) else { return }
         var pool = players[fileName] ?? []
-        var player: AudioPlayer
+        var player: AudioPlaybackNode
         if let idle = pool.first(where: { !$0.isPlaying }) {
             player = idle
-        } else if pool.count < maxPlayersPerSound, let created = playerFactory(soundURL) {
-            created.prepareToPlay()
+        } else if pool.count < maxPlayersPerSound {
+            let created = backend.makePlayerNode()
+            backend.attach(created)
+            backend.connect(created, format: buffer.format)
             pool.append(created)
             player = created
         } else if let fallback = pool.first {
@@ -71,31 +140,43 @@ public final class AudioEngine {
             return
         }
         players[fileName] = pool
+        backend.startIfNeeded()
         player.volume = resolvedVolume(for: event, master: masterVolume, gainOverride: gainOverride)
-        player.currentTime = 0
+        player.schedule(buffer)
         player.play()
     }
 
     public func resolveURL(for event: SoundEvent) -> URL? {
         guard let fileName = SoundEventMapper.fileName(for: event) else { return nil }
-        return resolveURL(for: event, fileName: fileName)
+        return resolveURL(fileName: fileName)
     }
 
-    private func resolveURL(for event: SoundEvent, fileName: String) -> URL {
+    private func resolveURL(fileName: String) -> URL {
         if let baseURL {
             return baseURL.appendingPathComponent(fileName)
         }
         return Bundle.main.url(forResource: fileName, withExtension: nil) ?? URL(fileURLWithPath: fileName)
     }
 
+    private func preloadBuffers() {
+        for fileName in SoundEventMapper.allFileNames {
+            let url = resolveURL(fileName: fileName)
+            if let buffer = backend.loadBuffer(from: url) {
+                buffers[fileName] = buffer
+            }
+        }
+    }
+
+    private func loadBuffer(fileName: String) -> SoundBuffer? {
+        let url = resolveURL(fileName: fileName)
+        guard let buffer = backend.loadBuffer(from: url) else { return nil }
+        buffers[fileName] = buffer
+        return buffer
+    }
+
     public func resolvedVolume(for event: SoundEvent, master: Double, gainOverride: Double? = nil) -> Float {
         let gain = gainOverride ?? SoundEventMapper.gain(for: event)
         let clamped = min(max(master * gain, 0), 1)
         return Float(clamped)
-    }
-
-    public static func defaultFactory(url: URL) -> AudioPlayer? {
-        guard let created = try? AVAudioPlayer(contentsOf: url) else { return nil }
-        return AVAudioPlayerAdapter(player: created)
     }
 }

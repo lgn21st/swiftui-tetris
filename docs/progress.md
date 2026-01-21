@@ -104,3 +104,4 @@
 - 2026-01-21: Added InputRouter wrapper and tests to centralize key/button mapping.
 - 2026-01-21: Switched mapping tests to use InputRouter while keeping legacy mappers as internal helpers.
 - 2026-01-21: InputRouter now normalizes uppercase key input for gameplay actions.
+- 2026-01-21: Migrated audio playback to AVAudioEngine with preloaded buffers.
