@@ -85,7 +85,7 @@ public struct GameState {
         }
 
         let interval = Timing.dropInterval(
-            level: 0,
+            level: level,
             baseDropMs: config.baseDropMs,
             softDrop: softDrop || softDropActive,
             softDropMultiplier: config.softDropMultiplier

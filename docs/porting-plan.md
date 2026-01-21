@@ -81,6 +81,8 @@
 - 2026-01-21: HUD shows ruleset label for parity.
 - 2026-01-21: HUD shows status label for parity.
 - 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
+- 2026-01-21: Gravity uses level-based drop interval (parity).
+- 2026-01-21: CLI packaging smoke test succeeded locally (release build + Packager).
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**

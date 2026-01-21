@@ -39,4 +39,14 @@ final class GameTickTests: XCTestCase {
         state.tick(elapsedMs: 100, softDrop: false)
         XCTAssertEqual(state.active.y, startY + 1)
     }
+
+    func testGravityUsesLevelInterval() {
+        var config = GameConfig()
+        config.baseDropMs = 1000
+        var state = GameState(config: config)
+        state.level = 1
+        let startY = state.active.y
+        state.tick(elapsedMs: 800, softDrop: false)
+        XCTAssertEqual(state.active.y, startY + 1)
+    }
 }

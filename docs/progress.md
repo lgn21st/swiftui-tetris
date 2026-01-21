@@ -38,3 +38,5 @@
 - 2026-01-21: Displayed ruleset label in HUD with tests.
 - 2026-01-21: Added HUD status label for ready/playing/paused/game over with tests.
 - 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
+- 2026-01-21: Gravity tick now uses level-based drop interval with tests.
+- 2026-01-21: CLI packaging smoke test succeeded locally (release build + Packager).

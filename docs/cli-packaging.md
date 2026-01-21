@@ -43,3 +43,4 @@ swift run Packager \
 - If `--entitlements` is provided, the file is copied to `Contents/Entitlements.plist` for later codesign usage.
 - If `dist/SwiftUITeris.app` already exists, delete it before re-running (or add a versioned output path).
 - Audio assets are expected under `assets/sfx/` (see `assets/README.md`).
+- Packaging verified on 2026-01-21 with a release build + Packager run.
