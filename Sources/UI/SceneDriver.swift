@@ -1,5 +1,4 @@
 import Foundation
-import AppKit
 import Renderer
 import Core
 
@@ -197,14 +196,6 @@ public final class SceneDriver: ObservableObject {
         input.releaseMovementHolds()
         input.apply(action: .pause, to: &loop.state)
         refreshDerivedState()
-    }
-
-    public func commandToggleDiagnostics() {
-        diagnosticsVisible.toggle()
-    }
-
-    public func commandToggleFullScreen() {
-        fullScreenHandler.toggleFullScreen()
     }
 
     private func handleGamepadAction(_ action: GameAction) {

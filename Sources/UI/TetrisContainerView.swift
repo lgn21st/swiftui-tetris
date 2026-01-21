@@ -84,7 +84,7 @@ public struct TetrisContainerView: View {
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) },
-                    onToggleFullScreen: { driver.commandToggleFullScreen() }
+                    onToggleFullScreen: { driver.toggleFullScreen() }
                 )
                 .frame(width: 0, height: 0)
                 WindowStateView { window in
@@ -119,9 +119,7 @@ public struct TetrisContainerView: View {
                 CommandActions(
                     startGame: { driver.commandStartGame() },
                     restartGame: { driver.commandRestartGame() },
-                    togglePause: { driver.commandTogglePause() },
-                    toggleDiagnostics: { driver.commandToggleDiagnostics() },
-                    toggleFullScreen: { driver.commandToggleFullScreen() }
+                    togglePause: { driver.commandTogglePause() }
                 )
             )
             .onAppear { driver.start() }

@@ -33,23 +33,11 @@ final class CommandHandlingTests: XCTestCase {
         XCTAssertFalse(driver.overlayState.isTitle)
     }
 
-    func testCommandToggleDiagnosticsTogglesVisibility() {
-        let driver = SceneDriver()
-
-        XCTAssertFalse(driver.diagnosticsVisible)
-
-        driver.commandToggleDiagnostics()
-        XCTAssertTrue(driver.diagnosticsVisible)
-
-        driver.commandToggleDiagnostics()
-        XCTAssertFalse(driver.diagnosticsVisible)
-    }
-
-    func testCommandToggleFullScreenInvokesHandler() {
+    func testToggleFullScreenInvokesHandler() {
         let handler = FullScreenHandlerSpy()
         let driver = SceneDriver(fullScreenHandler: handler)
 
-        driver.commandToggleFullScreen()
+        driver.toggleFullScreen()
 
         XCTAssertEqual(handler.toggleCount, 1)
     }

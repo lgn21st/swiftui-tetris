@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added diagnostics/fullscreen command toggles.
+- Last update: Trimmed menu commands back to restart/pause only.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
