@@ -96,4 +96,20 @@ final class SceneDriverInputTests: XCTestCase {
         XCTAssertTrue(driver.diagnosticsVisible)
         XCTAssertEqual(loop.state.active.x, startX + 1)
     }
+
+    func testCloseSettingsUnpausesAndHidesOverlay() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+
+        driver.handleKeyDown("s")
+        driver.tick(elapsedMs: 0)
+        XCTAssertTrue(driver.overlayState.isSettings)
+        XCTAssertTrue(loop.state.paused)
+
+        driver.closeSettings()
+        driver.tick(elapsedMs: 0)
+
+        XCTAssertFalse(driver.overlayState.isSettings)
+        XCTAssertFalse(loop.state.paused)
+    }
 }

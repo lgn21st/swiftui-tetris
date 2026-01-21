@@ -2,10 +2,12 @@ import SwiftUI
 
 public struct SettingsView: View {
     @Binding public var settings: SettingsState
+    public var onClose: () -> Void
     @FocusState private var focusedField: SettingsFocusField?
 
-    public init(settings: Binding<SettingsState>) {
+    public init(settings: Binding<SettingsState>, onClose: @escaping () -> Void) {
         self._settings = settings
+        self.onClose = onClose
     }
 
     public var body: some View {
@@ -37,7 +39,11 @@ public struct SettingsView: View {
                     ), in: 0...1)
                 }
             }
-            Button("Reset") { settings.reset() }
+            HStack(spacing: LayoutConstants.settingsSpacing) {
+                Button("Reset") { settings.reset() }
+                Button("Close") { onClose() }
+                    .keyboardShortcut("s")
+            }
         }
         .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
         .padding(12)
@@ -53,6 +59,9 @@ public struct SettingsView: View {
         .frame(maxWidth: LayoutConstants.settingsMaxWidth)
         .onAppear {
             focusedField = SettingsFocusPolicy.defaultField
+        }
+        .onExitCommand {
+            onClose()
         }
     }
 }

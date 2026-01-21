@@ -61,7 +61,9 @@ public struct TetrisContainerView: View {
                     SettingsView(settings: Binding(
                         get: { driver.settings },
                         set: { driver.settings = $0 }
-                    ))
+                    ), onClose: {
+                        driver.closeSettings()
+                    })
                     .transition(
                         .scale(scale: LayoutConstants.settingsEnterScale).combined(with: .opacity)
                     )

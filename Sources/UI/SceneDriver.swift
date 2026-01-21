@@ -141,8 +141,7 @@ public final class SceneDriver: ObservableObject {
         }
         if key == "escape" {
             if showSettings {
-                showSettings = false
-                loop.state.paused = false
+                closeSettings()
             } else {
                 recordLastInput(.pause)
                 input.releaseMovementHolds()
@@ -151,11 +150,7 @@ public final class SceneDriver: ObservableObject {
             return
         }
         if key == "s" {
-            showSettings.toggle()
-            loop.state.paused = showSettings
-            if showSettings {
-                input.releaseMovementHolds()
-            }
+            setSettingsVisible(!showSettings)
             return
         }
         if key == "m" {
@@ -221,6 +216,10 @@ public final class SceneDriver: ObservableObject {
         }
     }
 
+    public func closeSettings() {
+        setSettingsVisible(false)
+    }
+
     private func handleGamepadAction(_ action: GameAction) {
         if showSettings {
             return
@@ -260,5 +259,17 @@ public final class SceneDriver: ObservableObject {
 
     private func recordLastInput(_ action: GameAction) {
         lastInputAction = action
+    }
+
+    private func setSettingsVisible(_ visible: Bool) {
+        showSettings = visible
+        loop.state.paused = visible
+        input.releaseMovementHolds()
+        overlayState = OverlayState(
+            isPaused: loop.state.paused || showSettings,
+            isGameOver: loop.state.gameOver,
+            isTitle: !started,
+            isSettings: showSettings
+        )
     }
 }
