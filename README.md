@@ -73,3 +73,5 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - App activation on launch to surface the window when running from CLI.
 - Proportional layout scaling based on window size.
 - Per-event SFX sliders in Settings (with overrides).
+- Side panel layout with hold/next preview grids and theme polish.
+- Settings persistence via UserDefaults.

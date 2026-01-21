@@ -11,6 +11,8 @@ public struct HUDState: Equatable {
     public var lockBarRatio: Double
     public var lockWarningActive: Bool
     public var hintText: String
+    public var holdKind: TetrominoType?
+    public var nextKinds: [TetrominoType]
 
     private static let lockWarningThreshold = 0.85
     private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
@@ -32,7 +34,9 @@ public struct HUDState: Equatable {
             b2bText: b2bText,
             lockBarRatio: clampedRatio,
             lockWarningActive: clampedRatio >= lockWarningThreshold,
-            hintText: defaultHint
+            hintText: defaultHint,
+            holdKind: state.hold,
+            nextKinds: Array(state.nextQueue.prefix(5))
         )
     }
 }

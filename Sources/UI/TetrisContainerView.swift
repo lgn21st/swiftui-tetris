@@ -12,8 +12,13 @@ public struct TetrisContainerView: View {
         GeometryReader { proxy in
             let scale = LayoutScale.scale(for: proxy.size)
             ZStack {
-                SpriteView(scene: driver.scene)
-                HUDView(state: driver.hudState)
+                HStack(spacing: 0) {
+                    SpriteView(scene: driver.scene)
+                        .frame(width: LayoutConstants.boardWidth, height: LayoutConstants.boardHeight)
+                        .background(Color.black)
+                    SidePanelView(state: driver.hudState)
+                }
+                .background(Color.black.opacity(ThemeConstants.backgroundOpacity))
                 OverlayView(state: driver.overlayState)
                 if driver.overlayState.isSettings {
                     SettingsView(settings: Binding(
@@ -30,7 +35,7 @@ public struct TetrisContainerView: View {
                 )
                 .frame(width: 0, height: 0)
             }
-            .frame(width: WindowConfig.defaultWidth, height: WindowConfig.defaultHeight)
+            .frame(width: LayoutConstants.baseSize.width, height: LayoutConstants.baseSize.height)
             .scaleEffect(scale)
             .frame(width: proxy.size.width, height: proxy.size.height)
             .frame(minWidth: WindowConfig.minWidth, minHeight: WindowConfig.minHeight)

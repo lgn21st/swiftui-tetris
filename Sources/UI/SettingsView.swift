@@ -38,7 +38,7 @@ public struct SettingsView: View {
             Button("Reset") { settings.reset() }
         }
         .padding(12)
-        .background(.black.opacity(0.6))
+        .background(.black.opacity(ThemeConstants.panelOpacity))
         .foregroundColor(.white)
         .cornerRadius(8)
         .frame(maxWidth: 260)

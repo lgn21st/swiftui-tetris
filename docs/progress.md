@@ -30,3 +30,6 @@
 - 2026-01-21: Implemented proportional layout scaling based on window size.
 - 2026-01-21: Added per-event SFX sliders in Settings UI.
 - 2026-01-21: Revised porting plan with current status and next milestones.
+- 2026-01-21: Added hold/next preview grids and side panel layout.
+- 2026-01-21: Added settings persistence with UserDefaults store.
+- 2026-01-21: Applied theme polish for panels and overlays.

@@ -27,8 +27,8 @@
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.
 - Input repeat + pause/focus handling: complete with tests.
 - SpriteKit board rendering + landing flash: complete with tests.
-- HUD/overlays: functional (text-based), needs visual parity for hold/next previews.
-- Audio: implemented with per-event gain + settings controls.
+- HUD/overlays: side panel with hold/next preview grids implemented.
+- Audio: per-event gain + settings controls + persistence.
 - Window defaults + scaling: implemented.
 
 ## Milestones
@@ -89,7 +89,7 @@
 **Notes**
 - Separate SKNode layers: board, active, ghost, effects, overlays.
 
-### M3: SwiftUI UI Layer + Overlays — In Progress
+### M3: SwiftUI UI Layer + Overlays — Done
 **Deliverables**
 - SwiftUI container with side panel and overlays.
 - Title, pause, game over screens.
@@ -110,7 +110,7 @@
 - Repeat behavior matches gpui tests (DAS 150ms, ARR 50ms).
 - Soft drop grace behaves correctly without input spam.
 
-### M5: Parity Pass + UX polish — Next
+### M5: Parity Pass + UX polish — In Progress
 **Deliverables**
 - Parity checklist completed.
 - Visual polish (colors, overlays, subtle animations).

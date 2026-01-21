@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import Renderer
 import Core
 
@@ -17,11 +18,14 @@ public final class SceneDriver: ObservableObject {
     private var started: Bool
     private var showSettings: Bool
     private var diagnosticsTracker: DiagnosticsTracker
+    private let settingsStore: SettingsStoring
+    private var settingsCancellable: AnyCancellable?
 
     public init(
         loop: GameLoop = GameLoop(),
         input: InputEngine = InputEngine(),
-        audio: AudioEngine? = AudioEngine(baseURL: AssetLocator.sfxDirectory())
+        audio: AudioEngine? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
+        settingsStore: SettingsStoring = UserDefaultsSettingsStore()
     ) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
@@ -29,12 +33,16 @@ public final class SceneDriver: ObservableObject {
         self.audio = audio
         self.hudState = HUDState.from(state: loop.state)
         self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
-        self.settings = SettingsState()
+        self.settingsStore = settingsStore
+        self.settings = settingsStore.load()
         self.diagnosticsState = DiagnosticsState.empty
         self.diagnosticsVisible = false
         self.started = false
         self.showSettings = false
         self.diagnosticsTracker = DiagnosticsTracker()
+        self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
+            self?.settingsStore.save(updated)
+        }
     }
 
     public func start() {

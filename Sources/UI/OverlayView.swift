@@ -12,7 +12,7 @@ public struct OverlayView: View {
             EmptyView()
         } else {
             ZStack {
-                Color.black.opacity(0.5)
+                Color.black.opacity(ThemeConstants.overlayOpacity)
                 VStack(spacing: 8) {
                     Text(state.title)
                         .font(.system(size: 24, weight: .bold))

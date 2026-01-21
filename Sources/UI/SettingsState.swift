@@ -1,6 +1,6 @@
 import Core
 
-public struct SettingsState: Equatable {
+public struct SettingsState: Equatable, Codable {
     public var volume: Double
     public var muted: Bool
     public var gainOverrides: [SoundEventKind: Double]

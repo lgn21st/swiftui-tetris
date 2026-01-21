@@ -1,6 +1,6 @@
 import Core
 
-public enum SoundEventKind: String, CaseIterable, Identifiable {
+public enum SoundEventKind: String, CaseIterable, Identifiable, Codable {
     case move
     case rotate
     case softDrop
