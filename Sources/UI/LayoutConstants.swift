@@ -8,4 +8,9 @@ public enum LayoutConstants {
     public static let panelWidth: CGFloat = baseSize.width - boardWidth
     public static let panelPadding: CGFloat = 12
     public static let previewCell: CGFloat = 12
+    public static let panelSectionSpacing: CGFloat = 12
+    public static let panelItemSpacing: CGFloat = 6
+    public static let overlaySpacing: CGFloat = 8
+    public static let settingsSpacing: CGFloat = 8
+    public static let hudSpacing: CGFloat = 6
 }

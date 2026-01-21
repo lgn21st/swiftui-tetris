@@ -8,7 +8,7 @@ public struct SettingsView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: LayoutConstants.settingsSpacing) {
             Text("Settings")
                 .font(.system(size: TypographyConstants.settingsTitleSize, weight: .bold))
             Toggle("Mute", isOn: Binding(

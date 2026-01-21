@@ -84,6 +84,7 @@
 - 2026-01-21: Gravity uses level-based drop interval (parity).
 - 2026-01-21: CLI packaging smoke test succeeded locally (release build + Packager).
 - 2026-01-21: Standardized typography constants across UI views with tests.
+- 2026-01-21: Centralized layout spacing constants across UI views with tests.
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**

@@ -9,7 +9,7 @@ public struct HUDView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: LayoutConstants.hudSpacing) {
             Text(state.scoreText)
             Text(state.levelText)
             Text(state.linesText)

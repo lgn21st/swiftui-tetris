@@ -9,22 +9,22 @@ public struct SidePanelView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: LayoutConstants.panelSectionSpacing) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(state.scoreText)
                 Text(state.levelText)
                 Text(state.linesText)
             }
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
-            Text(state.holdText)
+                Text(state.holdText)
                     .font(.system(size: TypographyConstants.sidePanelHintFontSize, weight: .regular, design: .monospaced))
                     .foregroundColor(.white.opacity(0.8))
             }
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Next")
                 ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
                     PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
