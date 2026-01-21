@@ -23,6 +23,7 @@
 - Lock delay bar + warning pulse (implemented).
 - Fullscreen toggle, diagnostics overlay.
 - Board gridlines and HUD typography polish (implemented).
+- Line-clear shimmer overlay (implemented).
 
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.
@@ -38,6 +39,7 @@
 - Board gridlines and section header typography in HUD.
 - Active piece pulse tied to gravity interval.
 - Pausing clears soft drop active state.
+- Line-clear shimmer overlay during clear pause.
 
 ## Best-Practice Alignment
 - Architecture alignment work is complete; details live in `docs/architecture.md`.

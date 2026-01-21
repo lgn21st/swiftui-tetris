@@ -10,6 +10,8 @@ public struct RenderState {
     public var softDropTrailKind: TetrominoType?
     public var flashBlocks: [(Int, Int)]
     public var flashAlpha: Double
+    public var lineClearRows: [Int]
+    public var lineClearAlpha: Double
     public var activePulse: Double
     public var isPaused: Bool
     public var isGameOver: Bool
@@ -24,6 +26,8 @@ public struct RenderState {
         softDropTrailKind: TetrominoType?,
         flashBlocks: [(Int, Int)],
         flashAlpha: Double,
+        lineClearRows: [Int],
+        lineClearAlpha: Double,
         activePulse: Double,
         isPaused: Bool,
         isGameOver: Bool
@@ -37,6 +41,8 @@ public struct RenderState {
         self.softDropTrailKind = softDropTrailKind
         self.flashBlocks = flashBlocks
         self.flashAlpha = flashAlpha
+        self.lineClearRows = lineClearRows
+        self.lineClearAlpha = lineClearAlpha
         self.activePulse = activePulse
         self.isPaused = isPaused
         self.isGameOver = isGameOver
@@ -66,6 +72,10 @@ public enum RenderMapper {
                 softDropMultiplier: state.config.softDropMultiplier
             )
         )
+        let lineClearAlpha = state.lineClearTimerMs > 0
+        ? min(max(Double(state.lineClearTimerMs) / Double(GameState.lineClearPauseMs), 0), 1)
+        : 0
+        let lineClearRows = state.lineClearTimerMs > 0 ? state.lineClearRows : []
         let trailBlocks = hideActive ? [] : softDropTrailBlocks(
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
@@ -81,6 +91,8 @@ public enum RenderMapper {
             softDropTrailKind: trailBlocks.isEmpty ? nil : state.active.kind,
             flashBlocks: flashBlocks,
             flashAlpha: flashAlpha,
+            lineClearRows: lineClearRows,
+            lineClearAlpha: lineClearAlpha,
             activePulse: activePulse,
             isPaused: state.paused,
             isGameOver: state.gameOver

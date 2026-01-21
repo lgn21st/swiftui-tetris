@@ -49,6 +49,15 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertNil(renderState.ghostKind)
     }
 
+    func testRenderMappingIncludesLineClearRowsAndAlpha() {
+        var state = GameState(config: GameConfig())
+        state.lineClearTimerMs = 90
+        state.lineClearRows = [18]
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertEqual(renderState.lineClearRows, [18])
+        XCTAssertEqual(renderState.lineClearAlpha, 0.5, accuracy: 0.01)
+    }
+
     func testRenderMappingCopiesPauseAndGameOverFlags() {
         var state = GameState(config: GameConfig())
         state.paused = true

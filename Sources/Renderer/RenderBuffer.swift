@@ -5,6 +5,7 @@ public final class RenderBuffer {
     public let height: Int
     public private(set) var cells: [CellRender]
     public private(set) var flashIndices: [Int]
+    public private(set) var lineClearIndices: [Int]
     public private(set) var changedIndices: [Int]
     private var previousCells: [CellRender]
 
@@ -22,18 +23,21 @@ public final class RenderBuffer {
                     isGhost: false,
                     isActive: false,
                     isFlash: false,
-                    isTrail: false
+                    isTrail: false,
+                    isLineClear: false
                 ))
             }
         }
         self.cells = initial
         self.flashIndices = []
+        self.lineClearIndices = []
         self.changedIndices = []
         self.previousCells = initial
     }
 
     public func update(from state: RenderState) {
         flashIndices.removeAll(keepingCapacity: true)
+        lineClearIndices.removeAll(keepingCapacity: true)
         changedIndices.removeAll(keepingCapacity: true)
         for y in 0..<height {
             for x in 0..<width {
@@ -43,6 +47,7 @@ public final class RenderBuffer {
                 cells[index].isActive = false
                 cells[index].isFlash = false
                 cells[index].isTrail = false
+                cells[index].isLineClear = false
             }
         }
 
@@ -51,6 +56,15 @@ public final class RenderBuffer {
             let index = y * width + x
             cells[index].isFlash = true
             flashIndices.append(index)
+        }
+
+        for row in state.lineClearRows {
+            guard row >= 0, row < height else { continue }
+            for x in 0..<width {
+                let index = row * width + x
+                cells[index].isLineClear = true
+                lineClearIndices.append(index)
+            }
         }
 
         for (x, y) in state.activeBlocks {
@@ -75,7 +89,7 @@ public final class RenderBuffer {
         for (x, y) in state.softDropTrailBlocks {
             guard x >= 0, y >= 0, x < width, y < height else { continue }
             let index = y * width + x
-            if cells[index].isActive || cells[index].isGhost || cells[index].isFlash { continue }
+            if cells[index].isActive || cells[index].isGhost || cells[index].isFlash || cells[index].isLineClear { continue }
             if cells[index].kind != nil { continue }
             cells[index].isTrail = true
             cells[index].kind = state.softDropTrailKind

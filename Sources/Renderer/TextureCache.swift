@@ -13,6 +13,7 @@ public final class TextureCache {
     public enum Key: Hashable {
         case piece(kind: TetrominoType, ghost: Bool, style: PieceStyle)
         case flash
+        case lineClear
     }
 
     private let cellSize: CGFloat
@@ -36,8 +37,13 @@ public final class TextureCache {
         case .flash:
             color = SKColor(white: 1.0, alpha: 1.0)
             style = .normal
+        case .lineClear:
+            color = SKColor(white: 0.95, alpha: 1.0)
+            style = .normal
         }
-        let texture = makeTexture(color: color, style: style)
+        let texture = key == .lineClear
+            ? makeLineClearTexture(color: color)
+            : makeTexture(color: color, style: style)
         textures[key] = texture
         return texture
     }
@@ -92,6 +98,27 @@ public final class TextureCache {
         case .normal:
             break
         }
+        image.unlockFocus()
+        return SKTexture(image: image)
+    }
+
+    private func makeLineClearTexture(color: SKColor) -> SKTexture {
+        let size = NSSize(width: cellSize, height: cellSize)
+        let image = NSImage(size: size)
+        image.lockFocus()
+        let rect = NSRect(origin: .zero, size: size)
+        color.setFill()
+        NSBezierPath(rect: rect).fill()
+
+        let stripeColor = color.blended(withFraction: 0.6, of: .white) ?? color
+        stripeColor.withAlphaComponent(0.7).setStroke()
+        let path = NSBezierPath()
+        let inset: CGFloat = 2
+        path.move(to: CGPoint(x: rect.minX + inset, y: rect.minY + inset))
+        path.line(to: CGPoint(x: rect.maxX - inset, y: rect.maxY - inset))
+        path.lineWidth = max(1, cellSize * 0.08)
+        path.stroke()
+
         image.unlockFocus()
         return SKTexture(image: image)
     }

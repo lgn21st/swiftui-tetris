@@ -105,3 +105,4 @@
 - 2026-01-22: Removed Settings system in favor of convention-over-configuration defaults.
 - 2026-01-22: Removed window state persistence, simplified key capture, and minimized menu commands.
 - 2026-01-22: Added ghost outline stroke for clearer landing guidance.
+- 2026-01-22: Added line-clear shimmer overlay during the clear pause.

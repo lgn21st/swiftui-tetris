@@ -1,5 +1,6 @@
 public struct GameState {
     public static let landingFlashDurationMs = 120
+    public static let lineClearPauseMs = 180
     public var board: Board
     public var active: Tetromino
     public var paused: Bool
@@ -17,6 +18,7 @@ public struct GameState {
     public var dropTimerMs: Int
     public var lockTimerMs: Int
     public var lineClearTimerMs: Int
+    public var lineClearRows: [Int]
     public var landingFlashTimerMs: Int
     public var landingFlashBlocks: [(Int, Int)]
     public var softDropActive: Bool
@@ -49,6 +51,7 @@ public struct GameState {
         self.dropTimerMs = 0
         self.lockTimerMs = 0
         self.lineClearTimerMs = 0
+        self.lineClearRows = []
         self.landingFlashTimerMs = 0
         self.landingFlashBlocks = []
         self.softDropActive = false
@@ -74,6 +77,7 @@ public struct GameState {
             if lineClearTimerMs > 0 {
                 return
             }
+            lineClearRows = []
         }
 
         dropTimerMs += max(elapsedMs, 0)
@@ -263,7 +267,7 @@ public struct GameState {
         }
     }
 
-    public mutating func applyLineClear(cleared: Int, tSpin: TSpinKind = .none) {
+    public mutating func applyLineClear(cleared: Int, clearedRows: [Int], tSpin: TSpinKind = .none) {
         guard cleared >= 0 else { return }
         var points = 0
         let qualifiesB2B = (tSpin == .full && cleared > 0) || cleared == 4
@@ -286,7 +290,8 @@ public struct GameState {
         }
 
         if cleared > 0 {
-            lineClearTimerMs = 180
+            lineClearTimerMs = GameState.lineClearPauseMs
+            lineClearRows = clearedRows
             soundEvents.append(.lineClear(cleared))
             lines += cleared
             if config.ruleset == .modern {
@@ -303,6 +308,7 @@ public struct GameState {
         } else {
             combo = -1
             backToBack = false
+            lineClearRows = []
         }
 
         if points > 0 {
@@ -313,9 +319,9 @@ public struct GameState {
     private mutating func lockActivePiece() {
         setLandingFlash()
         board.lock(piece: active)
-        let cleared = board.clearLines()
+        let result = board.clearLines()
         let tSpin = config.ruleset == .modern ? tSpinKind() : .none
-        applyLineClear(cleared: cleared, tSpin: tSpin)
+        applyLineClear(cleared: result.count, clearedRows: result.rows, tSpin: tSpin)
         lastActionRotate = false
         spawnNext()
     }

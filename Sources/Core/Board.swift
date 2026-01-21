@@ -49,14 +49,16 @@ public struct Board: Equatable {
         }
     }
 
-    public mutating func clearLines() -> Int {
+    public mutating func clearLines() -> (count: Int, rows: [Int]) {
         var cleared = 0
+        var clearedRows: [Int] = []
         var writeRow = Board.height - 1
 
         for readRow in stride(from: Board.height - 1, through: 0, by: -1) {
             let full = cells[readRow].allSatisfy { $0.filled }
             if full {
                 cleared += 1
+                clearedRows.append(readRow)
             } else {
                 if writeRow != readRow {
                     cells[writeRow] = cells[readRow]
@@ -71,6 +73,6 @@ public struct Board: Equatable {
             }
         }
 
-        return cleared
+        return (cleared, clearedRows)
     }
 }

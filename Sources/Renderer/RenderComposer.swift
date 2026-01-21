@@ -8,6 +8,7 @@ public struct CellRender: Equatable {
     public var isActive: Bool
     public var isFlash: Bool
     public var isTrail: Bool
+    public var isLineClear: Bool
 }
 
 @available(*, deprecated, message: "Use RenderBuffer for in-place updates to avoid per-frame allocations.")
@@ -25,7 +26,8 @@ public enum RenderComposer {
                     isGhost: false,
                     isActive: false,
                     isFlash: false,
-                    isTrail: false
+                    isTrail: false,
+                    isLineClear: false
                 ))
             }
         }
@@ -34,11 +36,15 @@ public enum RenderComposer {
         let activeSet = Set(state.activeBlocks.map { "\($0.0),\($0.1)" })
         let flashSet = Set(state.flashBlocks.map { "\($0.0),\($0.1)" })
         let trailSet = Set(state.softDropTrailBlocks.map { "\($0.0),\($0.1)" })
+        let lineClearRows = Set(state.lineClearRows)
 
         for index in cells.indices {
             let key = "\(cells[index].x),\(cells[index].y)"
             if flashSet.contains(key) {
                 cells[index].isFlash = true
+            }
+            if lineClearRows.contains(cells[index].y) {
+                cells[index].isLineClear = true
             }
             if activeSet.contains(key) {
                 cells[index].isActive = true

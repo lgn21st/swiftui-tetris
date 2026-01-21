@@ -9,6 +9,7 @@ public final class TetrisScene: SKScene {
     private var cellNodes: [[SKSpriteNode]] = []
     private var renderBuffer: RenderBuffer
     private var lastFlashAlpha: Double?
+    private var lastLineClearAlpha: Double?
     private var clock: FixedStepClock
     private var frameClock: FrameClock
     private var textureCache: TextureCache
@@ -62,7 +63,9 @@ public final class TetrisScene: SKScene {
         renderBuffer.update(from: state)
         let flashAlphaChanged = lastFlashAlpha != state.flashAlpha
         lastFlashAlpha = state.flashAlpha
-        if flashAlphaChanged {
+        let lineClearAlphaChanged = lastLineClearAlpha != state.lineClearAlpha
+        lastLineClearAlpha = state.lineClearAlpha
+        if flashAlphaChanged || lineClearAlphaChanged {
             for index in renderBuffer.changedIndices {
                 guard index >= 0, index < renderBuffer.cells.count else { continue }
                 let cell = renderBuffer.cells[index]
@@ -71,6 +74,13 @@ public final class TetrisScene: SKScene {
                 applyRender(cell: cell, state: state, node: node)
             }
             for index in renderBuffer.flashIndices {
+                guard index >= 0, index < renderBuffer.cells.count else { continue }
+                let cell = renderBuffer.cells[index]
+                guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
+                let node = cellNodes[cell.y][cell.x]
+                applyRender(cell: cell, state: state, node: node)
+            }
+            for index in renderBuffer.lineClearIndices {
                 guard index >= 0, index < renderBuffer.cells.count else { continue }
                 let cell = renderBuffer.cells[index]
                 guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
@@ -89,6 +99,16 @@ public final class TetrisScene: SKScene {
     }
 
     private func applyRender(cell: CellRender, state: RenderState, node: SKSpriteNode) {
+        if cell.isLineClear {
+            if state.lineClearAlpha <= 0 {
+                clear(node: node)
+            } else {
+                node.isHidden = false
+                node.texture = textureCache.texture(for: .lineClear)
+                node.alpha = CGFloat(state.lineClearAlpha)
+            }
+            return
+        }
         if cell.isFlash {
             if state.flashAlpha <= 0 {
                 clear(node: node)
