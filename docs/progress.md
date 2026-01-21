@@ -114,5 +114,6 @@
 - 2026-01-21: Marked UI polish pass complete in roadmap/architecture docs.
 - 2026-01-21: Added Settings accessibility labels for volume and SFX sliders.
 - 2026-01-21: Clarified codesign verification for icon/entitlements; closed packaging TODO.
+- 2026-01-21: Documented accessibility labels in the feature matrix.
 - 2026-01-21: Switched SpriteKit rendering to cached textures (TextureCache + sprite nodes).
 - 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.

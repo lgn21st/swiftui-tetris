@@ -67,6 +67,7 @@ Legend:
 | HUD details | Optional | Last input, grounded, lock resets, SFX. |
 | Lock bar | Optional | Visual bar + warning pulse. |
 | Ghost tint | Yes | Low alpha. |
+| Accessibility labels | Optional | Overlay + Settings sliders labeled. |
 
 ## Audio
 | Feature | Required | Notes |
