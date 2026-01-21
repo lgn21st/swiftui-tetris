@@ -79,3 +79,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Line clear pause hides active/ghost in renderer mapping.
 - HUD ruleset label for parity.
 - HUD status label for parity.
+- CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.

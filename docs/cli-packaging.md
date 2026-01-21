@@ -7,6 +7,12 @@ This project uses a SwiftPM executable (`Packager`) to create a macOS `.app` bun
 swift build -c release
 ```
 
+If you hit module cache permission errors, set an explicit module cache:
+```sh
+mkdir -p .build/module-cache
+CLANG_MODULE_CACHE_PATH="$(pwd)/.build/module-cache" swift build -c release
+```
+
 ## Package the app
 ```sh
 swift run Packager \

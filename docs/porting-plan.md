@@ -80,6 +80,7 @@
 - 2026-01-21: Render mapping hides active/ghost during line clear pause.
 - 2026-01-21: HUD shows ruleset label for parity.
 - 2026-01-21: HUD shows status label for parity.
+- 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**
