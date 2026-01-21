@@ -1,6 +1,7 @@
 import SwiftUI
 import SpriteKit
 import Renderer
+import AppKit
 
 public struct TetrisContainerView: View {
     @StateObject private var driver = SceneDriver()
@@ -29,6 +30,9 @@ public struct TetrisContainerView: View {
             .ignoresSafeArea()
             .onAppear { driver.start() }
             .onDisappear { driver.stop() }
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in
+                driver.handleAppActiveChanged(isActive: false)
+            }
         }
     }
 }

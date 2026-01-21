@@ -63,6 +63,21 @@ public final class SceneDriver: ObservableObject {
         lastTick = nil
     }
 
+    func stateSnapshot() -> GameState {
+        loop.state
+    }
+
+    public func handleAppActiveChanged(isActive: Bool) {
+        guard !isActive else { return }
+        loop.state.paused = true
+        overlayState = OverlayState(
+            isPaused: true,
+            isGameOver: loop.state.gameOver,
+            isTitle: !started,
+            isSettings: showSettings
+        )
+    }
+
     public func handleKeyDown(_ key: String) {
         if key == "\n" || key == "\r" {
             if !started {

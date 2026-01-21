@@ -21,3 +21,4 @@
 - 2026-01-21: Asset locator and audio resolution for CLI runs.
 - 2026-01-21: Landing flash rendering with Core + Renderer tests.
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
+- 2026-01-21: Focus-loss auto-pause with UI integration tests.

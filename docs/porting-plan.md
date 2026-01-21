@@ -60,6 +60,7 @@
 - 2026-01-21: Added asset locator and audio resolution for CLI runs.
 - 2026-01-21: Added landing flash rendering with Core + Renderer tests.
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
+- 2026-01-21: Added focus-loss auto-pause with UI integration tests.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**
