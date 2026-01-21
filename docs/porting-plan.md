@@ -76,6 +76,9 @@
 - 2026-01-21: Added app activation on launch for CLI runs.
 - 2026-01-21: Added proportional layout scaling based on window size.
 - 2026-01-21: Added per-event SFX sliders in Settings UI.
+- 2026-01-21: Clamped layout scaling to a minimum of 0.6 for parity.
+- 2026-01-21: Render mapping hides active/ghost during line clear pause.
+- 2026-01-21: HUD shows ruleset label for parity.
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**

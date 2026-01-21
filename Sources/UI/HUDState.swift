@@ -8,6 +8,7 @@ public struct HUDState: Equatable {
     public var nextText: String
     public var comboText: String
     public var b2bText: String
+    public var rulesetText: String
     public var lockBarRatio: Double
     public var lockWarningActive: Bool
     public var hintText: String
@@ -22,6 +23,7 @@ public struct HUDState: Equatable {
         let nextKind = state.nextQueue.first.map { "\($0)" } ?? "-"
         let comboText = state.combo >= 0 ? "Combo: \(state.combo)" : "Combo: -"
         let b2bText = "B2B: \(state.backToBack ? "Yes" : "No")"
+        let rulesetText = "Ruleset: \(state.config.ruleset == .classic ? "Classic" : "Modern")"
         let ratio = state.config.lockDelayMs == 0 ? 0 : Double(state.lockTimerMs) / Double(state.config.lockDelayMs)
         let clampedRatio = min(max(ratio, 0), 1)
         return HUDState(
@@ -32,6 +34,7 @@ public struct HUDState: Equatable {
             nextText: "Next: \(nextKind)",
             comboText: comboText,
             b2bText: b2bText,
+            rulesetText: rulesetText,
             lockBarRatio: clampedRatio,
             lockWarningActive: clampedRatio >= lockWarningThreshold,
             hintText: defaultHint,

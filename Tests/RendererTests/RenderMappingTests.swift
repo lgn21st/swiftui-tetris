@@ -36,4 +36,16 @@ final class RenderMappingTests: XCTestCase {
         let renderState = RenderMapper.map(state: state)
         XCTAssertEqual(renderState.flashAlpha, 0.5, accuracy: 0.01)
     }
+
+    func testRenderMappingHidesActiveAndGhostDuringLineClearPause() {
+        var state = GameState(config: GameConfig())
+        state.active = Tetromino(kind: .t, x: 3, y: 0)
+        state.updateGhostCache()
+        state.lineClearTimerMs = 180
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertTrue(renderState.activeBlocks.isEmpty)
+        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
+        XCTAssertNil(renderState.activeKind)
+        XCTAssertNil(renderState.ghostKind)
+    }
 }

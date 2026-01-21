@@ -40,4 +40,12 @@ final class HUDStateTests: XCTestCase {
         let hud = HUDState.from(state: state)
         XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
     }
+
+    func testHudRulesetTextReflectsConfig() {
+        let classic = GameState(config: GameConfig(ruleset: .classic), seed: 1)
+        XCTAssertEqual(HUDState.from(state: classic).rulesetText, "Ruleset: Classic")
+
+        let modern = GameState(config: GameConfig(ruleset: .modern), seed: 1)
+        XCTAssertEqual(HUDState.from(state: modern).rulesetText, "Ruleset: Modern")
+    }
 }

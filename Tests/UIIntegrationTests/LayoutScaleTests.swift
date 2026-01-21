@@ -17,7 +17,7 @@ final class LayoutScaleTests: XCTestCase {
 
     func testLayoutScaleShrinks() {
         let small = CGSize(width: 240, height: 360)
-        XCTAssertEqual(LayoutScale.scale(for: small), 0.5)
+        XCTAssertEqual(LayoutScale.scale(for: small), 0.6)
         let narrow = CGSize(width: 300, height: 720)
         XCTAssertEqual(LayoutScale.scale(for: narrow), 0.625)
     }

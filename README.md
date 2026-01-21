@@ -42,9 +42,9 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/cli-packaging.md`: CLI packaging instructions.
 
 ## Near-term Plan
-- Implement Core module and unit tests.
-- Build SpriteKit rendering skeleton.
-- Hook up SwiftUI HUD/overlays.
+- Complete M5 parity checklist and verify gpui timing/feel.
+- Perform UI polish pass (layout, typography, colors).
+- Run CLI packaging smoke test and document any gaps.
 
 ## Progress
 - Core board logic (bounds, placement, locking, line clears) with tests.
@@ -72,6 +72,9 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Per-event SFX gain mapping with master volume control.
 - App activation on launch to surface the window when running from CLI.
 - Proportional layout scaling based on window size.
+- Layout scaling clamped to minimum 0.6 for parity.
 - Per-event SFX sliders in Settings (with overrides).
 - Side panel layout with hold/next preview grids and theme polish.
 - Settings persistence via UserDefaults.
+- Line clear pause hides active/ghost in renderer mapping.
+- HUD ruleset label for parity.

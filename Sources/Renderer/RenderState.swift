@@ -33,10 +33,11 @@ public enum RenderMapper {
         let board = state.board.cells.map { row in
             row.map { $0.filled ? $0.kind : nil }
         }
-        let activeBlocks = state.active.blocks(rotation: state.active.rotation).map { (dx, dy) in
+        let hideActive = state.lineClearTimerMs > 0
+        let activeBlocks = hideActive ? [] : state.active.blocks(rotation: state.active.rotation).map { (dx, dy) in
             (state.active.x + dx, state.active.y + dy)
         }
-        let ghostBlocks = state.ghostBlocks()
+        let ghostBlocks = hideActive ? [] : state.ghostBlocks()
         let flashBlocks = state.landingFlashTimerMs > 0 ? state.landingFlashBlocks : []
         let flashAlpha = state.landingFlashTimerMs > 0
         ? min(max(Double(state.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
@@ -45,8 +46,8 @@ public enum RenderMapper {
             board: board,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
-            activeKind: state.active.kind,
-            ghostKind: state.active.kind,
+            activeKind: hideActive ? nil : state.active.kind,
+            ghostKind: hideActive ? nil : state.active.kind,
             flashBlocks: flashBlocks,
             flashAlpha: flashAlpha
         )
