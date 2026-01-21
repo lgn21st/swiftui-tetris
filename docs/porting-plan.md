@@ -82,7 +82,7 @@ See `docs/progress.md` for the chronological log.
 - Repeat behavior matches gpui tests (DAS 150ms, ARR 50ms).
 - Soft drop grace behaves correctly without input spam.
 
-### M5: Parity Pass + UX polish — In Progress
+### M5: Parity Pass + UX polish — Done
 **Deliverables**
 - Parity checklist completed.
 - Visual polish (colors, overlays, subtle animations).

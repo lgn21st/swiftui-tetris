@@ -47,3 +47,6 @@ See `docs/porting-plan.md` for the current milestone plan and next steps.
 
 ## Progress
 See `docs/progress.md` for the consolidated progress log.
+
+## Current Milestone
+M6 (optional features). M5 parity + UX polish is complete.
