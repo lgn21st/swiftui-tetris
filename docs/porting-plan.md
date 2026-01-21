@@ -47,45 +47,7 @@
 - Keep logic UI-agnostic.
 
 ## Progress Log
-- 2026-01-21: Added Core board logic (bounds, placement, locking, line clears) with TDD tests.
-- 2026-01-21: Added drop interval timing logic with TDD tests.
-- 2026-01-21: Added DAS/ARR repeat logic with TDD tests.
-- 2026-01-21: Added placement/collision tests for rotations.
-- 2026-01-21: Added GameState tick order, lock delay, soft drop grace tests and implementation.
-- 2026-01-21: Added ghost projection tests and implementation.
-- 2026-01-21: Added SRS kick tables and rotation tests.
-- 2026-01-21: Added classic scoring and level progression with tests.
-- 2026-01-21: Added renderer mapping state and tests.
-- 2026-01-21: Added CLI Packager and Packaging module with tests.
-- 2026-01-21: Added CLI packager support for icon and entitlements with tests.
-- 2026-01-21: Added RNG 7-bag queue, hold logic, and drop scoring with tests.
-- 2026-01-21: Added action mapping, lock reset limit, and pause/game-over guards with tests.
-- 2026-01-21: Added preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
-- 2026-01-21: Added T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
-- 2026-01-21: Added keyboard input capture, overlay state model, and sound event hooks.
-- 2026-01-21: Added HUD/overlay views and AVAudioPlayer-based audio playback.
-- 2026-01-21: Added assets scaffolding, settings UI, and expanded HUD details.
-- 2026-01-21: Added asset locator and audio resolution for CLI runs.
-- 2026-01-21: Added landing flash rendering with Core + Renderer tests.
-- 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
-- 2026-01-21: Added focus-loss auto-pause with UI integration tests.
-- 2026-01-21: Added space-to-start, lock bar warning pulse, and landing flash fade.
-- 2026-01-21: Added title overlay start hint (“Press Space or Enter to start”).
-- 2026-01-21: Added pause/settings hints, diagnostics overlay toggle, and window defaults.
-- 2026-01-21: Added per-event SFX gain mapping with master volume control.
-- 2026-01-21: Added app activation on launch for CLI runs.
-- 2026-01-21: Added proportional layout scaling based on window size.
-- 2026-01-21: Added per-event SFX sliders in Settings UI.
-- 2026-01-21: Clamped layout scaling to a minimum of 0.6 for parity.
-- 2026-01-21: Render mapping hides active/ghost during line clear pause.
-- 2026-01-21: HUD shows ruleset label for parity.
-- 2026-01-21: HUD shows status label for parity.
-- 2026-01-21: CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
-- 2026-01-21: Gravity uses level-based drop interval (parity).
-- 2026-01-21: CLI packaging smoke test succeeded locally (release build + Packager).
-- 2026-01-21: Standardized typography constants across UI views with tests.
-- 2026-01-21: Centralized layout spacing constants across UI views with tests.
-- 2026-01-21: Side panel layout reordered for clearer status/ruleset grouping.
+See `docs/progress.md` for the chronological log.
 
 ### M2: SpriteKit Board Rendering — Done
 **Deliverables**
