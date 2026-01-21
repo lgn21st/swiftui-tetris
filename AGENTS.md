@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added tests for gain clamping in SettingsState.
+- Last update: Added test coverage for ARR=0 disabling repeats.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

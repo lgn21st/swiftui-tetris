@@ -25,4 +25,18 @@ final class InputEngineConfigTests: XCTestCase {
         engine.tick(elapsedMs: 10, canAccept: true, state: &state)
         XCTAssertEqual(state.active.x, updatedX - 1)
     }
+
+    func testArrZeroDisablesRepeat() {
+        var state = GameState(config: GameConfig())
+        let engine = InputEngine()
+        engine.updateConfig(
+            repeatConfig: RepeatConfig(dasMs: 0, arrMs: 0),
+            softDropRepeatConfig: RepeatConfig(dasMs: 0, arrMs: 0)
+        )
+        engine.setLeftHeld(true, state: &state)
+        let initialX = state.active.x
+
+        engine.tick(elapsedMs: 100, canAccept: true, state: &state)
+        XCTAssertEqual(state.active.x, initialX)
+    }
 }
