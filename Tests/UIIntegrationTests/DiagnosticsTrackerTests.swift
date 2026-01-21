@@ -15,4 +15,11 @@ final class DiagnosticsTrackerTests: XCTestCase {
         let fpsValue = Int(parts.last ?? "") ?? 0
         XCTAssertTrue((60...62).contains(fpsValue))
     }
+
+    func testSceneDriverUpdatesDiagnosticsFromFrame() {
+        let driver = SceneDriver()
+        driver.scene.update(1.0)
+        driver.scene.update(1.05)
+        XCTAssertEqual(driver.diagnosticsState.tickText, "Tick: 50ms")
+    }
 }

@@ -21,7 +21,6 @@ public final class SceneDriver: ObservableObject {
     private let settingsStore: SettingsStoring
     private var settingsCancellable: AnyCancellable?
     private var lastInputAction: GameAction?
-    private var stepsSinceLastRender: Int
     private var latestRenderState: RenderState
 
     public init(
@@ -45,7 +44,6 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
-        self.stepsSinceLastRender = 0
         self.latestRenderState = RenderMapper.map(state: loop.state)
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
@@ -68,6 +66,10 @@ public final class SceneDriver: ObservableObject {
             let elapsed = Int(Double(steps) * TetrisScene.fixedStepMs)
             self?.tick(elapsedMs: elapsed, fixedSteps: steps)
         }
+        self.scene.onFrame = { [weak self] frameMs in
+            guard let self else { return }
+            self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: frameMs)
+        }
         self.scene.onRender = { [weak self] in
             self?.latestRenderState
         }
@@ -81,13 +83,8 @@ public final class SceneDriver: ObservableObject {
         let elapsed = max(elapsedMs, 0)
         let canAccept = !loop.state.paused && !loop.state.gameOver
         input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
-        stepsSinceLastRender += fixedSteps
         let renderState = loop.stepFrame(elapsedMs: elapsed)
         latestRenderState = renderState
-        diagnosticsState = diagnosticsTracker.recordFrame(
-            elapsedMs: Int(Double(stepsSinceLastRender) * TetrisScene.fixedStepMs)
-        )
-        stepsSinceLastRender = 0
         let events = loop.state.takeSoundEvents()
         if let audio = audio, !settings.muted {
             for event in events {

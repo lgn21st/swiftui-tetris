@@ -92,3 +92,4 @@
 - 2026-01-21: Wired TetrisScene fixed-step updates into SceneDriver; removed Timer-based loop.
 - 2026-01-21: Normalized render step naming and diagnostics to align with fixed-step timing.
 - 2026-01-21: Render now occurs per SpriteKit frame via scene render callback.
+- 2026-01-21: Diagnostics now use SpriteKit frame delta (frame clock) for FPS/tick reporting.

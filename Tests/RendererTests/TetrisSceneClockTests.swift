@@ -23,4 +23,15 @@ final class TetrisSceneClockTests: XCTestCase {
 
         XCTAssertEqual(totalSteps, 6)
     }
+
+    func testSceneReportsFrameDelta() {
+        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        var lastFrameMs = 0
+        scene.onFrame = { lastFrameMs = $0 }
+
+        scene.update(1.0)
+        scene.update(1.02)
+
+        XCTAssertEqual(lastFrameMs, 20)
+    }
 }
