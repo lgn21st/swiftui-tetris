@@ -11,6 +11,14 @@ public struct OverlayView: View {
         !state.isSettings
     }
 
+    static func accessibilityLabel(for state: OverlayState) -> String {
+        let title = state.title
+        let message = state.message
+        if title.isEmpty { return "" }
+        if message.isEmpty { return title }
+        return "\(title). \(message)"
+    }
+
     public var body: some View {
         if state.title.isEmpty {
             EmptyView()
@@ -28,6 +36,8 @@ public struct OverlayView: View {
                                 .foregroundColor(.white.opacity(0.85))
                         }
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(Self.accessibilityLabel(for: state))
                 }
             }
         }
