@@ -8,6 +8,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Strict TDD for every feature, improvement, and refactor.
 - Favor platform-appropriate patterns (see `docs/architecture.md`).
 - Use low-latency audio with preloaded buffers.
+- Convention-over-configuration defaults: no Settings UI or persistence; minimal menu actions.
 
 ## Run (CLI-first)
 - Tests: `swift test`

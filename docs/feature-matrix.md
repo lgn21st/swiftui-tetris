@@ -50,7 +50,7 @@ Legend:
 | Start | Yes | Enter/Return/Space. |
 | Pause | Yes | P. |
 | Fullscreen | Optional | Cmd+Ctrl+F. |
-| Menu commands | Optional | Cmd+ shortcuts for start/restart/pause. |
+| Menu commands | Optional | Minimal menu for restart/pause. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
 | Input repeat | Yes | Fixed DAS/ARR/soft drop ARR defaults. |

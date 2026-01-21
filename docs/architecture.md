@@ -29,7 +29,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 
 ### Input
 - Create a single `InputRouter` that maps keyboard/gamepad to `GameAction`.
-- Support SwiftUI `Commands` for menu shortcuts (Pause, Restart).
+- Support SwiftUI `Commands` for minimal menu actions (Pause, Restart).
 - Keep key capture and gamepad handling decoupled from gameplay logic.
 
 ### Audio
