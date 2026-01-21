@@ -108,6 +108,10 @@ public struct SettingsState: Equatable, Codable {
         isSfxEnabled(for: SoundEventKind.from(event: event))
     }
 
+    public func isSfxControlEnabled(for kind: SoundEventKind) -> Bool {
+        isSfxEnabled(for: kind)
+    }
+
     public mutating func setInputDas(_ value: Int) {
         inputDasMs = Self.clamp(value, to: Self.inputDasRange)
     }

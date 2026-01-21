@@ -83,7 +83,9 @@ public struct SettingsView: View {
                         set: { settings.setGain($0, for: kind) }
                     ), in: 0...1)
                     .accessibilityLabel(SettingsAccessibility.sfxLabel(for: kind))
+                    .disabled(!settings.isSfxControlEnabled(for: kind))
                 }
+                .opacity(settings.isSfxControlEnabled(for: kind) ? 1.0 : 0.6)
             }
             HStack(spacing: LayoutConstants.settingsSpacing) {
                 Button("Reset") { settings.reset() }

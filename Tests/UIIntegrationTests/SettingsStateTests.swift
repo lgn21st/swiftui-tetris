@@ -90,4 +90,12 @@ final class SettingsStateTests: XCTestCase {
         settings.setSfxEnabled(false, for: .lineClear)
         XCTAssertFalse(settings.isSfxEnabled(for: SoundEvent.lineClear(2)))
     }
+
+    func testSfxControlReflectsToggle() {
+        var settings = SettingsState()
+        settings.setSfxEnabled(false, for: .rotate)
+        XCTAssertFalse(settings.isSfxControlEnabled(for: .rotate))
+        settings.setSfxEnabled(true, for: .rotate)
+        XCTAssertTrue(settings.isSfxControlEnabled(for: .rotate))
+    }
 }
