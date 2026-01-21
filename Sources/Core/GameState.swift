@@ -103,6 +103,36 @@ public struct GameState {
         softDropTimeoutMs = config.softDropGraceMs
     }
 
+    public mutating func apply(action: GameAction) {
+        if gameOver && action != .restart {
+            return
+        }
+        if paused && action != .pause && action != .restart {
+            return
+        }
+
+        switch action {
+        case .moveLeft:
+            _ = tryMove(dx: -1, dy: 0)
+        case .moveRight:
+            _ = tryMove(dx: 1, dy: 0)
+        case .softDrop:
+            _ = softDropStep()
+        case .hardDrop:
+            _ = hardDrop()
+        case .rotateCw:
+            _ = rotate(clockwise: true)
+        case .rotateCcw:
+            _ = rotate(clockwise: false)
+        case .hold:
+            _ = holdAction()
+        case .pause:
+            paused.toggle()
+        case .restart:
+            restart(seed: rngSeed())
+        }
+    }
+
     @discardableResult
     public mutating func softDropStep() -> Bool {
         let moved = tryMove(dx: 0, dy: 1)
@@ -244,5 +274,13 @@ public struct GameState {
         let next = nextQueue.removeFirst()
         active = spawnPiece(kind: next)
         canHold = true
+    }
+
+    public mutating func restart(seed: UInt64) {
+        self = GameState(config: config, seed: seed)
+    }
+
+    private mutating func rngSeed() -> UInt64 {
+        UInt64(rng.nextUInt32())
     }
 }

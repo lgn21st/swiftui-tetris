@@ -12,3 +12,4 @@
 - 2026-01-21: CLI Packager and Packaging module with tests.
 - 2026-01-21: CLI packager icon + entitlements support with tests.
 - 2026-01-21: RNG 7-bag queue, hold logic, and drop scoring with tests.
+- 2026-01-21: Action mapping, lock reset limit, and pause/game-over guards with tests.
