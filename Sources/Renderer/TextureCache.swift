@@ -53,9 +53,13 @@ public final class TextureCache {
             color = SKColor(white: 0.95, alpha: 1.0)
             style = .normal
         }
-        let texture = key == .lineClear
-            ? makeLineClearTexture(color: color)
-            : makeTexture(color: color, style: style)
+        let texture: SKTexture
+        switch key {
+        case .lineClear:
+            texture = makeLineClearTexture(color: color)
+        default:
+            texture = makeTexture(color: color, style: style)
+        }
         textures[key] = texture
         return texture
     }
@@ -143,4 +147,5 @@ public final class TextureCache {
         image.unlockFocus()
         return SKTexture(image: image)
     }
+
 }

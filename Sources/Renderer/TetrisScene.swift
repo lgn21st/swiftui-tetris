@@ -67,6 +67,7 @@ public final class TetrisScene: SKScene {
         }
     }
 
+
     public func render(state: RenderState) {
         renderBuffer.update(from: state)
         let flashAlphaChanged = lastFlashAlpha != state.flashAlpha
@@ -201,6 +202,7 @@ public final class TetrisScene: SKScene {
         activeNodes
     }
 
+
     private func commonInit() {
         scaleMode = .resizeFill
         backgroundColor = RenderTheme.boardBackgroundColor
@@ -220,6 +222,7 @@ public final class TetrisScene: SKScene {
             return node
         }
     }
+
 
     private func renderScorePopups(_ popups: [ScorePopup]) {
         let capped = popups.prefix(Self.maxScorePopupNodes)
