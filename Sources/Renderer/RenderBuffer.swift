@@ -31,7 +31,7 @@ public final class RenderBuffer {
         self.previousCells = initial
     }
 
-    public func update(from state: RenderState) -> [Int] {
+    public func update(from state: RenderState) {
         flashIndices.removeAll(keepingCapacity: true)
         changedIndices.removeAll(keepingCapacity: true)
         for y in 0..<height {
@@ -76,6 +76,5 @@ public final class RenderBuffer {
                 previousCells[index] = cells[index]
             }
         }
-        return changedIndices
     }
 }

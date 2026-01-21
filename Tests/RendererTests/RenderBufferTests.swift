@@ -17,12 +17,12 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        let changed = buffer.update(from: state)
+        buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 1 }
         XCTAssertEqual(cell?.isActive, true)
         XCTAssertEqual(cell?.isGhost, false)
         XCTAssertEqual(cell?.kind, .t)
-        XCTAssertEqual(changed, [1 * Board.width + 1])
+        XCTAssertEqual(buffer.changedIndices, [1 * Board.width + 1])
     }
 
     func testGhostFillsEmptyCell() {
@@ -39,11 +39,11 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        let changed = buffer.update(from: state)
+        buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 2 && $0.y == 2 }
         XCTAssertEqual(cell?.isGhost, true)
         XCTAssertEqual(cell?.kind, .i)
-        XCTAssertEqual(changed, [2 * Board.width + 2])
+        XCTAssertEqual(buffer.changedIndices, [2 * Board.width + 2])
     }
 
     func testFlashMarksCells() {
@@ -60,11 +60,11 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        let changed = buffer.update(from: state)
+        buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 0 && $0.y == 0 }
         XCTAssertEqual(cell?.isFlash, true)
         XCTAssertEqual(cell?.kind, nil)
-        XCTAssertEqual(changed, [0])
+        XCTAssertEqual(buffer.changedIndices, [0])
     }
 
     func testUpdateReportsNoChangesWhenStateUnchanged() {
@@ -81,9 +81,9 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        _ = buffer.update(from: state)
-        let changed = buffer.update(from: state)
-        XCTAssertEqual(changed, [])
+        buffer.update(from: state)
+        buffer.update(from: state)
+        XCTAssertEqual(buffer.changedIndices, [])
     }
 
     func testUpdateTracksFlashIndices() {
@@ -100,7 +100,7 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        _ = buffer.update(from: state)
+        buffer.update(from: state)
         XCTAssertEqual(buffer.flashIndices, [0, 2 * Board.width + 3])
         XCTAssertEqual(buffer.changedIndices, [0, 2 * Board.width + 3])
     }

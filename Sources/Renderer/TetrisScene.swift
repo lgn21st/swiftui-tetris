@@ -55,11 +55,11 @@ public final class TetrisScene: SKScene {
     }
 
     public func render(state: RenderState) {
-        let changedIndices = renderBuffer.update(from: state)
+        renderBuffer.update(from: state)
         let flashAlphaChanged = lastFlashAlpha != state.flashAlpha
         lastFlashAlpha = state.flashAlpha
         if flashAlphaChanged {
-            for index in changedIndices {
+            for index in renderBuffer.changedIndices {
                 guard index >= 0, index < renderBuffer.cells.count else { continue }
                 let cell = renderBuffer.cells[index]
                 guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
@@ -75,7 +75,7 @@ public final class TetrisScene: SKScene {
             }
             return
         }
-        for index in changedIndices {
+        for index in renderBuffer.changedIndices {
             guard index >= 0, index < renderBuffer.cells.count else { continue }
             let cell = renderBuffer.cells[index]
             guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
