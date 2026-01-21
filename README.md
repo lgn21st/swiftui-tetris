@@ -38,4 +38,4 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Status
-Core and optional features are implemented and covered by tests, including soft drop trail, active-piece highlight textures, lock-bar warning pulse, board gridlines, and an active-piece pulse.
+Core and optional features are implemented and covered by tests, including soft drop trail, ghost outline stroke, active-piece highlight textures, lock-bar warning pulse, board gridlines, and an active-piece pulse.

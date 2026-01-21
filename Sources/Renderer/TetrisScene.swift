@@ -111,7 +111,7 @@ public final class TetrisScene: SKScene {
         }
         node.isHidden = false
         let isGhost = cell.isGhost && !cell.isActive
-        let style: TextureCache.PieceStyle = cell.isActive ? .highlight : .normal
+        let style: TextureCache.PieceStyle = cell.isActive ? .highlight : (isGhost ? .ghost : .normal)
         node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost, style: style))
         if cell.isActive {
             let pulse = max(0, min(state.activePulse, 1))

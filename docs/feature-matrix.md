@@ -72,6 +72,7 @@ Legend:
 | HUD section typography | Optional | Distinct header sizing for Hold/Next sections. |
 | Active drop pulse | Optional | Subtle alpha pulse tied to gravity interval. |
 | Ghost tint | Yes | Low alpha. |
+| Ghost outline | Optional | Outline stroke on ghost piece (implemented). |
 | Accessibility labels | Optional | Overlay labels for title + message. |
 
 ## Audio

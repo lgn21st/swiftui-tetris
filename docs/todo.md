@@ -10,7 +10,6 @@ None.
 
 ## UI / UX
 - Line-clear shimmer effect (post-lock visual polish).
-- Ghost outline stroke for sharper landing guidance.
 - HUD dividers and section grouping polish for better scan.
 - First-run onboarding hints (contextual overlays).
 

@@ -7,6 +7,7 @@ public final class TextureCache {
         case normal
         case highlight
         case trail
+        case ghost
     }
 
     public enum Key: Hashable {
@@ -50,7 +51,7 @@ public final class TextureCache {
         switch style {
         case .trail:
             baseColor = color.withAlphaComponent(0.35)
-        case .highlight, .normal:
+        case .highlight, .normal, .ghost:
             baseColor = color
         }
         baseColor.setFill()
@@ -80,6 +81,13 @@ public final class TextureCache {
             strokeColor.withAlphaComponent(0.6).setStroke()
             let path = NSBezierPath(rect: outline)
             path.lineWidth = 1
+            path.stroke()
+        case .ghost:
+            let outline = rect.insetBy(dx: 0.6, dy: 0.6)
+            let strokeColor = color.blended(withFraction: 0.7, of: .white) ?? color
+            strokeColor.withAlphaComponent(0.8).setStroke()
+            let path = NSBezierPath(rect: outline)
+            path.lineWidth = 1.2
             path.stroke()
         case .normal:
             break

@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Removed window persistence, simplified key capture, and minimized menu commands.
+- Last update: Added ghost outline stroke for clearer landing guidance.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

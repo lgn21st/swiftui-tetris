@@ -15,7 +15,9 @@ final class TextureCacheTests: XCTestCase {
         let normal = cache.texture(for: .piece(kind: .t, ghost: false, style: .normal))
         let highlight = cache.texture(for: .piece(kind: .t, ghost: false, style: .highlight))
         let trail = cache.texture(for: .piece(kind: .t, ghost: false, style: .trail))
+        let ghost = cache.texture(for: .piece(kind: .t, ghost: true, style: .ghost))
         XCTAssertFalse(normal === highlight)
         XCTAssertFalse(normal === trail)
+        XCTAssertFalse(normal === ghost)
     }
 }
