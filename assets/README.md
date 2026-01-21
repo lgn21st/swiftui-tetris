@@ -3,7 +3,7 @@
 Place runtime assets here.
 
 ## Audio (assets/sfx)
-Expected files:
+Files copied from gpui-tetris:
 - move.wav
 - rotate.wav
 - soft_drop.wav
@@ -16,7 +16,7 @@ Expected files:
 - game_over.wav
 
 ## App Icon
-Provide `assets/AppIcon.icns` for packaging.
+`assets/AppIcon.icns` is copied from gpui-tetris.
 
 ## Entitlements
 Provide `assets/App.entitlements` for codesigning if needed.
