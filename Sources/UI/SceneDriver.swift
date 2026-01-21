@@ -139,6 +139,16 @@ public final class SceneDriver: ObservableObject {
             }
             return
         }
+        if key == "escape" {
+            if showSettings {
+                showSettings = false
+                loop.state.paused = false
+            } else {
+                recordLastInput(.pause)
+                input.apply(action: .pause, to: &loop.state)
+            }
+            return
+        }
         if key == "s" {
             showSettings.toggle()
             loop.state.paused = showSettings

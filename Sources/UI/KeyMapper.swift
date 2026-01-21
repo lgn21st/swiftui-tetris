@@ -3,6 +3,7 @@ import Core
 public enum KeyMapper {
     public static func action(for key: String) -> GameAction? {
         switch key {
+        case "escape": return .pause
         case "left": return .moveLeft
         case "right": return .moveRight
         case "down": return .softDrop

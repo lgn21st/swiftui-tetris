@@ -36,4 +36,12 @@ final class SceneDriverInputTests: XCTestCase {
         driver.tick(elapsedMs: 200)
         XCTAssertEqual(loop.state.active.x, startX - 2)
     }
+
+    func testEscapePausesWhenSettingsClosed() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        XCTAssertFalse(loop.state.paused)
+        driver.handleKeyDown("escape")
+        XCTAssertTrue(loop.state.paused)
+    }
 }

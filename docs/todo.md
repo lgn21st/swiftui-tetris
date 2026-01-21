@@ -3,7 +3,6 @@
 Track areas where we intentionally used a basic implementation and plan to revisit after high-priority work.
 
 ## Input / Window / Focus
-- Expand non-character key handling (Esc, Tab, function keys, keypad +/-) if needed.
 - Validate key repeat behavior in edge cases (held keys across focus changes).
 - Confirm gamepad Y button behavior across common controllers.
 

@@ -20,4 +20,11 @@ final class KeyboardInputTests: XCTestCase {
         XCTAssertEqual(KeyCodeMapper.keyString(for: 125), "down")
         XCTAssertEqual(KeyCodeMapper.keyString(for: 126), "up")
     }
+
+    func testKeyCodeMapperNonCharacterKeys() {
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 53), "escape")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 48), "tab")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 69), "+")
+        XCTAssertEqual(KeyCodeMapper.keyString(for: 78), "-")
+    }
 }
