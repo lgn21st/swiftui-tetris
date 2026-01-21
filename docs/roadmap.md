@@ -43,7 +43,7 @@
 - Skip node updates for unchanged cell states.
 - Update only flash cells when flash alpha changes.
 
-### R3: Input Router (In Progress)
+### R3: Input Router (Done)
 - Consolidate keyboard/gamepad mapping into a single router.
 - Keep UI focus handling separate from gameplay input.
 - Added an `InputRouter` wrapper to centralize key/button mapping.

@@ -4,14 +4,14 @@ import XCTest
 
 final class KeyboardInputTests: XCTestCase {
     func testKeyboardMappingLeftRight() {
-        XCTAssertEqual(KeyMapper.action(for: "left"), .moveLeft)
-        XCTAssertEqual(KeyMapper.action(for: "right"), .moveRight)
+        XCTAssertEqual(InputRouter.action(forKey: "left"), .moveLeft)
+        XCTAssertEqual(InputRouter.action(forKey: "right"), .moveRight)
     }
 
     func testKeyboardMappingRotateDropHold() {
-        XCTAssertEqual(KeyMapper.action(for: "up"), .rotateCw)
-        XCTAssertEqual(KeyMapper.action(for: " "), .hardDrop)
-        XCTAssertEqual(KeyMapper.action(for: "c"), .hold)
+        XCTAssertEqual(InputRouter.action(forKey: "up"), .rotateCw)
+        XCTAssertEqual(InputRouter.action(forKey: " "), .hardDrop)
+        XCTAssertEqual(InputRouter.action(forKey: "c"), .hold)
     }
 
     func testKeyCodeMapperArrows() {

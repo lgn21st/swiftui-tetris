@@ -102,3 +102,4 @@
 - 2026-01-21: Architecture gaps updated to reflect loop migration completion.
 - 2026-01-21: Added pooled audio playback to allow overlapping SFX with AVAudioPlayer.
 - 2026-01-21: Added InputRouter wrapper and tests to centralize key/button mapping.
+- 2026-01-21: Switched mapping tests to use InputRouter while keeping legacy mappers as internal helpers.

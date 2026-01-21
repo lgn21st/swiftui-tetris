@@ -12,7 +12,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 ## Gaps in Current Implementation
 - Rendering still uses `SKShapeNode` fill/stroke instead of cached textures.
 - Audio is `AVAudioPlayer`-based and not optimized for rapid, overlapping SFX.
-- Input lives in multiple layers; no unified “input device → action” abstraction.
+- Input mapping is centralized, but focus/state handling still lives in `SceneDriver`.
 
 ## Target Architecture
 ### Loop & Timing
