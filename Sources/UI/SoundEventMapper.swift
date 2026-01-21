@@ -24,4 +24,16 @@ public enum SoundEventMapper {
         case .gameOver: return 0.6
         }
     }
+
+    public static func gain(for kind: SoundEventKind) -> Double {
+        switch kind {
+        case .move: return 0.2
+        case .rotate: return 0.3
+        case .softDrop: return 0.2
+        case .hardDrop: return 0.4
+        case .hold: return 0.35
+        case .lineClear: return 0.5
+        case .gameOver: return 0.6
+        }
+    }
 }

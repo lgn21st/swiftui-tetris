@@ -72,7 +72,7 @@ Legend:
 | --- | --- | --- | --- |
 | Events | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver | Optional | Implement with AVAudioEngine or SKAction. |
 | Gains | Per-event gain mapping | Optional | Implemented in UI SoundEventMapper. |
-| Master volume | Default 0.7, step 0.1 | Optional | Persist in app settings. |
+| Master volume | Default 0.7, step 0.1 | Optional | Implemented in settings UI. |
 
 ## Diagnostics and Testing
 | Feature | gpui baseline | Required | SwiftUI/SpriteKit notes |

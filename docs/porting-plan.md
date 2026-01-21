@@ -67,6 +67,7 @@
 - 2026-01-21: Added per-event SFX gain mapping with master volume control.
 - 2026-01-21: Added app activation on launch for CLI runs.
 - 2026-01-21: Added proportional layout scaling based on window size.
+- 2026-01-21: Added per-event SFX sliders in Settings UI.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

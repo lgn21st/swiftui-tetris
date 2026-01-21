@@ -10,7 +10,7 @@ public final class AudioEngine {
         self.players = [:]
     }
 
-    public func play(_ event: SoundEvent, masterVolume: Double = 1.0) {
+    public func play(_ event: SoundEvent, masterVolume: Double = 1.0, gainOverride: Double? = nil) {
         guard let fileName = SoundEventMapper.fileName(for: event) else { return }
         let soundURL = resolveURL(for: event, fileName: fileName)
         let player: AVAudioPlayer
@@ -22,7 +22,7 @@ public final class AudioEngine {
             players[fileName] = created
             player = created
         }
-        player.volume = resolvedVolume(for: event, master: masterVolume)
+        player.volume = resolvedVolume(for: event, master: masterVolume, gainOverride: gainOverride)
         player.currentTime = 0
         player.play()
     }
@@ -39,8 +39,8 @@ public final class AudioEngine {
         return Bundle.main.url(forResource: fileName, withExtension: nil) ?? URL(fileURLWithPath: fileName)
     }
 
-    public func resolvedVolume(for event: SoundEvent, master: Double) -> Float {
-        let gain = SoundEventMapper.gain(for: event)
+    public func resolvedVolume(for event: SoundEvent, master: Double, gainOverride: Double? = nil) -> Float {
+        let gain = gainOverride ?? SoundEventMapper.gain(for: event)
         let clamped = min(max(master * gain, 0), 1)
         return Float(clamped)
     }
