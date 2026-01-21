@@ -15,6 +15,10 @@ codesign --deep --force --options runtime \
   dist/SwiftUITeris.app
 ```
 
+If you used the Packager `--entitlements` flag, the file is copied to:
+`dist/SwiftUITeris.app/Contents/Entitlements.plist`
+Use that path for audit/verification after signing.
+
 ## Zip for notarization
 ```sh
 ditto -c -k --keepParent dist/SwiftUITeris.app dist/SwiftUITeris.zip
@@ -36,6 +40,8 @@ xcrun stapler staple dist/SwiftUITeris.app
 ```sh
 codesign -dv --verbose=4 dist/SwiftUITeris.app
 spctl -a -vv dist/SwiftUITeris.app
+plutil -p dist/SwiftUITeris.app/Contents/Info.plist | grep CFBundleIconFile
+test -f dist/SwiftUITeris.app/Contents/Entitlements.plist
 ```
 
 ## Notes

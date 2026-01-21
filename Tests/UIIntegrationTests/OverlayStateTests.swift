@@ -34,6 +34,6 @@ final class OverlayStateTests: XCTestCase {
 
     func testOverlayShowsSettingsHint() {
         let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: false, isSettings: true)
-        XCTAssertEqual(overlay.message, "S or Esc to close, M mute, +/- volume, 0 reset")
+        XCTAssertEqual(overlay.message, "S or Esc to close")
     }
 }

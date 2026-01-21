@@ -6,7 +6,7 @@ Track areas where we intentionally used a basic implementation and plan to revis
 None.
 
 ## Audio / Assets / Packaging
-- Verify icon/entitlements flow for signed builds.
+None.
 
 ## UI / UX
 None.

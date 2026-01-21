@@ -25,6 +25,7 @@ public struct SettingsView: View {
                     get: { settings.volume },
                     set: { settings.volume = $0 }
                 ), in: 0...1)
+                .accessibilityLabel(SettingsAccessibility.volumeLabel)
             }
             Divider().background(Color.white.opacity(0.4))
             Text("SFX Levels")
@@ -37,6 +38,7 @@ public struct SettingsView: View {
                         get: { settings.gainOverrides[kind] ?? SoundEventMapper.gain(for: kind) },
                         set: { settings.setGain($0, for: kind) }
                     ), in: 0...1)
+                    .accessibilityLabel(SettingsAccessibility.sfxLabel(for: kind))
                 }
             }
             HStack(spacing: LayoutConstants.settingsSpacing) {
