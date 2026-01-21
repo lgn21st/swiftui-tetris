@@ -53,6 +53,7 @@
 - 2026-01-21: Added RNG 7-bag queue, hold logic, and drop scoring with tests.
 - 2026-01-21: Added action mapping, lock reset limit, and pause/game-over guards with tests.
 - 2026-01-21: Added preview mask cache, modern rules (combo/B2B), and UI input wiring tests.
+- 2026-01-21: Added T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

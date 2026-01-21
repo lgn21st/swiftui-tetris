@@ -8,6 +8,7 @@ public struct GameState {
     public var lines: Int
     public var combo: Int
     public var backToBack: Bool
+    public var lastActionRotate: Bool
     public var hold: TetrominoType?
     public var canHold: Bool
     public var nextQueue: [TetrominoType]
@@ -39,6 +40,7 @@ public struct GameState {
         self.lines = 0
         self.combo = -1
         self.backToBack = false
+        self.lastActionRotate = false
         self.hold = nil
         self.canHold = true
         self.dropTimerMs = 0
@@ -118,18 +120,23 @@ public struct GameState {
         switch action {
         case .moveLeft:
             _ = tryMove(dx: -1, dy: 0)
+            lastActionRotate = false
         case .moveRight:
             _ = tryMove(dx: 1, dy: 0)
+            lastActionRotate = false
         case .softDrop:
             _ = softDropStep()
+            lastActionRotate = false
         case .hardDrop:
             _ = hardDrop()
+            lastActionRotate = false
         case .rotateCw:
-            _ = rotate(clockwise: true)
+            lastActionRotate = rotate(clockwise: true)
         case .rotateCcw:
-            _ = rotate(clockwise: false)
+            lastActionRotate = rotate(clockwise: false)
         case .hold:
             _ = holdAction()
+            lastActionRotate = false
         case .pause:
             paused.toggle()
         case .restart:
@@ -290,7 +297,9 @@ public struct GameState {
         setLandingFlash()
         board.lock(piece: active)
         let cleared = board.clearLines()
-        applyLineClear(cleared: cleared)
+        let tSpin = config.ruleset == .modern ? tSpinKind() : .none
+        applyLineClear(cleared: cleared, tSpin: tSpin)
+        lastActionRotate = false
         spawnNext()
     }
 
@@ -306,6 +315,7 @@ public struct GameState {
         }
         updateGhostCache()
         lockResetCount = 0
+        lastActionRotate = false
         return piece
     }
 
@@ -322,5 +332,38 @@ public struct GameState {
 
     private mutating func rngSeed() -> UInt64 {
         UInt64(rng.nextUInt32())
+    }
+
+    public func tSpinKind() -> TSpinKind {
+        guard active.kind == .t, lastActionRotate else { return .none }
+        let centerX = active.x + 1
+        let centerY = active.y + 1
+        let corners = [
+            (centerX - 1, centerY - 1),
+            (centerX + 1, centerY - 1),
+            (centerX - 1, centerY + 1),
+            (centerX + 1, centerY + 1)
+        ]
+        var filled = 0
+        for (x, y) in corners {
+            if board.isOccupied(x: x, y: y) {
+                filled += 1
+            }
+        }
+        if filled < 3 { return .none }
+
+        let front: [(Int, Int)]
+        switch active.rotation {
+        case .north:
+            front = [(centerX - 1, centerY - 1), (centerX + 1, centerY - 1)]
+        case .east:
+            front = [(centerX + 1, centerY - 1), (centerX + 1, centerY + 1)]
+        case .south:
+            front = [(centerX - 1, centerY + 1), (centerX + 1, centerY + 1)]
+        case .west:
+            front = [(centerX - 1, centerY - 1), (centerX - 1, centerY + 1)]
+        }
+        let frontFilled = front.filter { board.isOccupied(x: $0.0, y: $0.1) }.count
+        return frontFilled == 2 ? .full : .mini
     }
 }

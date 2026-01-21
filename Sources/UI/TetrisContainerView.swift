@@ -3,15 +3,17 @@ import SpriteKit
 import Renderer
 
 public struct TetrisContainerView: View {
-    private let scene = TetrisScene(size: TetrisScene.defaultSize)
+    @StateObject private var driver = SceneDriver()
 
     public init() {}
 
     public var body: some View {
         GeometryReader { proxy in
-            SpriteView(scene: scene)
+            SpriteView(scene: driver.scene)
                 .frame(width: proxy.size.width, height: proxy.size.height)
                 .ignoresSafeArea()
+                .onAppear { driver.start() }
+                .onDisappear { driver.stop() }
         }
     }
 }

@@ -23,7 +23,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: preview masks, modern rules, and UI input wiring tests added.
+- Last update: T-spin detection, render composition, input repeats, and SceneDriver loop added.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

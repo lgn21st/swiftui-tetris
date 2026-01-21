@@ -1,0 +1,19 @@
+import Core
+import Renderer
+
+public final class GameLoop {
+    public private(set) var state: GameState
+
+    public init(state: GameState = GameState(config: GameConfig(), seed: 1)) {
+        self.state = state
+    }
+
+    public func apply(action: GameAction) {
+        state.apply(action: action)
+    }
+
+    public func step(elapsedMs: Int, softDrop: Bool = false) -> RenderState {
+        state.tick(elapsedMs: elapsedMs, softDrop: softDrop)
+        return RenderMapper.map(state: state)
+    }
+}

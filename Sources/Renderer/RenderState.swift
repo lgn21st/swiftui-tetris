@@ -4,11 +4,21 @@ public struct RenderState {
     public var board: [[TetrominoType?]]
     public var activeBlocks: [(Int, Int)]
     public var ghostBlocks: [(Int, Int)]
+    public var activeKind: TetrominoType?
+    public var ghostKind: TetrominoType?
 
-    public init(board: [[TetrominoType?]], activeBlocks: [(Int, Int)], ghostBlocks: [(Int, Int)]) {
+    public init(
+        board: [[TetrominoType?]],
+        activeBlocks: [(Int, Int)],
+        ghostBlocks: [(Int, Int)],
+        activeKind: TetrominoType?,
+        ghostKind: TetrominoType?
+    ) {
         self.board = board
         self.activeBlocks = activeBlocks
         self.ghostBlocks = ghostBlocks
+        self.activeKind = activeKind
+        self.ghostKind = ghostKind
     }
 }
 
@@ -21,6 +31,12 @@ public enum RenderMapper {
             (state.active.x + dx, state.active.y + dy)
         }
         let ghostBlocks = state.ghostBlocks()
-        return RenderState(board: board, activeBlocks: activeBlocks, ghostBlocks: ghostBlocks)
+        return RenderState(
+            board: board,
+            activeBlocks: activeBlocks,
+            ghostBlocks: ghostBlocks,
+            activeKind: state.active.kind,
+            ghostKind: state.active.kind
+        )
     }
 }
