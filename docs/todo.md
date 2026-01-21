@@ -9,7 +9,6 @@ None.
 - Verify icon/entitlements flow for signed builds.
 
 ## UI / UX
-- Confirm overlay layering + interaction order across states (Title, Pause, Settings, Game Over).
 - Evaluate Settings overlay keyboard focus behavior.
 
 ## Diagnostics / Tooling

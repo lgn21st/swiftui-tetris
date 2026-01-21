@@ -69,4 +69,19 @@ final class SceneDriverInputTests: XCTestCase {
 
         XCTAssertEqual(loop.state.active.x, startX - 1)
     }
+
+    func testSettingsIgnoresMovementInput() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        let startX = loop.state.active.x
+
+        driver.handleKeyDown("s")
+        driver.handleKeyDown("left")
+        driver.handleKeyUp("left")
+        driver.handleKeyDown("s")
+        driver.tick(elapsedMs: 200)
+
+        XCTAssertEqual(loop.state.active.x, startX)
+        XCTAssertEqual(driver.hudState.lastInputText, "Last input: None")
+    }
 }

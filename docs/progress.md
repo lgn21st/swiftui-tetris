@@ -79,3 +79,4 @@
 - 2026-01-21: Added tests to ensure held input clears on focus loss and pause.
 - 2026-01-21: Added focus-loss repeat test to cover held key edge cases.
 - 2026-01-21: Disabled settings overlay animation when Reduce Motion is enabled.
+- 2026-01-21: Ignored gameplay input while Settings overlay is open to prevent held input carryover.

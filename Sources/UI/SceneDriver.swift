@@ -178,6 +178,9 @@ public final class SceneDriver: ObservableObject {
             diagnosticsVisible.toggle()
             return
         }
+        if showSettings {
+            return
+        }
         guard let action = KeyMapper.action(for: key) else { return }
         recordLastInput(action)
         switch action {
@@ -196,6 +199,9 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyUp(_ key: String) {
+        if showSettings {
+            return
+        }
         guard let action = KeyMapper.action(for: key) else { return }
         switch action {
         case .moveLeft:
@@ -216,6 +222,9 @@ public final class SceneDriver: ObservableObject {
     }
 
     private func handleGamepadAction(_ action: GameAction) {
+        if showSettings {
+            return
+        }
         if !started, action == .pause || action == .restart {
             started = true
             loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
@@ -226,16 +235,25 @@ public final class SceneDriver: ObservableObject {
     }
 
     private func setGamepadLeftHeld(_ held: Bool) {
+        if showSettings {
+            return
+        }
         if held { recordLastInput(.moveLeft) }
         input.setLeftHeld(held, state: &loop.state)
     }
 
     private func setGamepadRightHeld(_ held: Bool) {
+        if showSettings {
+            return
+        }
         if held { recordLastInput(.moveRight) }
         input.setRightHeld(held, state: &loop.state)
     }
 
     private func setGamepadDownHeld(_ held: Bool) {
+        if showSettings {
+            return
+        }
         if held { recordLastInput(.softDrop) }
         input.setDownHeld(held, state: &loop.state)
     }
