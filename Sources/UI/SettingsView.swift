@@ -43,8 +43,10 @@ public struct SettingsView: View {
             }
             HStack(spacing: LayoutConstants.settingsSpacing) {
                 Button("Reset") { settings.reset() }
+                    .accessibilityLabel(SettingsAccessibility.resetLabel)
                 Button("Close") { onClose() }
                     .keyboardShortcut("s")
+                    .accessibilityLabel(SettingsAccessibility.closeLabel)
             }
         }
         .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
