@@ -16,4 +16,9 @@ final class OverlayStateTests: XCTestCase {
         let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: false, isSettings: true)
         XCTAssertEqual(overlay.title, "Settings")
     }
+
+    func testOverlayShowsStartHintOnTitle() {
+        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
+        XCTAssertEqual(overlay.message, "Press Space or Enter to start")
+    }
 }

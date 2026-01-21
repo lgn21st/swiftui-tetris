@@ -13,9 +13,16 @@ public struct OverlayView: View {
         } else {
             ZStack {
                 Color.black.opacity(0.5)
-                Text(state.title)
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(.white)
+                VStack(spacing: 8) {
+                    Text(state.title)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                    if !state.message.isEmpty {
+                        Text(state.message)
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.85))
+                    }
+                }
             }
             .ignoresSafeArea()
         }

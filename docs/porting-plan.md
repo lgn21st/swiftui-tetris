@@ -62,6 +62,7 @@
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
 - 2026-01-21: Added focus-loss auto-pause with UI integration tests.
 - 2026-01-21: Added space-to-start, lock bar warning pulse, and landing flash fade.
+- 2026-01-21: Added title overlay start hint (“Press Space or Enter to start”).
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

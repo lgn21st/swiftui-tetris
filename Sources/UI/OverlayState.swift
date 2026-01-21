@@ -11,4 +11,9 @@ public struct OverlayState: Equatable {
         if isTitle { return "Title" }
         return ""
     }
+
+    public var message: String {
+        if isTitle { return "Press Space or Enter to start" }
+        return ""
+    }
 }

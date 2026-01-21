@@ -23,3 +23,4 @@
 - 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
 - 2026-01-21: Focus-loss auto-pause with UI integration tests.
 - 2026-01-21: Space-to-start, lock bar warning pulse, and landing flash fade.
+- 2026-01-21: Title overlay start hint (“Press Space or Enter to start”).
