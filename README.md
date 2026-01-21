@@ -42,9 +42,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/cli-packaging.md`: CLI packaging instructions.
 
 ## Near-term Plan
-- Complete M5 parity checklist and verify gpui timing/feel.
-- Perform UI polish pass (layout, typography, colors).
-- Run CLI packaging smoke test and document any gaps.
+See `docs/porting-plan.md` for the current milestone plan and next steps.
 
 ## Progress
 See `docs/progress.md` for the consolidated progress log.

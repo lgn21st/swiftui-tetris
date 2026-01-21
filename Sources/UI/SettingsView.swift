@@ -37,10 +37,11 @@ public struct SettingsView: View {
             }
             Button("Reset") { settings.reset() }
         }
+        .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
         .padding(12)
         .background(.black.opacity(ThemeConstants.panelOpacity))
         .foregroundColor(.white)
-        .cornerRadius(8)
-        .frame(maxWidth: 260)
+        .cornerRadius(LayoutConstants.panelCornerRadius)
+        .frame(maxWidth: LayoutConstants.settingsMaxWidth)
     }
 }

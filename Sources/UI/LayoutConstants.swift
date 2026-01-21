@@ -13,4 +13,6 @@ public enum LayoutConstants {
     public static let overlaySpacing: CGFloat = 8
     public static let settingsSpacing: CGFloat = 8
     public static let hudSpacing: CGFloat = 6
+    public static let settingsMaxWidth: CGFloat = 260
+    public static let panelCornerRadius: CGFloat = 8
 }
