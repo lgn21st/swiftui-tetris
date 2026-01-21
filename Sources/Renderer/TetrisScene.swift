@@ -30,7 +30,10 @@ public final class TetrisScene: SKScene {
         for cell in composed {
             guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
             let node = cellNodes[cell.y][cell.x]
-            if cell.kind == nil && !cell.isGhost && !cell.isActive {
+            if cell.isFlash {
+                node.fillColor = PiecePalette.flashColor
+                node.strokeColor = PiecePalette.flashColor
+            } else if cell.kind == nil && !cell.isGhost && !cell.isActive {
                 node.fillColor = .clear
                 node.strokeColor = .clear
             } else {

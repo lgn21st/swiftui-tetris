@@ -6,6 +6,7 @@ public struct CellRender: Equatable {
     public var kind: TetrominoType?
     public var isGhost: Bool
     public var isActive: Bool
+    public var isFlash: Bool
 }
 
 public enum RenderComposer {
@@ -14,15 +15,19 @@ public enum RenderComposer {
         for y in 0..<state.board.count {
             for x in 0..<state.board[y].count {
                 let kind = state.board[y][x]
-                cells.append(CellRender(x: x, y: y, kind: kind, isGhost: false, isActive: false))
+                cells.append(CellRender(x: x, y: y, kind: kind, isGhost: false, isActive: false, isFlash: false))
             }
         }
 
         let ghostSet = Set(state.ghostBlocks.map { "\($0.0),\($0.1)" })
         let activeSet = Set(state.activeBlocks.map { "\($0.0),\($0.1)" })
+        let flashSet = Set(state.flashBlocks.map { "\($0.0),\($0.1)" })
 
         for index in cells.indices {
             let key = "\(cells[index].x),\(cells[index].y)"
+            if flashSet.contains(key) {
+                cells[index].isFlash = true
+            }
             if activeSet.contains(key) {
                 cells[index].isActive = true
                 if cells[index].kind == nil {

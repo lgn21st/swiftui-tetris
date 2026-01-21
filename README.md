@@ -64,3 +64,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - HUD/overlay views and AVAudioPlayer-based audio playback.
 - Assets scaffolding, settings UI, and expanded HUD details.
 - Asset locator and audio resolution for CLI runs.
+- Landing flash rendering with Core + Renderer tests.

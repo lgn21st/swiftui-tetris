@@ -17,6 +17,7 @@ public struct GameState {
     public var lockTimerMs: Int
     public var lineClearTimerMs: Int
     public var landingFlashTimerMs: Int
+    public var landingFlashBlocks: [(Int, Int)]
     public var softDropActive: Bool
     public var softDropTimeoutMs: Int
     public var lockResetCount: Int
@@ -48,6 +49,7 @@ public struct GameState {
         self.lockTimerMs = 0
         self.lineClearTimerMs = 0
         self.landingFlashTimerMs = 0
+        self.landingFlashBlocks = []
         self.softDropActive = false
         self.softDropTimeoutMs = 0
         self.lockResetCount = 0
@@ -315,6 +317,9 @@ public struct GameState {
 
     private mutating func setLandingFlash() {
         landingFlashTimerMs = 120
+        landingFlashBlocks = active.blocks(rotation: active.rotation).map { (dx, dy) in
+            (active.x + dx, active.y + dy)
+        }
     }
 
     private mutating func spawnPiece(kind: TetrominoType) -> Tetromino {

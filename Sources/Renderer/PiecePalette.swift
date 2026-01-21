@@ -2,6 +2,8 @@ import Core
 import SpriteKit
 
 public enum PiecePalette {
+    public static let flashColor = SKColor(white: 1.0, alpha: 0.85)
+
     public static func color(for kind: TetrominoType?, ghost: Bool) -> SKColor {
         guard let kind else {
             return SKColor.clear

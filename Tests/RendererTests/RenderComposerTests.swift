@@ -10,7 +10,8 @@ final class RenderComposerTests: XCTestCase {
             activeBlocks: [(1, 1)],
             ghostBlocks: [(1, 1)],
             activeKind: .t,
-            ghostKind: .t
+            ghostKind: .t,
+            flashBlocks: []
         )
         let cells = RenderComposer.compose(from: state)
         let cell = cells.first { $0.x == 1 && $0.y == 1 }
@@ -26,11 +27,28 @@ final class RenderComposerTests: XCTestCase {
             activeBlocks: [],
             ghostBlocks: [(2, 2)],
             activeKind: nil,
-            ghostKind: .i
+            ghostKind: .i,
+            flashBlocks: []
         )
         let cells = RenderComposer.compose(from: state)
         let cell = cells.first { $0.x == 2 && $0.y == 2 }
         XCTAssertEqual(cell?.isGhost, true)
         XCTAssertEqual(cell?.kind, .i)
+    }
+
+    func testFlashMarksCells() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [],
+            ghostBlocks: [],
+            activeKind: nil,
+            ghostKind: nil,
+            flashBlocks: [(0, 0)]
+        )
+        let cells = RenderComposer.compose(from: state)
+        let cell = cells.first { $0.x == 0 && $0.y == 0 }
+        XCTAssertEqual(cell?.isFlash, true)
+        XCTAssertEqual(cell?.kind, nil)
     }
 }

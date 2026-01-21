@@ -58,6 +58,7 @@
 - 2026-01-21: Added HUD/overlay views and AVAudioPlayer-based audio playback.
 - 2026-01-21: Added assets scaffolding, settings UI, and expanded HUD details.
 - 2026-01-21: Added asset locator and audio resolution for CLI runs.
+- 2026-01-21: Added landing flash rendering with Core + Renderer tests.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**
