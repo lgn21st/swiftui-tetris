@@ -23,7 +23,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: GameState tick/lock/ghost logic added with tests.
+- Last update: SRS kicks, scoring, and renderer mapping tests added.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

@@ -36,3 +36,6 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Placement/collision tests for rotations.
 - GameState tick order, lock delay, soft drop grace with tests.
 - Ghost projection with tests.
+- SRS kick tables and rotation tests.
+- Classic scoring and level progression with tests.
+- Renderer mapping state and tests.

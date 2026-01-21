@@ -45,6 +45,9 @@
 - 2026-01-21: Added placement/collision tests for rotations.
 - 2026-01-21: Added GameState tick order, lock delay, soft drop grace tests and implementation.
 - 2026-01-21: Added ghost projection tests and implementation.
+- 2026-01-21: Added SRS kick tables and rotation tests.
+- 2026-01-21: Added classic scoring and level progression with tests.
+- 2026-01-21: Added renderer mapping state and tests.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

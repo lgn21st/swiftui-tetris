@@ -1,8 +1,11 @@
-public struct GameState: Equatable {
+public struct GameState {
     public var board: Board
     public var active: Tetromino
     public var paused: Bool
     public var gameOver: Bool
+    public var score: Int
+    public var level: Int
+    public var lines: Int
 
     public var dropTimerMs: Int
     public var lockTimerMs: Int
@@ -21,6 +24,9 @@ public struct GameState: Equatable {
         self.active = Tetromino(kind: .i, x: spawn.x, y: spawn.y)
         self.paused = false
         self.gameOver = false
+        self.score = 0
+        self.level = 0
+        self.lines = 0
         self.dropTimerMs = 0
         self.lockTimerMs = 0
         self.lineClearTimerMs = 0
@@ -119,6 +125,25 @@ public struct GameState: Equatable {
         ghostCache
     }
 
+    @discardableResult
+    public mutating func rotate(clockwise: Bool) -> Bool {
+        let nextRotation = clockwise ? active.rotation.cw() : active.rotation.ccw()
+        let kicks = srsKicks(kind: active.kind, from: active.rotation, to: nextRotation)
+        for (dx, dy) in kicks {
+            let nx = active.x + dx
+            let ny = active.y + dy
+            if board.canPlace(piece: active, x: nx, y: ny, rotation: nextRotation) {
+                active.x = nx
+                active.y = ny
+                active.rotation = nextRotation
+                updateGhostCache()
+                handleLockReset()
+                return true
+            }
+        }
+        return false
+    }
+
     private mutating func handleLockReset() {
         guard !canMoveDown() else {
             lockTimerMs = 0
@@ -131,13 +156,21 @@ public struct GameState: Equatable {
         }
     }
 
+    public mutating func applyLineClear(cleared: Int) {
+        if cleared > 0 {
+            let points = Scoring.classicScore(linesCleared: cleared, level: level)
+            score += points
+            lines += cleared
+            level = lines / 10
+            lineClearTimerMs = 180
+        }
+    }
+
     private mutating func lockActivePiece() {
         setLandingFlash()
         board.lock(piece: active)
         let cleared = board.clearLines()
-        if cleared > 0 {
-            lineClearTimerMs = 180
-        }
+        applyLineClear(cleared: cleared)
         let spawn = spawnPosition()
         active = Tetromino(kind: .i, x: spawn.x, y: spawn.y)
         updateGhostCache()

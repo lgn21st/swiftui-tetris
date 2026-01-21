@@ -15,6 +15,7 @@ let package = Package(
         .target(name: "Renderer", dependencies: ["Core"], path: "Sources/Renderer"),
         .target(name: "UI", dependencies: ["Core", "Renderer"], path: "Sources/UI"),
         .executableTarget(name: "App", dependencies: ["UI"], path: "Sources/App"),
-        .testTarget(name: "CoreTests", dependencies: ["Core"], path: "Tests/CoreTests")
+        .testTarget(name: "CoreTests", dependencies: ["Core"], path: "Tests/CoreTests"),
+        .testTarget(name: "RendererTests", dependencies: ["Renderer", "Core"], path: "Tests/RendererTests")
     ]
 )
