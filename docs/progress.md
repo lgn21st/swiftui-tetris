@@ -47,3 +47,4 @@
 - 2026-01-21: Added panel shadow constants for Settings and side panel.
 - 2026-01-21: Added settings overlay enter animation constants.
 - 2026-01-21: Mapped arrow key keyCodes to movement actions for CLI runs.
+- 2026-01-21: Centralized HUD view padding/corner radius/background opacity.

@@ -9,5 +9,6 @@ final class ThemeConstantsTests: XCTestCase {
         XCTAssertEqual(ThemeConstants.overlayOpacity, 0.55)
         XCTAssertEqual(ThemeConstants.dividerOpacity, 0.3)
         XCTAssertEqual(ThemeConstants.panelShadowOpacity, 0.35)
+        XCTAssertEqual(ThemeConstants.hudBackgroundOpacity, 0.4)
     }
 }

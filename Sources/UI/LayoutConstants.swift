@@ -18,4 +18,6 @@ public enum LayoutConstants {
     public static let panelShadowRadius: CGFloat = 10
     public static let settingsEnterScale: CGFloat = 0.96
     public static let settingsAnimationDuration: Double = 0.18
+    public static let hudPadding: CGFloat = 8
+    public static let hudCornerRadius: CGFloat = 6
 }

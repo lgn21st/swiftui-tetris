@@ -39,10 +39,10 @@ public struct HUDView: View {
                 .foregroundColor(.white.opacity(0.85))
         }
         .font(.system(size: TypographyConstants.hudFontSize, weight: .medium, design: .monospaced))
-        .padding(8)
-        .background(.black.opacity(0.4))
+        .padding(LayoutConstants.hudPadding)
+        .background(.black.opacity(ThemeConstants.hudBackgroundOpacity))
         .foregroundColor(.white)
-        .cornerRadius(6)
+        .cornerRadius(LayoutConstants.hudCornerRadius)
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
