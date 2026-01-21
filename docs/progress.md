@@ -74,3 +74,5 @@
 - 2026-01-21: Key capture now reclaims first responder on window focus changes.
 - 2026-01-21: InputEngine reset clears held repeats on app deactivation to avoid stuck movement.
 - 2026-01-21: Added non-character key mappings (Esc/Tab/keypad +/-) and Esc pause handling.
+- 2026-01-21: Documented runtime differences checklist for CLI vs packaged builds.
+- 2026-01-21: Added gamepad compatibility notes and release checklist item.

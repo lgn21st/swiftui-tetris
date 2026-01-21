@@ -14,6 +14,7 @@ Use this checklist before cutting a release build.
 - Fullscreen: Cmd+Ctrl+F toggles correctly.
 - Window size: fixed to content size (no resize persistence).
 - Gamepad: dpad move/drop, A/B rotate, X hard drop, Y hold, menu pause, options restart.
+- Gamepad labels: verify Xbox vs Nintendo labeling (see `docs/gamepad-compat.md`).
 
 ## Package + QA
 - Package with assets:
@@ -30,6 +31,7 @@ Use this checklist before cutting a release build.
   ```
 - Open `dist/SwiftUITeris.app` and re-run QA checks for audio, input, fullscreen.
 - Verify icon in Finder (may require `touch` + `killall Finder`).
+- Confirm CLI vs packaged parity (see `docs/runtime-differences.md`).
 
 ## Notes
 - Use unique `--bundle-id` and increment `--version`/`--build` for real releases.

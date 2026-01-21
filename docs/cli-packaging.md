@@ -45,4 +45,5 @@ swift run Packager \
 - If `--assets-path` is provided, its contents are copied to `Contents/Resources/assets/`.
 - If `dist/SwiftUITeris.app` already exists, delete it before re-running (or add a versioned output path).
 - Audio assets are expected under `assets/sfx/` (see `assets/README.md`).
+- See `docs/runtime-differences.md` for runtime parity checks between CLI and packaged builds.
 - Packaging verified on 2026-01-21 with a release build + Packager run.

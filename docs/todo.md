@@ -4,11 +4,9 @@ Track areas where we intentionally used a basic implementation and plan to revis
 
 ## Input / Window / Focus
 - Validate key repeat behavior in edge cases (held keys across focus changes).
-- Confirm gamepad Y button behavior across common controllers.
 
 ## Audio / Assets / Packaging
 - Verify icon/entitlements flow for signed builds.
-- Document any differences between `swift run App` and packaged app behavior.
 
 ## UI / UX
 - Confirm overlay layering + interaction order across states (Title, Pause, Settings, Game Over).
