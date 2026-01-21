@@ -70,3 +70,5 @@
 - 2026-01-21: Added gpui panel labels (last input, grounded, lock resets, SFX) and reordered HUD stats to match gpui.
 - 2026-01-21: Ruleset label now matches gpui ("Rules: Classic/Modern").
 - 2026-01-21: Wired InputEngine repeats into SceneDriver tick (DAS/ARR active during gameplay).
+- 2026-01-21: Removed unused HUDView to reduce dead UI code.
+- 2026-01-21: Key capture now reclaims first responder on window focus changes.

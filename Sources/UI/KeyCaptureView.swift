@@ -38,9 +38,19 @@ public final class KeyCaptureNSView: NSView {
     var onKeyDown: ((String) -> Void)?
     var onKeyUp: ((String) -> Void)?
     var onToggleFullScreen: (() -> Void)?
+    private var observers: [NSObjectProtocol] = []
 
     public override var acceptsFirstResponder: Bool {
         true
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        registerForWindowNotifications()
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.window?.makeFirstResponder(self)
+        }
     }
 
     public override func keyDown(with event: NSEvent) {
@@ -62,5 +72,33 @@ public final class KeyCaptureNSView: NSView {
         } else if let chars = event.charactersIgnoringModifiers {
             onKeyUp?(chars)
         }
+    }
+
+    private func registerForWindowNotifications() {
+        removeObservers()
+        guard let window else { return }
+        let center = NotificationCenter.default
+        observers = [
+            center.addObserver(
+                forName: NSWindow.didBecomeKeyNotification,
+                object: window,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self else { return }
+                window.makeFirstResponder(self)
+            }
+        ]
+    }
+
+    private func removeObservers() {
+        let center = NotificationCenter.default
+        for observer in observers {
+            center.removeObserver(observer)
+        }
+        observers = []
+    }
+
+    deinit {
+        removeObservers()
     }
 }

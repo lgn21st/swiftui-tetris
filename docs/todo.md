@@ -15,7 +15,6 @@ Track areas where we intentionally used a basic implementation and plan to revis
 ## UI / UX
 - Confirm overlay layering + interaction order across states (Title, Pause, Settings, Game Over).
 - Evaluate Settings overlay animation and accessibility (reduced motion, keyboard focus).
-- Decide whether to keep `HUDView` (currently unused) or remove/replace.
 
 ## Diagnostics / Tooling
 - Validate diagnostics overlay usefulness and key toggles during gameplay.
