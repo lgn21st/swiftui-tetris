@@ -57,7 +57,7 @@ public final class TetrisScene: SKScene {
         if steps > 0 {
             onFixedStep?(steps)
         }
-        if let renderState = onRender?(), shouldRender(state: renderState) {
+        if let renderState = onRender?(), shouldRender(state: renderState), Self.canRender(view: view) {
             render(state: renderState)
         }
     }
@@ -120,12 +120,6 @@ public final class TetrisScene: SKScene {
         }
         guard let kind = cell.kind else {
             clear(node: node)
-            return
-        }
-        if cell.isTrail {
-            node.isHidden = false
-            node.alpha = 1
-            node.texture = textureCache.texture(for: .piece(kind: kind, ghost: false, style: .trail))
             return
         }
         node.isHidden = false
@@ -288,5 +282,14 @@ public final class TetrisScene: SKScene {
     private func shouldRender(state: RenderState) -> Bool {
         if state.isGameOver { return true }
         return !state.isPaused
+    }
+
+    static func canRender(view: SKView?) -> Bool {
+        guard let view else { return false }
+        if view.isHidden { return false }
+        if view.window == nil { return false }
+        let boundsSize = view.bounds.size
+        if boundsSize.width <= 0 || boundsSize.height <= 0 { return false }
+        return true
     }
 }

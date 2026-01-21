@@ -138,3 +138,4 @@
 - 2026-01-22: Re-enabled ghost rendering with hide-on-lock/ground/line-clear rules to avoid visual overlap.
 - 2026-01-22: Restored ghost timing to hide only on ground/lock/line-clear without early or spawn-row suppression.
 - 2026-01-22: Suppressed ghost until the active piece has moved since spawn to avoid lock/board flicker.
+- 2026-01-22: Skipped render calls until the SKView is attached and sized to avoid drawable warnings.

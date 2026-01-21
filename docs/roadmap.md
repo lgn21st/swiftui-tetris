@@ -39,7 +39,6 @@
 - Audio: per-event gain defaults; AVAudioEngine buffers for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
 - SwiftUI menu commands: minimal restart/pause actions wired.
-- Soft drop trail + active piece highlight for board polish.
 - Lock bar warning pulse in HUD.
 - Board gridlines and section header typography in HUD.
 - Active piece pulse tied to gravity interval.

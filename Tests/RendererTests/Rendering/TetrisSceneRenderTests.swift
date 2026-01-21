@@ -1,4 +1,6 @@
 import XCTest
+import AppKit
+import SpriteKit
 @testable import Renderer
 @testable import Core
 
@@ -66,6 +68,25 @@ final class TetrisSceneRenderTests: XCTestCase {
         }
     }
 
+    func testCanRenderReturnsFalseForNilView() {
+        XCTAssertFalse(TetrisScene.canRender(view: nil))
+    }
+
+    func testCanRenderRequiresWindowAndSize() {
+        let view = SKView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+        XCTAssertFalse(TetrisScene.canRender(view: view))
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = view
+        XCTAssertTrue(TetrisScene.canRender(view: view))
+        view.frame = .zero
+        XCTAssertFalse(TetrisScene.canRender(view: view))
+    }
+
     private static func emptyRenderState(isPaused: Bool = false, isGameOver: Bool = false) -> RenderState {
         let row = Array<TetrominoType?>(repeating: nil, count: Board.width)
         let board = Array(repeating: row, count: Board.height)
@@ -75,8 +96,6 @@ final class TetrisSceneRenderTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],
@@ -103,8 +122,6 @@ final class TetrisSceneRenderTests: XCTestCase {
             ghostBlocks: [],
             activeKind: activeKind,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],

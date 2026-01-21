@@ -11,8 +11,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [(1, 1)],
             activeKind: .t,
             ghostKind: .t,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],
@@ -42,8 +40,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [(2, 2)],
             activeKind: nil,
             ghostKind: .i,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],
@@ -72,8 +68,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [(0, 0)],
             flashAlpha: 1,
             lineClearRows: [],
@@ -102,8 +96,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [],
             activeKind: .l,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],
@@ -130,8 +122,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [5],
@@ -161,8 +151,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
-            softDropTrailBlocks: [],
-            softDropTrailKind: nil,
             flashBlocks: [(0, 0), (3, 2)],
             flashAlpha: 1,
             lineClearRows: [],
@@ -189,8 +177,6 @@ final class RenderBufferTests: XCTestCase {
             ghostBlocks: [],
             activeKind: nil,
             ghostKind: nil,
-            softDropTrailBlocks: [(1, 2)],
-            softDropTrailKind: .t,
             flashBlocks: [],
             flashAlpha: 0,
             lineClearRows: [],
@@ -206,7 +192,6 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 2 }
-        XCTAssertEqual(cell?.isTrail, false)
         XCTAssertNil(cell?.kind)
     }
 }

@@ -6,8 +6,6 @@ public struct RenderState {
     public var ghostBlocks: [(Int, Int)]
     public var activeKind: TetrominoType?
     public var ghostKind: TetrominoType?
-    public var softDropTrailBlocks: [(Int, Int)]
-    public var softDropTrailKind: TetrominoType?
     public var flashBlocks: [(Int, Int)]
     public var flashAlpha: Double
     public var lineClearRows: [Int]
@@ -26,8 +24,6 @@ public struct RenderState {
         ghostBlocks: [(Int, Int)],
         activeKind: TetrominoType?,
         ghostKind: TetrominoType?,
-        softDropTrailBlocks: [(Int, Int)],
-        softDropTrailKind: TetrominoType?,
         flashBlocks: [(Int, Int)],
         flashAlpha: Double,
         lineClearRows: [Int],
@@ -45,8 +41,6 @@ public struct RenderState {
         self.ghostBlocks = ghostBlocks
         self.activeKind = activeKind
         self.ghostKind = ghostKind
-        self.softDropTrailBlocks = softDropTrailBlocks
-        self.softDropTrailKind = softDropTrailKind
         self.flashBlocks = flashBlocks
         self.flashAlpha = flashAlpha
         self.lineClearRows = lineClearRows
@@ -117,15 +111,12 @@ public enum RenderMapper {
             lineClearAlpha: lineClearAlpha,
             lineClearScore: snapshot.lineClearScore
         )
-        let trailBlocks: [(Int, Int)] = []
         return RenderState(
             board: board,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
             activeKind: hideActive ? nil : snapshot.active.kind,
             ghostKind: hideGhost ? nil : snapshot.active.kind,
-            softDropTrailBlocks: trailBlocks,
-            softDropTrailKind: trailBlocks.isEmpty ? nil : snapshot.active.kind,
             flashBlocks: flashBlocks,
             flashAlpha: flashAlpha,
             lineClearRows: lineClearRows,

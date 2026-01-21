@@ -92,16 +92,6 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertTrue(renderState.isGameOver)
     }
 
-    func testRenderMappingOmitsSoftDropTrailEvenWhenActive() {
-        var state = GameState(config: GameConfig(), seed: 1)
-        state.active = Tetromino(kind: .t, x: 3, y: 0)
-        state.updateGhostCache()
-        state.softDropActive = true
-        let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.softDropTrailBlocks.isEmpty)
-        XCTAssertNil(renderState.softDropTrailKind)
-    }
-
     func testRenderMappingComputesActivePulse() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.dropTimerMs = 0

@@ -6,7 +6,6 @@ public final class TextureCache {
     public enum PieceStyle: Hashable {
         case normal
         case highlight
-        case trail
         case ghost
         case flashOutline
         case flashBorder
@@ -57,8 +56,6 @@ public final class TextureCache {
         let rect = NSRect(origin: .zero, size: size)
         let baseColor: SKColor
         switch style {
-        case .trail:
-            baseColor = color.withAlphaComponent(0.35)
         case .highlight, .normal, .ghost, .flashBorder:
             baseColor = color
         case .flashOutline:
@@ -87,13 +84,6 @@ public final class TextureCache {
             let glossColor = strokeColor.withAlphaComponent(0.5)
             glossColor.setFill()
             NSBezierPath(rect: glossRect).fill()
-        case .trail:
-            let outline = rect.insetBy(dx: 0.75, dy: 0.75)
-            let strokeColor = color.blended(withFraction: 0.55, of: .white) ?? color
-            strokeColor.withAlphaComponent(0.6).setStroke()
-            let path = NSBezierPath(rect: outline)
-            path.lineWidth = 1
-            path.stroke()
         case .ghost:
             let outline = rect.insetBy(dx: 0.5, dy: 0.5)
             let strokeColor = color

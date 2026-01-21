@@ -7,6 +7,5 @@ public struct CellRender: Equatable {
     public var isGhost: Bool
     public var isActive: Bool
     public var isFlash: Bool
-    public var isTrail: Bool
     public var isLineClear: Bool
 }

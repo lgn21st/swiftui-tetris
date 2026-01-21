@@ -23,7 +23,6 @@ public final class RenderBuffer {
                     isGhost: false,
                     isActive: false,
                     isFlash: false,
-                    isTrail: false,
                     isLineClear: false
                 ))
             }
@@ -46,7 +45,6 @@ public final class RenderBuffer {
                 cells[index].isGhost = false
                 cells[index].isActive = false
                 cells[index].isFlash = false
-                cells[index].isTrail = false
                 cells[index].isLineClear = false
             }
         }
