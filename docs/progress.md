@@ -76,3 +76,5 @@
 - 2026-01-21: Added non-character key mappings (Esc/Tab/keypad +/-) and Esc pause handling.
 - 2026-01-21: Documented runtime differences checklist for CLI vs packaged builds.
 - 2026-01-21: Added gamepad compatibility notes and release checklist item.
+- 2026-01-21: Added tests to ensure held input clears on focus loss and pause.
+- 2026-01-21: Added focus-loss repeat test to cover held key edge cases.

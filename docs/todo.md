@@ -3,7 +3,7 @@
 Track areas where we intentionally used a basic implementation and plan to revisit after high-priority work.
 
 ## Input / Window / Focus
-- Validate key repeat behavior in edge cases (held keys across focus changes).
+None.
 
 ## Audio / Assets / Packaging
 - Verify icon/entitlements flow for signed builds.

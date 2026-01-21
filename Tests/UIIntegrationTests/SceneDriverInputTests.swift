@@ -56,4 +56,17 @@ final class SceneDriverInputTests: XCTestCase {
 
         XCTAssertEqual(loop.state.active.x, startX - 1)
     }
+
+    func testFocusLossClearsHeldMovementInput() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        let startX = loop.state.active.x
+
+        driver.handleKeyDown("left")
+        driver.handleAppActiveChanged(isActive: false)
+        loop.state.paused = false
+        driver.tick(elapsedMs: 200)
+
+        XCTAssertEqual(loop.state.active.x, startX - 1)
+    }
 }
