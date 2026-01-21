@@ -27,7 +27,11 @@ final class SettingsPersistenceTests: XCTestCase {
         var settings = SettingsState()
         settings.volume = 0.5
         settings.muted = true
+        settings.setInputDas(120)
+        settings.setInputArr(40)
+        settings.setSoftDropArr(30)
         settings.setGain(0.9, for: .hardDrop)
+        settings.setSfxEnabled(false, for: .softDrop)
         store.save(settings)
         let loaded = store.load()
         XCTAssertEqual(loaded, settings)

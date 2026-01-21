@@ -93,6 +93,15 @@ public final class InputEngine {
         }
     }
 
+    public func updateConfig(repeatConfig: RepeatConfig, softDropRepeatConfig: RepeatConfig) {
+        self.repeatConfig = repeatConfig
+        self.softDropRepeatConfig = softDropRepeatConfig
+        leftRepeat.syncHeld(leftHeld)
+        rightRepeat.syncHeld(rightHeld)
+        downRepeat.syncHeld(downHeld)
+        lastDir = leftHeld ? .left : (rightHeld ? .right : nil)
+    }
+
     public func releaseMovementHolds() {
         leftHeld = false
         rightHeld = false

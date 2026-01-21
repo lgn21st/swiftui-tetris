@@ -8,7 +8,7 @@ public final class SceneDriver: ObservableObject {
     public let scene: TetrisScene
     private let loop: GameLoop
     private let input: InputEngine
-    private let audio: AudioEngine?
+    private let audio: AudioPlaying?
     private var gamepad: GamepadManager?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
@@ -27,7 +27,7 @@ public final class SceneDriver: ObservableObject {
     public init(
         loop: GameLoop = GameLoop(),
         input: InputEngine = InputEngine(),
-        audio: AudioEngine? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
+        audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
         settingsStore: SettingsStoring = UserDefaultsSettingsStore()
     ) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
@@ -47,8 +47,16 @@ public final class SceneDriver: ObservableObject {
         self.lastInputAction = nil
         self.latestRenderState = RenderMapper.map(state: loop.state)
         self.focusHandler = FocusPauseHandler()
+        self.input.updateConfig(
+            repeatConfig: settings.repeatConfig(),
+            softDropRepeatConfig: settings.softDropRepeatConfig()
+        )
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
+            self?.input.updateConfig(
+                repeatConfig: updated.repeatConfig(),
+                softDropRepeatConfig: updated.softDropRepeatConfig()
+            )
         }
         self.gamepad = GamepadManager(
             onLeftHeld: { [weak self] held in
@@ -90,6 +98,9 @@ public final class SceneDriver: ObservableObject {
         let events = loop.state.takeSoundEvents()
         if let audio = audio, !settings.muted {
             for event in events {
+                if !settings.isSfxEnabled(for: event) {
+                    continue
+                }
                 audio.play(
                     event,
                     masterVolume: settings.volume,

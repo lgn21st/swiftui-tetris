@@ -1,6 +1,10 @@
 import Core
 import AVFoundation
 
+public protocol AudioPlaying {
+    func play(_ event: SoundEvent, masterVolume: Double, gainOverride: Double?)
+}
+
 public protocol SoundBuffer {
     var format: AVAudioFormat { get }
     var pcmBuffer: AVAudioPCMBuffer { get }
@@ -101,7 +105,7 @@ private final class AVAudioEngineBackend: AudioEngineBackend {
     }
 }
 
-public final class AudioEngine {
+public final class AudioEngine: AudioPlaying {
     private let baseURL: URL?
     private let maxPlayersPerSound: Int
     private let backend: AudioEngineBackend

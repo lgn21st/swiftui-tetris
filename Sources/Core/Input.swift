@@ -31,6 +31,12 @@ public struct RepeatState {
         repeatsFired = 0
     }
 
+    public mutating func syncHeld(_ newValue: Bool) {
+        held = newValue
+        timeSincePressMs = 0
+        repeatsFired = 0
+    }
+
     public mutating func tick(elapsedMs: Int, config: RepeatConfig) -> Int {
         guard held, config.arrMs != 0 else { return 0 }
         timeSincePressMs += max(elapsedMs, 0)

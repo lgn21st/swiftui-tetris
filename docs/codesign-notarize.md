@@ -7,6 +7,10 @@ Use this checklist to codesign, notarize, and staple the packaged app. These ste
 - Notarytool credentials stored as a keychain profile.
 - A packaged `.app` in `dist/` (see `docs/cli-packaging.md`).
 
+## Preflight
+- Verify the packaged app includes assets and icon metadata before signing.
+- Confirm `dist/SwiftUITeris.app` launches locally.
+
 ## Codesign
 ```sh
 codesign --deep --force --options runtime \

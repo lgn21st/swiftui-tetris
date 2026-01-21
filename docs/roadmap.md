@@ -31,6 +31,7 @@
 - Audio: per-event gain + settings + persistence; AVAudioEngine buffers for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
 - SwiftUI menu commands: start/restart/pause/settings actions wired.
+- Settings: configurable DAS/ARR/soft drop ARR + per-event SFX toggles.
 
 ## Best-Practice Alignment
 - Architecture alignment work is complete; details live in `docs/architecture.md`.

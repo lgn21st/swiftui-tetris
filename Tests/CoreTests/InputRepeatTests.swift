@@ -27,4 +27,13 @@ final class InputRepeatTests: XCTestCase {
         state.release()
         XCTAssertEqual(state.tick(elapsedMs: 200, config: config), 0)
     }
+
+    func testSyncHeldResetsRepeatCounters() {
+        var state = RepeatState()
+        let config = RepeatConfig(dasMs: 0, arrMs: 50)
+        _ = state.press()
+        XCTAssertEqual(state.tick(elapsedMs: 200, config: config), 4)
+        state.syncHeld(true)
+        XCTAssertEqual(state.tick(elapsedMs: 50, config: config), 1)
+    }
 }

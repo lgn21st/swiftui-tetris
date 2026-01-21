@@ -30,4 +30,18 @@ final class SceneDriverSettingsPersistenceTests: XCTestCase {
         driver.settings.muted = true
         XCTAssertEqual(store.saved.last, driver.settings)
     }
+
+    func testSceneDriverAppliesInputSettingsToRepeats() {
+        let store = MemoryStore()
+        store.loaded = SettingsState(inputDasMs: 0, inputArrMs: 10, softDropArrMs: 10)
+        let driver = SceneDriver(settingsStore: store)
+        driver.commandStartGame()
+
+        driver.handleKeyDown("left")
+        let startX = driver.stateSnapshot().active.x
+
+        driver.tick(elapsedMs: 10)
+        let afterTickX = driver.stateSnapshot().active.x
+        XCTAssertEqual(afterTickX, startX - 1)
+    }
 }

@@ -120,3 +120,6 @@
 - 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.
 - 2026-01-21: Reduced documentation redundancy and refreshed architecture/roadmap summaries.
 - 2026-01-21: Tightened CLI packaging and runtime-differences docs for consistency.
+- 2026-01-21: Added input repeat settings (DAS/ARR/soft drop ARR) with persistence and tests.
+- 2026-01-21: Added per-event SFX toggles in Settings; audio playback honors toggles.
+- 2026-01-21: Added preflight notes to codesign/notarize checklist.

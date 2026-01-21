@@ -55,6 +55,7 @@ Legend:
 | Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
+| Input repeat settings | Optional | Configurable DAS/ARR/soft drop ARR in Settings. |
 
 ## UI and Layout
 | Feature | Required | Notes |
@@ -75,6 +76,7 @@ Legend:
 | Events | Optional | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver. |
 | Gains | Optional | Per-event gain mapping. |
 | Master volume | Optional | Default 0.7, step 0.1. |
+| Per-event toggles | Optional | Enable/disable each SFX event. |
 
 ## Diagnostics and Testing
 | Feature | Required | Notes |
