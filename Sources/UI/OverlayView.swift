@@ -12,6 +12,7 @@ public struct OverlayView: View {
     }
 
     static func accessibilityLabel(for state: OverlayState) -> String {
+        if !showsContent(for: state) { return "" }
         let title = state.title
         let message = state.message
         if title.isEmpty { return "" }

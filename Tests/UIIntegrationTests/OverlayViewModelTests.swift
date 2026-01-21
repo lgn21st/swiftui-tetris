@@ -19,4 +19,9 @@ final class OverlayViewModelTests: XCTestCase {
             "Paused. Press P to resume, R to restart"
         )
     }
+
+    func testOverlayAccessibilityLabelEmptyWhenSettingsOpen() {
+        let state = OverlayState(isPaused: false, isGameOver: false, isTitle: false, isSettings: true)
+        XCTAssertEqual(OverlayView.accessibilityLabel(for: state), "")
+    }
 }
