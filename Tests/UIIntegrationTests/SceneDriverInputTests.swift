@@ -44,4 +44,16 @@ final class SceneDriverInputTests: XCTestCase {
         driver.handleKeyDown("escape")
         XCTAssertTrue(loop.state.paused)
     }
+
+    func testPauseClearsHeldMovementInput() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        let startX = loop.state.active.x
+
+        driver.handleKeyDown("left")
+        driver.handleKeyDown("p")
+        driver.tick(elapsedMs: 200)
+
+        XCTAssertEqual(loop.state.active.x, startX - 1)
+    }
 }

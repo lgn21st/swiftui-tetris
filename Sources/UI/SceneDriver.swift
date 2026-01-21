@@ -145,6 +145,7 @@ public final class SceneDriver: ObservableObject {
                 loop.state.paused = false
             } else {
                 recordLastInput(.pause)
+                input.releaseMovementHolds()
                 input.apply(action: .pause, to: &loop.state)
             }
             return
@@ -152,6 +153,9 @@ public final class SceneDriver: ObservableObject {
         if key == "s" {
             showSettings.toggle()
             loop.state.paused = showSettings
+            if showSettings {
+                input.releaseMovementHolds()
+            }
             return
         }
         if key == "m" {
@@ -183,6 +187,9 @@ public final class SceneDriver: ObservableObject {
             input.setRightHeld(true, state: &loop.state)
         case .softDrop:
             input.setDownHeld(true, state: &loop.state)
+        case .pause:
+            input.releaseMovementHolds()
+            input.apply(action: action, to: &loop.state)
         default:
             input.apply(action: action, to: &loop.state)
         }

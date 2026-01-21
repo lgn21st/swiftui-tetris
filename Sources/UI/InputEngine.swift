@@ -93,7 +93,7 @@ public final class InputEngine {
         }
     }
 
-    public func reset() {
+    public func releaseMovementHolds() {
         leftHeld = false
         rightHeld = false
         downHeld = false
@@ -101,6 +101,10 @@ public final class InputEngine {
         rightRepeat.release()
         downRepeat.release()
         lastDir = nil
+    }
+
+    public func reset() {
+        releaseMovementHolds()
     }
 
     private func syncMovement(state: inout GameState) {
