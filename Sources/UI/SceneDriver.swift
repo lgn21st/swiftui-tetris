@@ -22,6 +22,7 @@ public final class SceneDriver: ObservableObject {
     private var diagnosticsTracker: DiagnosticsTracker
     private let settingsStore: SettingsStoring
     private var settingsCancellable: AnyCancellable?
+    private var lastInputAction: GameAction?
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -43,6 +44,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsState = DiagnosticsState.empty
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
+        self.lastInputAction = nil
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
         }
@@ -71,27 +73,39 @@ public final class SceneDriver: ObservableObject {
             let now = Date()
             let elapsed = Int(now.timeIntervalSince(self.lastTick ?? now) * 1000)
             self.lastTick = now
-            let renderState = self.loop.step(elapsedMs: max(elapsed, 0))
-            self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: elapsed)
-            let events = self.loop.state.takeSoundEvents()
-            if let audio = self.audio, !self.settings.muted {
-                for event in events {
-                    audio.play(
-                        event,
-                        masterVolume: self.settings.volume,
-                        gainOverride: self.settings.gainOverride(for: event)
-                    )
-                }
-            }
-            self.hudState = HUDState.from(state: self.loop.state, started: self.started)
-            self.overlayState = OverlayState(
-                isPaused: self.loop.state.paused || self.showSettings,
-                isGameOver: self.loop.state.gameOver,
-                isTitle: !self.started,
-                isSettings: self.showSettings
-            )
-            self.scene.render(state: renderState)
+            self.tick(elapsedMs: elapsed)
         }
+    }
+
+    func tick(elapsedMs: Int) {
+        let elapsed = max(elapsedMs, 0)
+        let canAccept = !loop.state.paused && !loop.state.gameOver
+        input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
+        let renderState = loop.step(elapsedMs: elapsed)
+        diagnosticsState = diagnosticsTracker.recordFrame(elapsedMs: elapsed)
+        let events = loop.state.takeSoundEvents()
+        if let audio = audio, !settings.muted {
+            for event in events {
+                audio.play(
+                    event,
+                    masterVolume: settings.volume,
+                    gainOverride: settings.gainOverride(for: event)
+                )
+            }
+        }
+        hudState = HUDState.from(
+            state: loop.state,
+            started: started,
+            settings: settings,
+            lastInput: lastInputAction
+        )
+        overlayState = OverlayState(
+            isPaused: loop.state.paused || showSettings,
+            isGameOver: loop.state.gameOver,
+            isTitle: !started,
+            isSettings: showSettings
+        )
+        scene.render(state: renderState)
     }
 
     public func stop() {
@@ -150,6 +164,7 @@ public final class SceneDriver: ObservableObject {
             return
         }
         guard let action = KeyMapper.action(for: key) else { return }
+        recordLastInput(action)
         switch action {
         case .moveLeft:
             input.setLeftHeld(true, state: &loop.state)
@@ -188,18 +203,26 @@ public final class SceneDriver: ObservableObject {
             loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
             return
         }
+        recordLastInput(action)
         input.apply(action: action, to: &loop.state)
     }
 
     private func setGamepadLeftHeld(_ held: Bool) {
+        if held { recordLastInput(.moveLeft) }
         input.setLeftHeld(held, state: &loop.state)
     }
 
     private func setGamepadRightHeld(_ held: Bool) {
+        if held { recordLastInput(.moveRight) }
         input.setRightHeld(held, state: &loop.state)
     }
 
     private func setGamepadDownHeld(_ held: Bool) {
+        if held { recordLastInput(.softDrop) }
         input.setDownHeld(held, state: &loop.state)
+    }
+
+    private func recordLastInput(_ action: GameAction) {
+        lastInputAction = action
     }
 }

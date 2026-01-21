@@ -12,6 +12,7 @@ final class HUDDetailTests: XCTestCase {
         let hud = HUDState.from(state: state)
         XCTAssertEqual(hud.comboText, "Combo: 2")
         XCTAssertEqual(hud.b2bText, "B2B: Yes")
+        XCTAssertFalse(hud.isClassicRuleset)
     }
 
     func testHudLockBarRatio() {
@@ -20,5 +21,6 @@ final class HUDDetailTests: XCTestCase {
         state.config.lockDelayMs = 450
         let hud = HUDState.from(state: state)
         XCTAssertEqual(hud.lockBarRatio, 0.5, accuracy: 0.001)
+        XCTAssertTrue(hud.isClassicRuleset)
     }
 }

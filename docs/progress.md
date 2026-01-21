@@ -67,3 +67,6 @@
 - 2026-01-21: Enabled resizable window with centered content group and reset-to-default window sizing on launch.
 - 2026-01-21: Centered content group vertically within the window while keeping scale centered.
 - 2026-01-21: Applied gpui-matched board background color inside SpriteKit rendering.
+- 2026-01-21: Added gpui panel labels (last input, grounded, lock resets, SFX) and reordered HUD stats to match gpui.
+- 2026-01-21: Ruleset label now matches gpui ("Rules: Classic/Modern").
+- 2026-01-21: Wired InputEngine repeats into SceneDriver tick (DAS/ARR active during gameplay).

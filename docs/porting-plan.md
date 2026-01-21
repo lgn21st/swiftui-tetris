@@ -29,6 +29,7 @@
 - SpriteKit board rendering + landing flash: complete with tests.
 - HUD/overlays: side panel with hold/next preview grids implemented.
 - Layout parity: top-leading alignment, padding, and panel sizing matched to gpui.
+- HUD panel labels: last input, grounded, lock resets, and SFX status added.
 - Audio: per-event gain + settings controls + persistence.
 - Window defaults + scaling: implemented; content stays centered on resize.
 

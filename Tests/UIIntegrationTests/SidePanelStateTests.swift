@@ -16,6 +16,6 @@ final class SidePanelStateTests: XCTestCase {
         let state = GameState(config: GameConfig(), seed: 1)
         let hud = HUDState.from(state: state, started: false)
         XCTAssertTrue(hud.statusText.contains("Status"))
-        XCTAssertTrue(hud.rulesetText.contains("Ruleset"))
+        XCTAssertTrue(hud.rulesetText.contains("Rules"))
     }
 }

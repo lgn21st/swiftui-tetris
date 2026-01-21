@@ -43,10 +43,10 @@ final class HUDStateTests: XCTestCase {
 
     func testHudRulesetTextReflectsConfig() {
         let classic = GameState(config: GameConfig(ruleset: .classic), seed: 1)
-        XCTAssertEqual(HUDState.from(state: classic).rulesetText, "Ruleset: Classic")
+        XCTAssertEqual(HUDState.from(state: classic).rulesetText, "Rules: Classic")
 
         let modern = GameState(config: GameConfig(ruleset: .modern), seed: 1)
-        XCTAssertEqual(HUDState.from(state: modern).rulesetText, "Ruleset: Modern")
+        XCTAssertEqual(HUDState.from(state: modern).rulesetText, "Rules: Modern")
     }
 
     func testHudStatusText() {
@@ -64,5 +64,27 @@ final class HUDStateTests: XCTestCase {
     func testHudStatusTextBeforeStart() {
         let state = GameState(config: GameConfig(), seed: 1)
         XCTAssertEqual(HUDState.from(state: state, started: false).statusText, "Status: Ready")
+    }
+
+    func testHudLastInputAndSfxLabels() {
+        let state = GameState(config: GameConfig(), seed: 1)
+        var settings = SettingsState()
+        settings.volume = 0.7
+        let hud = HUDState.from(state: state, settings: settings, lastInput: .rotateCw)
+        XCTAssertEqual(hud.lastInputText, "Last input: Rotate CW")
+        XCTAssertEqual(hud.sfxText, "SFX: 70%")
+
+        settings.muted = true
+        let mutedHud = HUDState.from(state: state, settings: settings, lastInput: nil)
+        XCTAssertEqual(mutedHud.lastInputText, "Last input: None")
+        XCTAssertEqual(mutedHud.sfxText, "SFX: Muted")
+    }
+
+    func testHudGroundedAndLockResetsText() {
+        var state = GameState(config: GameConfig(lockResetLimit: 15), seed: 1)
+        state.lockResetCount = 3
+        let hud = HUDState.from(state: state)
+        XCTAssertEqual(hud.lockResetsText, "Lock resets: 12/15")
+        XCTAssertEqual(hud.groundedText, "Grounded: No")
     }
 }

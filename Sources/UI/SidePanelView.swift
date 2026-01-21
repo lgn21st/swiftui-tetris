@@ -11,21 +11,25 @@ public struct SidePanelView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: LayoutConstants.panelSectionSpacing) {
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                Text(state.lastInputText)
                 Text(state.scoreText)
                 Text(state.levelText)
                 Text(state.linesText)
                 Text(state.statusText)
                 Text(state.rulesetText)
                 Text(state.holdText)
-                if state.comboText.contains("-") == false || state.b2bText.contains("-") == false {
+                Text(state.groundedText)
+                Text(state.lockResetsText)
+                Text(state.sfxText)
+                if !state.isClassicRuleset {
                     VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                         Text(state.comboText)
                         Text(state.b2bText)
                     }
                 }
-                ProgressView(value: state.lockBarRatio)
-                    .tint(state.lockWarningActive ? .red : .green)
             }
+            ProgressView(value: state.lockBarRatio)
+                .tint(state.lockWarningActive ? .red : .green)
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
                     .font(.system(size: TypographyConstants.sidePanelFontSize * 0.95, weight: .medium, design: .monospaced))
