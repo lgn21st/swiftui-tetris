@@ -106,3 +106,4 @@
 - 2026-01-22: Removed window state persistence, simplified key capture, and minimized menu commands.
 - 2026-01-22: Added ghost outline stroke for clearer landing guidance.
 - 2026-01-22: Added line-clear shimmer overlay during the clear pause.
+- 2026-01-22: Added HUD section dividers to improve side panel scanability.

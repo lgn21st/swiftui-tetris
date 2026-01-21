@@ -65,6 +65,7 @@ Legend:
 | Overlay hints | Optional | Title/pause/game over messages. |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
 | HUD details | Optional | Last input, grounded, lock resets. |
+| HUD dividers | Optional | Section dividers for scan-friendly grouping (implemented). |
 | Lock bar | Optional | Visual bar + warning pulse (implemented). |
 | Line-clear shimmer | Optional | Shimmer overlay on cleared rows (implemented). |
 | Soft drop trail | Optional | Trail between active piece and ghost during soft drop. |

@@ -30,13 +30,16 @@ public struct SidePanelView: View {
             let warningOpacity = 0.35 + 0.65 * state.lockWarningPulse
             let warningColor = Color.red.opacity(warningOpacity)
             let normalColor = Color.green.opacity(0.7)
+            PanelDivider()
             ProgressView(value: state.lockBarRatio)
                 .tint(state.lockWarningActive ? warningColor : normalColor)
+            PanelDivider()
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Hold")
                     .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
             }
+            PanelDivider()
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
                 Text("Next")
                     .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
@@ -80,5 +83,21 @@ public struct SidePanelView: View {
             x: 0,
             y: 4
         )
+    }
+}
+
+private struct PanelDivider: View {
+    var body: some View {
+        Rectangle()
+            .fill(
+                Color(
+                    red: ThemeConstants.borderColorRed,
+                    green: ThemeConstants.borderColorGreen,
+                    blue: ThemeConstants.borderColorBlue
+                )
+                .opacity(ThemeConstants.dividerOpacity)
+            )
+            .frame(height: LayoutConstants.panelDividerHeight)
+            .padding(.vertical, LayoutConstants.panelDividerPadding)
     }
 }

@@ -9,7 +9,6 @@ None.
 None.
 
 ## UI / UX
-- HUD dividers and section grouping polish for better scan.
 - First-run onboarding hints (contextual overlays).
 
 ## Diagnostics / Tooling
