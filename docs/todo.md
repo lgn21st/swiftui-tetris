@@ -9,7 +9,11 @@ None.
 None.
 
 ## UI / UX
-None.
+- Line-clear shimmer effect (post-lock visual polish).
+- Ghost outline stroke for sharper landing guidance.
+- HUD dividers and section grouping polish for better scan.
+- Settings tooltips (ARR=0 disables repeat; soft drop grace behavior).
+- First-run onboarding hints (contextual overlays).
 
 ## Diagnostics / Tooling
 None.

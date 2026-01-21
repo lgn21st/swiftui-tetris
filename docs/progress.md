@@ -147,3 +147,4 @@
 - 2026-01-22: Pausing clears soft drop active state and timeout.
 - 2026-01-22: Added active piece pulse tied to gravity interval.
 - 2026-01-22: Added Settings input summary line under input repeat section.
+- 2026-01-22: Added new UI/UX polish items to TODO backlog.
