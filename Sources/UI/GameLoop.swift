@@ -16,4 +16,8 @@ public final class GameLoop {
         state.tick(elapsedMs: elapsedMs, softDrop: softDrop)
         return RenderMapper.map(state: state)
     }
+
+    public func stepFrame(elapsedMs: Int) -> RenderState {
+        step(elapsedMs: elapsedMs)
+    }
 }
