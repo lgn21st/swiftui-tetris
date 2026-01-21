@@ -7,6 +7,7 @@ public final class TetrisScene: SKScene {
     public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = 24
     private var cellNodes: [[SKShapeNode]] = []
+    private var renderBuffer: RenderBuffer
     private var clock: FixedStepClock
     private var frameClock: FrameClock
     public var onFixedStep: ((Int) -> Void)?
@@ -16,6 +17,7 @@ public final class TetrisScene: SKScene {
     public override init(size: CGSize) {
         self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
+        self.renderBuffer = RenderBuffer()
         super.init(size: size)
         commonInit()
     }
@@ -23,6 +25,7 @@ public final class TetrisScene: SKScene {
     public init(size: CGSize, stepMs: Double, maxDeltaMs: Double) {
         self.clock = FixedStepClock(stepMs: stepMs, maxDeltaMs: maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: maxDeltaMs)
+        self.renderBuffer = RenderBuffer()
         super.init(size: size)
         commonInit()
     }
@@ -30,6 +33,7 @@ public final class TetrisScene: SKScene {
     public required init?(coder: NSCoder) {
         self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
+        self.renderBuffer = RenderBuffer()
         super.init(coder: coder)
         commonInit()
     }
@@ -50,8 +54,8 @@ public final class TetrisScene: SKScene {
     }
 
     public func render(state: RenderState) {
-        let composed = RenderComposer.compose(from: state)
-        for cell in composed {
+        renderBuffer.update(from: state)
+        for cell in renderBuffer.cells {
             guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
             let node = cellNodes[cell.y][cell.x]
             if cell.isFlash {

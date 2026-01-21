@@ -6,7 +6,8 @@ macOS native Tetris built with SwiftUI + SpriteKit. The priority is solid rules,
 - SwiftUI for UI/overlays, SpriteKit for board rendering.
 - Keep logic and rendering decoupled; Core must be unit-testable.
 - Enforce strict TDD: every feature, improvement, or refactor must be protected by tests.
- - Embrace SwiftUI + SpriteKit best practices for timing, rendering, and input.
+- Embrace SwiftUI + SpriteKit best practices for timing, rendering, and input.
+- Prefer render pipelines that reuse buffers/nodes to avoid per-frame allocations.
 
 ## Run (CLI-first)
 - Requires macOS + Xcode toolchain (no Xcode UI required).

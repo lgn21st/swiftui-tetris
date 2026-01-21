@@ -32,13 +32,14 @@
 - Window defaults + scaling: implemented; content stays centered on resize.
 
 ## Refactor Track (Best Practices Alignment)
-### R1: Loop Ownership (Planned)
+### R1: Loop Ownership (Done)
 - Move timing from `SceneDriver.Timer` to `TetrisScene.update(_:)`.
 - Introduce fixed timestep accumulator for deterministic ticks.
 
-### R2: Render Pipeline (Planned)
-- Pre-allocate node grids and texture cache.
+### R2: Render Pipeline (In Progress)
+- Pre-allocate node grids and render buffers.
 - Avoid per-frame allocations and node churn.
+- Add texture cache if needed after profiling.
 
 ### R3: Input Router (Planned)
 - Consolidate keyboard/gamepad mapping into a single router.
