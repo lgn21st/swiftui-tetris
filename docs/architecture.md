@@ -59,6 +59,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 5) **UI Polish Pass (In Progress)**
    - Added SwiftUI `Commands` for menu shortcuts (start/restart/pause/settings).
    - Extracted focus pause handling into `FocusPauseHandler`.
+   - Added overlay fade animation and accessibility labels.
    - Confirm Settings focus, overlay transitions, and reduced motion behavior.
 
 ## Testing Strategy

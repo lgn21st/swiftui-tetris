@@ -57,6 +57,7 @@
 ### R5: UI Polish (In Progress)
 - Confirm overlay transitions and accessibility.
 - Add any missing UI integration coverage.
+- Overlay fade animation and accessibility labels are in place.
 
 ## Validation Checklist
 - Movement and rotation: SRS tables verified by tests.
