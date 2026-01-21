@@ -17,11 +17,12 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        buffer.update(from: state)
+        let changed = buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 1 }
         XCTAssertEqual(cell?.isActive, true)
         XCTAssertEqual(cell?.isGhost, false)
         XCTAssertEqual(cell?.kind, .t)
+        XCTAssertEqual(changed, [1 * Board.width + 1])
     }
 
     func testGhostFillsEmptyCell() {
@@ -38,10 +39,11 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        buffer.update(from: state)
+        let changed = buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 2 && $0.y == 2 }
         XCTAssertEqual(cell?.isGhost, true)
         XCTAssertEqual(cell?.kind, .i)
+        XCTAssertEqual(changed, [2 * Board.width + 2])
     }
 
     func testFlashMarksCells() {
@@ -58,9 +60,29 @@ final class RenderBufferTests: XCTestCase {
             isGameOver: false
         )
         let buffer = RenderBuffer()
-        buffer.update(from: state)
+        let changed = buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 0 && $0.y == 0 }
         XCTAssertEqual(cell?.isFlash, true)
         XCTAssertEqual(cell?.kind, nil)
+        XCTAssertEqual(changed, [0])
+    }
+
+    func testUpdateReportsNoChangesWhenStateUnchanged() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [(3, 4)],
+            ghostBlocks: [],
+            activeKind: .l,
+            ghostKind: nil,
+            flashBlocks: [],
+            flashAlpha: 0,
+            isPaused: false,
+            isGameOver: false
+        )
+        let buffer = RenderBuffer()
+        _ = buffer.update(from: state)
+        let changed = buffer.update(from: state)
+        XCTAssertEqual(changed, [])
     }
 }

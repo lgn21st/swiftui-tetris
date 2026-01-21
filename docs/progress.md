@@ -95,3 +95,4 @@
 - 2026-01-21: Diagnostics now use SpriteKit frame delta (frame clock) for FPS/tick reporting.
 - 2026-01-21: Render gating now respects pause/game over state at the scene layer.
 - 2026-01-21: Added render buffer to reuse cell state and avoid per-frame allocations.
+- 2026-01-21: Render buffer now reports changed indices to skip node updates for unchanged cells.

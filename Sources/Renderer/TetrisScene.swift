@@ -8,6 +8,7 @@ public final class TetrisScene: SKScene {
     private let cellSize: CGFloat = 24
     private var cellNodes: [[SKShapeNode]] = []
     private var renderBuffer: RenderBuffer
+    private var lastFlashAlpha: Double?
     private var clock: FixedStepClock
     private var frameClock: FrameClock
     public var onFixedStep: ((Int) -> Void)?
@@ -54,26 +55,42 @@ public final class TetrisScene: SKScene {
     }
 
     public func render(state: RenderState) {
-        renderBuffer.update(from: state)
-        for cell in renderBuffer.cells {
+        let changedIndices = renderBuffer.update(from: state)
+        let shouldUpdateAll = lastFlashAlpha != state.flashAlpha
+        lastFlashAlpha = state.flashAlpha
+        if shouldUpdateAll {
+            for cell in renderBuffer.cells {
+                guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
+                let node = cellNodes[cell.y][cell.x]
+                applyRender(cell: cell, state: state, node: node)
+            }
+            return
+        }
+        for index in changedIndices {
+            guard index >= 0, index < renderBuffer.cells.count else { continue }
+            let cell = renderBuffer.cells[index]
             guard cell.y < cellNodes.count, cell.x < cellNodes[cell.y].count else { continue }
             let node = cellNodes[cell.y][cell.x]
-            if cell.isFlash {
-                if state.flashAlpha <= 0 {
-                    node.fillColor = .clear
-                    node.strokeColor = .clear
-                } else {
-                    let flash = PiecePalette.flashColor.withAlphaComponent(CGFloat(state.flashAlpha))
-                    node.fillColor = flash
-                    node.strokeColor = flash
-                }
-            } else if cell.kind == nil && !cell.isGhost && !cell.isActive {
+            applyRender(cell: cell, state: state, node: node)
+        }
+    }
+
+    private func applyRender(cell: CellRender, state: RenderState, node: SKShapeNode) {
+        if cell.isFlash {
+            if state.flashAlpha <= 0 {
                 node.fillColor = .clear
                 node.strokeColor = .clear
             } else {
-                node.fillColor = PiecePalette.color(for: cell.kind, ghost: cell.isGhost && !cell.isActive)
-                node.strokeColor = node.fillColor
+                let flash = PiecePalette.flashColor.withAlphaComponent(CGFloat(state.flashAlpha))
+                node.fillColor = flash
+                node.strokeColor = flash
             }
+        } else if cell.kind == nil && !cell.isGhost && !cell.isActive {
+            node.fillColor = .clear
+            node.strokeColor = .clear
+        } else {
+            node.fillColor = PiecePalette.color(for: cell.kind, ghost: cell.isGhost && !cell.isActive)
+            node.strokeColor = node.fillColor
         }
     }
 
