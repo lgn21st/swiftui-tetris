@@ -22,6 +22,7 @@ public final class SceneDriver: ObservableObject {
     private var settingsCancellable: AnyCancellable?
     private var lastInputAction: GameAction?
     private var stepsSinceLastRender: Int
+    private var latestRenderState: RenderState
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -45,6 +46,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
         self.stepsSinceLastRender = 0
+        self.latestRenderState = RenderMapper.map(state: loop.state)
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
         }
@@ -66,6 +68,9 @@ public final class SceneDriver: ObservableObject {
             let elapsed = Int(Double(steps) * TetrisScene.fixedStepMs)
             self?.tick(elapsedMs: elapsed, fixedSteps: steps)
         }
+        self.scene.onRender = { [weak self] in
+            self?.latestRenderState
+        }
     }
 
     public func start() {
@@ -78,6 +83,7 @@ public final class SceneDriver: ObservableObject {
         input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
         stepsSinceLastRender += fixedSteps
         let renderState = loop.stepFrame(elapsedMs: elapsed)
+        latestRenderState = renderState
         diagnosticsState = diagnosticsTracker.recordFrame(
             elapsedMs: Int(Double(stepsSinceLastRender) * TetrisScene.fixedStepMs)
         )

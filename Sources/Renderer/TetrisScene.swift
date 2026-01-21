@@ -9,6 +9,7 @@ public final class TetrisScene: SKScene {
     private var cellNodes: [[SKShapeNode]] = []
     private var clock: FixedStepClock
     public var onFixedStep: ((Int) -> Void)?
+    public var onRender: (() -> RenderState?)?
 
     public override init(size: CGSize) {
         self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
@@ -33,6 +34,9 @@ public final class TetrisScene: SKScene {
         let steps = clock.advance(currentTime: currentTime)
         if steps > 0 {
             onFixedStep?(steps)
+        }
+        if let renderState = onRender?() {
+            render(state: renderState)
         }
     }
 
