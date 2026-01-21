@@ -9,8 +9,8 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - **No per-frame allocations**: reuse nodes, buffers, and arrays to keep frame pacing stable.
 - **Assets are bundled**: load audio/textures via `Bundle.module` (SwiftPM) for packaged parity.
 
-## Gaps in Current Implementation
-- UI polish pass still in progress (commands/overlays/accessibility validation).
+## Status
+- Architecture alignment is complete; see `docs/progress.md` for the change log.
 
 ## Target Architecture
 ### Loop & Timing
@@ -42,25 +42,12 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - Overlay HUD/Settings with `ZStack` and `FocusState`.
 - Provide accessibility: reduce motion, keyboard focus order, and legible text sizes.
 
-## Refactor Plan (TDD)
-1) **Loop Migration (Done)**
-   - Add tests around loop tick cadence.
-   - Move timing from `SceneDriver.Timer` to `TetrisScene.update`.
-2) **Render Pipeline (Done)**
-   - Add renderer tests to verify node reuse and color mapping.
-   - Add render buffer change tracking to avoid full-board updates.
-   - Switch to texture caching when node updates are no longer the bottleneck.
-3) **Input Router (Done)**
-   - Add tests for keyboard/gamepad mappings in a unified router.
-   - Route all inputs through a single action pipeline.
-4) **Audio Engine (Done)**
-   - Added tests for pooled playback behavior.
-   - Replaced `AVAudioPlayer` with `AVAudioEngine` buffers.
-5) **UI Polish Pass (Done)**
-   - Added SwiftUI `Commands` for menu shortcuts (start/restart/pause/settings).
-   - Extracted focus pause handling into `FocusPauseHandler`.
-   - Added overlay fade animation and accessibility labels.
-   - Confirm Settings focus, overlay transitions, and reduced motion behavior.
+## Alignment Summary (Complete)
+- Loop ownership moved to `TetrisScene.update(_:)` with fixed-step timing.
+- Render pipeline reuses buffers/nodes and caches textures.
+- Input routed through `InputRouter` for keyboard + gamepad consistency.
+- Audio uses `AVAudioEngine` with preloaded buffers.
+- UI polish includes commands, overlays, focus pause handling, and accessibility coverage.
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.

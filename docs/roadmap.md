@@ -32,32 +32,9 @@
 - Window defaults + scaling: implemented; content stays centered on resize.
 - SwiftUI menu commands: start/restart/pause/settings actions wired.
 
-## Refactor Track (Best Practices Alignment)
-### R1: Loop Ownership (Done)
-- Move timing from `SceneDriver.Timer` to `TetrisScene.update(_:)`.
-- Introduce fixed timestep accumulator for deterministic ticks.
-
-### R2: Render Pipeline (Done)
-- Pre-allocate node grids and render buffers.
-- Avoid per-frame allocations and node churn.
-- Add texture cache if needed after profiling.
-- Skip node updates for unchanged cell states.
-- Update only flash cells when flash alpha changes.
-
-### R3: Input Router (Done)
-- Consolidate keyboard/gamepad mapping into a single router.
-- Keep UI focus handling separate from gameplay input.
-- Added an `InputRouter` wrapper to centralize key/button mapping.
-
-### R4: Audio Engine (Done)
-- Migrated to `AVAudioEngine` with preloaded buffers.
-- Kept per-event gain + master volume behavior.
-- Replaced pooled `AVAudioPlayer` interim approach.
-
-### R5: UI Polish (Done)
-- Confirmed overlay transitions and accessibility coverage.
-- Added UI integration coverage for commands and overlay behaviors.
-- Overlay fade animation and accessibility labels are in place.
+## Best-Practice Alignment
+- Architecture alignment work is complete; details live in `docs/architecture.md`.
+- Progress tracking for the alignment work is in `docs/progress.md`.
 
 ## Validation Checklist
 - Movement and rotation: SRS tables verified by tests.

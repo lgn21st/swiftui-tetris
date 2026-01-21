@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added menu commands, texture-cached SpriteKit rendering, and focus pause handler.
+- Last update: Reduced documentation redundancy and refreshed architecture/roadmap summaries.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
