@@ -48,6 +48,7 @@
 - 2026-01-21: Added SRS kick tables and rotation tests.
 - 2026-01-21: Added classic scoring and level progression with tests.
 - 2026-01-21: Added renderer mapping state and tests.
+- 2026-01-21: Added CLI Packager and Packaging module with tests.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

@@ -12,6 +12,13 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Requires macOS + Xcode.
 - Create and open a SwiftUI App project, then run (details to be added).
 
+## CLI Commands
+- Tests: `swift test`
+- Build (debug): `swift build`
+- Build (release): `swift build -c release`
+- Run app: `swift run App`
+- Package .app (CLI):\n  1) `swift build -c release`\n  2) `swift run Packager --binary-path .build/release/App --output dist/SwiftUITeris.app --bundle-id com.example.swiftui-teris --name SwiftUITeris --version 0.1.0 --build 1`
+
 ## Planned Structure
 - `Core/`: rules, timing, scoring, queue, rotation.
 - `Renderer/`: SpriteKit scene and nodes.
@@ -23,6 +30,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `docs/rules-spec.md`: rules and timing constants.
 - `docs/porting-plan.md`: milestones and exit criteria.
 - `docs/progress.md`: consolidated progress log.
+- `docs/cli-packaging.md`: CLI packaging instructions.
 
 ## Near-term Plan
 - Implement Core module and unit tests.
