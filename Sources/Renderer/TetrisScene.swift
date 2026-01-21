@@ -110,10 +110,15 @@ public final class TetrisScene: SKScene {
             return
         }
         node.isHidden = false
-        node.alpha = 1
         let isGhost = cell.isGhost && !cell.isActive
         let style: TextureCache.PieceStyle = cell.isActive ? .highlight : .normal
         node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost, style: style))
+        if cell.isActive {
+            let pulse = max(0, min(state.activePulse, 1))
+            node.alpha = CGFloat(0.85 + 0.15 * pulse)
+        } else {
+            node.alpha = 1
+        }
     }
 
     private func buildGrid() {

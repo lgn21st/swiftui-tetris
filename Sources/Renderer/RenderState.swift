@@ -10,6 +10,7 @@ public struct RenderState {
     public var softDropTrailKind: TetrominoType?
     public var flashBlocks: [(Int, Int)]
     public var flashAlpha: Double
+    public var activePulse: Double
     public var isPaused: Bool
     public var isGameOver: Bool
 
@@ -23,6 +24,7 @@ public struct RenderState {
         softDropTrailKind: TetrominoType?,
         flashBlocks: [(Int, Int)],
         flashAlpha: Double,
+        activePulse: Double,
         isPaused: Bool,
         isGameOver: Bool
     ) {
@@ -35,6 +37,7 @@ public struct RenderState {
         self.softDropTrailKind = softDropTrailKind
         self.flashBlocks = flashBlocks
         self.flashAlpha = flashAlpha
+        self.activePulse = activePulse
         self.isPaused = isPaused
         self.isGameOver = isGameOver
     }
@@ -54,6 +57,15 @@ public enum RenderMapper {
         let flashAlpha = state.landingFlashTimerMs > 0
         ? min(max(Double(state.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
         : 0
+        let activePulse = hideActive ? 0 : activePulseValue(
+            dropTimerMs: state.dropTimerMs,
+            intervalMs: Timing.dropInterval(
+                level: state.level,
+                baseDropMs: state.config.baseDropMs,
+                softDrop: state.softDropActive,
+                softDropMultiplier: state.config.softDropMultiplier
+            )
+        )
         let trailBlocks = hideActive ? [] : softDropTrailBlocks(
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
@@ -69,9 +81,18 @@ public enum RenderMapper {
             softDropTrailKind: trailBlocks.isEmpty ? nil : state.active.kind,
             flashBlocks: flashBlocks,
             flashAlpha: flashAlpha,
+            activePulse: activePulse,
             isPaused: state.paused,
             isGameOver: state.gameOver
         )
+    }
+
+    private static func activePulseValue(dropTimerMs: Int, intervalMs: Int) -> Double {
+        guard intervalMs > 0 else { return 0 }
+        let remainder = max(dropTimerMs, 0) % intervalMs
+        let progress = Double(remainder) / Double(intervalMs)
+        let triangle = progress < 0.5 ? progress * 2 : (1 - progress) * 2
+        return min(max(triangle, 0), 1)
     }
 
     private static func softDropTrailBlocks(

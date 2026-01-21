@@ -74,6 +74,7 @@ Legend:
 | Active piece highlight | Optional | Subtle highlight pass for active blocks. |
 | Board gridlines | Optional | Subtle gridline overlay behind board cells. |
 | HUD section typography | Optional | Distinct header sizing for Hold/Next sections. |
+| Active drop pulse | Optional | Subtle alpha pulse tied to gravity interval. |
 | Ghost tint | Yes | Low alpha. |
 | Accessibility labels | Optional | Overlay + Settings sliders labeled. |
 

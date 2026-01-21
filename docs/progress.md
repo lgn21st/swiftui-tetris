@@ -145,3 +145,4 @@
 - 2026-01-22: Updated overlay hints to include settings shortcut on title/pause/game over screens.
 - 2026-01-22: Added volume percent label next to Settings slider.
 - 2026-01-22: Pausing clears soft drop active state and timeout.
+- 2026-01-22: Added active piece pulse tied to gravity interval.

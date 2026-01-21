@@ -77,4 +77,18 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertTrue(renderState.softDropTrailBlocks.isEmpty)
         XCTAssertNil(renderState.softDropTrailKind)
     }
+
+    func testRenderMappingComputesActivePulse() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.dropTimerMs = 0
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertEqual(renderState.activePulse, 0, accuracy: 0.001)
+    }
+
+    func testRenderMappingComputesActivePulseAtMidInterval() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.dropTimerMs = 500
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertEqual(renderState.activePulse, 1, accuracy: 0.001)
+    }
 }

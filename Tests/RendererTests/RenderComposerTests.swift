@@ -16,6 +16,7 @@ final class RenderComposerTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -39,6 +40,7 @@ final class RenderComposerTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -61,6 +63,7 @@ final class RenderComposerTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [(0, 0)],
             flashAlpha: 1,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -83,6 +86,7 @@ final class RenderComposerTests: XCTestCase {
             softDropTrailKind: .s,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )

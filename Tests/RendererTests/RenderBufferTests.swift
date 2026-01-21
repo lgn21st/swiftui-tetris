@@ -15,6 +15,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -39,6 +40,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -62,6 +64,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [(0, 0)],
             flashAlpha: 1,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -85,6 +88,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -106,6 +110,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: nil,
             flashBlocks: [(0, 0), (3, 2)],
             flashAlpha: 1,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -127,6 +132,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: .t,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )
@@ -149,6 +155,7 @@ final class RenderBufferTests: XCTestCase {
             softDropTrailKind: .t,
             flashBlocks: [],
             flashAlpha: 0,
+            activePulse: 0,
             isPaused: false,
             isGameOver: false
         )

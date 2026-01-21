@@ -38,6 +38,7 @@
 - Board gridlines and section header typography in HUD.
 - Overlay hints include settings shortcut on title/pause/game over screens.
 - Settings volume slider shows percent value.
+- Active piece pulse tied to gravity interval.
 - Pausing clears soft drop active state.
 
 ## Best-Practice Alignment
