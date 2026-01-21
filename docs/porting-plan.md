@@ -64,6 +64,7 @@
 - 2026-01-21: Added space-to-start, lock bar warning pulse, and landing flash fade.
 - 2026-01-21: Added title overlay start hint (“Press Space or Enter to start”).
 - 2026-01-21: Added pause/settings hints, diagnostics overlay toggle, and window defaults.
+- 2026-01-21: Added per-event SFX gain mapping with master volume control.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

@@ -10,8 +10,10 @@ public struct HUDState: Equatable {
     public var b2bText: String
     public var lockBarRatio: Double
     public var lockWarningActive: Bool
+    public var hintText: String
 
     private static let lockWarningThreshold = 0.85
+    private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
 
     public static func from(state: GameState) -> HUDState {
         let holdStatus = state.canHold ? "Ready" : "Used"
@@ -29,7 +31,8 @@ public struct HUDState: Equatable {
             comboText: comboText,
             b2bText: b2bText,
             lockBarRatio: clampedRatio,
-            lockWarningActive: clampedRatio >= lockWarningThreshold
+            lockWarningActive: clampedRatio >= lockWarningThreshold,
+            hintText: defaultHint
         )
     }
 }

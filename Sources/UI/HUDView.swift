@@ -34,6 +34,9 @@ public struct HUDView: View {
                     : .default,
                     value: pulseOn
                 )
+            Text(state.hintText)
+                .font(.system(size: 10, weight: .regular, design: .monospaced))
+                .foregroundColor(.white.opacity(0.85))
         }
         .font(.system(size: 12, weight: .medium, design: .monospaced))
         .padding(8)

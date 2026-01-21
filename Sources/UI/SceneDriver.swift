@@ -50,7 +50,7 @@ public final class SceneDriver: ObservableObject {
             let events = self.loop.state.takeSoundEvents()
             if let audio = self.audio, !self.settings.muted {
                 for event in events {
-                    audio.play(event)
+                    audio.play(event, masterVolume: self.settings.volume)
                 }
             }
             self.hudState = HUDState.from(state: self.loop.state)
