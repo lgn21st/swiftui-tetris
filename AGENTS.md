@@ -21,6 +21,10 @@
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.
 - Avoid mixing SpriteKit state mutations with Core rule logic.
 
+## Progress Updates
+- Keep `README.md` and `docs/porting-plan.md` updated after each phase.
+- Last update: DAS/ARR repeat tests added.
+
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
 - Use skill `gpui-tetris-dev` only when analyzing or referencing gpui source behavior.

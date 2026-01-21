@@ -27,3 +27,8 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Implement Core module and unit tests.
 - Build SpriteKit rendering skeleton.
 - Hook up SwiftUI HUD/overlays.
+
+## Progress
+- Core board logic (bounds, placement, locking, line clears) with tests.
+- Drop interval timing logic with tests.
+- DAS/ARR repeat logic with tests.

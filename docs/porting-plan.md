@@ -38,6 +38,11 @@
 - Match constants in `docs/rules-spec.md`.
 - Keep logic UI-agnostic.
 
+## Progress Log
+- 2026-01-21: Added Core board logic (bounds, placement, locking, line clears) with TDD tests.
+- 2026-01-21: Added drop interval timing logic with TDD tests.
+- 2026-01-21: Added DAS/ARR repeat logic with TDD tests.
+
 ### M2: SpriteKit Board Rendering
 **Deliverables**
 - `SKScene` rendering board, active piece, ghost piece, landing flash.
