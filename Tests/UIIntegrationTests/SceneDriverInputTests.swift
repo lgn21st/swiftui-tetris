@@ -84,4 +84,16 @@ final class SceneDriverInputTests: XCTestCase {
         XCTAssertEqual(loop.state.active.x, startX)
         XCTAssertEqual(driver.hudState.lastInputText, "Last input: None")
     }
+
+    func testDiagnosticsToggleDoesNotBlockInput() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        let startX = loop.state.active.x
+
+        driver.handleKeyDown("d")
+        driver.handleKeyDown("right")
+
+        XCTAssertTrue(driver.diagnosticsVisible)
+        XCTAssertEqual(loop.state.active.x, startX + 1)
+    }
 }

@@ -82,3 +82,4 @@
 - 2026-01-21: Ignored gameplay input while Settings overlay is open to prevent held input carryover.
 - 2026-01-21: Disabled key capture while Settings is open to allow UI focus and keyboard control.
 - 2026-01-21: Added default focus for Settings overlay (Mute toggle) with focus policy.
+- 2026-01-21: Added diagnostic toggle regression to ensure it doesn't block gameplay input.

@@ -12,4 +12,4 @@ None.
 None.
 
 ## Diagnostics / Tooling
-- Validate diagnostics overlay usefulness and key toggles during gameplay.
+None.
