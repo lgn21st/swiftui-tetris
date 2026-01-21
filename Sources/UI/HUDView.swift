@@ -35,10 +35,10 @@ public struct HUDView: View {
                     value: pulseOn
                 )
             Text(state.hintText)
-                .font(.system(size: 10, weight: .regular, design: .monospaced))
+                .font(.system(size: TypographyConstants.hudHintFontSize, weight: .regular, design: .monospaced))
                 .foregroundColor(.white.opacity(0.85))
         }
-        .font(.system(size: 12, weight: .medium, design: .monospaced))
+        .font(.system(size: TypographyConstants.hudFontSize, weight: .medium, design: .monospaced))
         .padding(8)
         .background(.black.opacity(0.4))
         .foregroundColor(.white)

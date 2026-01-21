@@ -10,7 +10,7 @@ public struct SettingsView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Settings")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: TypographyConstants.settingsTitleSize, weight: .bold))
             Toggle("Mute", isOn: Binding(
                 get: { settings.muted },
                 set: { _ in settings.toggleMute() }
@@ -24,7 +24,7 @@ public struct SettingsView: View {
             }
             Divider().background(Color.white.opacity(0.4))
             Text("SFX Levels")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: TypographyConstants.settingsSectionSize, weight: .semibold))
             ForEach(SoundEventKind.allCases) { kind in
                 HStack {
                     Text(kind.label)

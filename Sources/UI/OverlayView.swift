@@ -15,11 +15,11 @@ public struct OverlayView: View {
                 Color.black.opacity(ThemeConstants.overlayOpacity)
                 VStack(spacing: 8) {
                     Text(state.title)
-                        .font(.system(size: 24, weight: .bold))
+                        .font(.system(size: TypographyConstants.overlayTitleSize, weight: .bold))
                         .foregroundColor(.white)
                     if !state.message.isEmpty {
                         Text(state.message)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: TypographyConstants.overlayMessageSize, weight: .medium))
                             .foregroundColor(.white.opacity(0.85))
                     }
                 }

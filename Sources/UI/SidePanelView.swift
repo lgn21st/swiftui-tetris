@@ -19,8 +19,8 @@ public struct SidePanelView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Hold")
                 PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
-                Text(state.holdText)
-                    .font(.system(size: 10, weight: .regular, design: .monospaced))
+            Text(state.holdText)
+                    .font(.system(size: TypographyConstants.sidePanelHintFontSize, weight: .regular, design: .monospaced))
                     .foregroundColor(.white.opacity(0.8))
             }
             Divider().background(Color.white.opacity(ThemeConstants.dividerOpacity))
@@ -38,11 +38,11 @@ public struct SidePanelView: View {
             ProgressView(value: state.lockBarRatio)
                 .tint(state.lockWarningActive ? .red : .green)
             Text(state.hintText)
-                .font(.system(size: 10, weight: .regular, design: .monospaced))
+                .font(.system(size: TypographyConstants.sidePanelHintFontSize, weight: .regular, design: .monospaced))
                 .foregroundColor(.white.opacity(0.85))
             Spacer()
         }
-        .font(.system(size: 12, weight: .medium, design: .monospaced))
+        .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
         .foregroundColor(.white)
         .padding(LayoutConstants.panelPadding)
         .frame(width: LayoutConstants.panelWidth, height: LayoutConstants.baseSize.height)

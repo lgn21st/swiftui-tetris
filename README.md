@@ -82,3 +82,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - CLI packaging smoke test attempted; blocked by sandbox permissions in this environment.
 - Gravity uses level-based drop interval for parity.
 - CLI packaging smoke test succeeded locally (release build + Packager).
+- Standardized typography constants across UI views.
