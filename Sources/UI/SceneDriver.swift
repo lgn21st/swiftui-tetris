@@ -22,6 +22,7 @@ public final class SceneDriver: ObservableObject {
     private var settingsCancellable: AnyCancellable?
     private var lastInputAction: GameAction?
     private var latestRenderState: RenderState
+    private let focusHandler: FocusPauseHandler
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -45,6 +46,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
         self.latestRenderState = RenderMapper.map(state: loop.state)
+        self.focusHandler = FocusPauseHandler()
         self.settingsCancellable = $settings.dropFirst().sink { [weak self] updated in
             self?.settingsStore.save(updated)
         }
@@ -95,18 +97,7 @@ public final class SceneDriver: ObservableObject {
                 )
             }
         }
-        hudState = HUDState.from(
-            state: loop.state,
-            started: started,
-            settings: settings,
-            lastInput: lastInputAction
-        )
-        overlayState = OverlayState(
-            isPaused: loop.state.paused || showSettings,
-            isGameOver: loop.state.gameOver,
-            isTitle: !started,
-            isSettings: showSettings
-        )
+        refreshDerivedState()
         scene.render(state: renderState)
     }
 
@@ -119,23 +110,24 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleAppActiveChanged(isActive: Bool) {
-        guard !isActive else { return }
-        loop.state.paused = true
-        input.reset()
-        overlayState = OverlayState(
-            isPaused: true,
-            isGameOver: loop.state.gameOver,
-            isTitle: !started,
-            isSettings: showSettings
+        overlayState = focusHandler.handleAppActiveChanged(
+            isActive: isActive,
+            state: &loop.state,
+            input: input,
+            started: started,
+            showSettings: showSettings
+        )
+        hudState = HUDState.from(
+            state: loop.state,
+            started: started,
+            settings: settings,
+            lastInput: lastInputAction
         )
     }
 
     public func handleKeyDown(_ key: String) {
         if !started && (key == "\n" || key == "\r" || key == " " || key == "space") {
-            if !started {
-                started = true
-                loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
-            }
+            startIfNeeded()
             return
         }
         if key == "escape" {
@@ -219,13 +211,39 @@ public final class SceneDriver: ObservableObject {
         setSettingsVisible(false)
     }
 
+    public func commandStartGame() {
+        startIfNeeded()
+        refreshDerivedState()
+    }
+
+    public func commandRestartGame() {
+        started = true
+        loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+        showSettings = false
+        input.reset()
+        refreshDerivedState()
+    }
+
+    public func commandTogglePause() {
+        if showSettings {
+            return
+        }
+        recordLastInput(.pause)
+        input.releaseMovementHolds()
+        input.apply(action: .pause, to: &loop.state)
+        refreshDerivedState()
+    }
+
+    public func commandToggleSettings() {
+        setSettingsVisible(!showSettings)
+    }
+
     private func handleGamepadAction(_ action: GameAction) {
         if showSettings {
             return
         }
         if !started, action == .pause || action == .restart {
-            started = true
-            loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+            startIfNeeded()
             return
         }
         recordLastInput(action)
@@ -264,11 +282,28 @@ public final class SceneDriver: ObservableObject {
         showSettings = visible
         loop.state.paused = visible
         input.releaseMovementHolds()
+        refreshDerivedState()
+    }
+
+    private func refreshDerivedState() {
+        hudState = HUDState.from(
+            state: loop.state,
+            started: started,
+            settings: settings,
+            lastInput: lastInputAction
+        )
         overlayState = OverlayState(
             isPaused: loop.state.paused || showSettings,
             isGameOver: loop.state.gameOver,
             isTitle: !started,
             isSettings: showSettings
         )
+    }
+
+    private func startIfNeeded() {
+        if !started {
+            started = true
+            loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+        }
     }
 }

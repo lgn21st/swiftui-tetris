@@ -52,6 +52,7 @@ Legend:
 | Mute | Optional | M. |
 | Volume | Optional | +/- adjust; 0 reset. |
 | Fullscreen | Optional | Cmd+Ctrl+F. |
+| Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
 

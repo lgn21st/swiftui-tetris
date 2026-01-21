@@ -10,8 +10,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - **Assets are bundled**: load audio/textures via `Bundle.module` (SwiftPM) for packaged parity.
 
 ## Gaps in Current Implementation
-- Rendering still uses `SKShapeNode` fill/stroke instead of cached textures.
-- Input mapping is centralized, but focus/state handling still lives in `SceneDriver`.
+- UI polish pass still in progress (commands/overlays/accessibility validation).
 
 ## Target Architecture
 ### Loop & Timing
@@ -26,7 +25,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 - Pre-allocate node grids for board + ghost + effects.
 - Use a render buffer to track changed and flash cells without per-frame allocations.
 - Update only nodes whose cell state changed, plus flash cells when flash alpha changes.
-- Use texture atlas or cached `SKTexture` for each tetromino color if profiling shows fill-rate pressure.
+- Use cached `SKTexture`s for each tetromino color to avoid per-frame drawing.
 
 ### Input
 - Create a single `InputRouter` that maps keyboard/gamepad to `GameAction`.
@@ -51,14 +50,15 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
    - Add renderer tests to verify node reuse and color mapping.
    - Add render buffer change tracking to avoid full-board updates.
    - Switch to texture caching when node updates are no longer the bottleneck.
-3) **Input Router**
+3) **Input Router (Done)**
    - Add tests for keyboard/gamepad mappings in a unified router.
    - Route all inputs through a single action pipeline.
 4) **Audio Engine (Done)**
    - Added tests for pooled playback behavior.
    - Replaced `AVAudioPlayer` with `AVAudioEngine` buffers.
-5) **UI Polish Pass**
-   - Add snapshot-style UI tests where feasible.
+5) **UI Polish Pass (In Progress)**
+   - Added SwiftUI `Commands` for menu shortcuts (start/restart/pause/settings/audio).
+   - Extracted focus pause handling into `FocusPauseHandler`.
    - Confirm Settings focus, overlay transitions, and reduced motion behavior.
 
 ## Testing Strategy

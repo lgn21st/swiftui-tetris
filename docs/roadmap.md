@@ -26,10 +26,11 @@
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.
 - Input repeat + pause/focus handling: complete with tests.
-- SpriteKit board rendering + landing flash: complete with tests.
+- SpriteKit board rendering + landing flash + texture cache: complete with tests.
 - HUD/overlays and settings: complete with tests.
 - Audio: per-event gain + settings + persistence; pooled playback for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
+- SwiftUI menu commands: start/restart/pause/settings/audio actions wired.
 
 ## Refactor Track (Best Practices Alignment)
 ### R1: Loop Ownership (Done)
@@ -53,7 +54,7 @@
 - Kept per-event gain + master volume behavior.
 - Replaced pooled `AVAudioPlayer` interim approach.
 
-### R5: UI Polish (Planned)
+### R5: UI Polish (In Progress)
 - Confirm overlay transitions and accessibility.
 - Add any missing UI integration coverage.
 

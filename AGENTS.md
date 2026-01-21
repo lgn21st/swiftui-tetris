@@ -26,7 +26,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Audio playback now uses AVAudioEngine with preloaded buffers.
+- Last update: Added menu commands, texture-cached SpriteKit rendering, and focus pause handler.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

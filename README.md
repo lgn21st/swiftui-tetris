@@ -17,6 +17,7 @@ macOS native Tetris built with SwiftUI + SpriteKit. The priority is solid rules,
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
 - Fullscreen toggle: Cmd+Ctrl+F.
+- Menu commands: Cmd+Return (Start), Cmd+R (Restart), Cmd+P (Pause), Cmd+, (Settings).
 - Gamepad: GameController support (dpad + A/B/X/Y + menu/options).
 
 ## CLI Packaging

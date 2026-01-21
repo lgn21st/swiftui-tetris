@@ -105,3 +105,6 @@
 - 2026-01-21: Switched mapping tests to use InputRouter while keeping legacy mappers as internal helpers.
 - 2026-01-21: InputRouter now normalizes uppercase key input for gameplay actions.
 - 2026-01-21: Migrated audio playback to AVAudioEngine with preloaded buffers.
+- 2026-01-21: Added SwiftUI command menu wiring for start/restart/pause/settings actions.
+- 2026-01-21: Switched SpriteKit rendering to cached textures (TextureCache + sprite nodes).
+- 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.

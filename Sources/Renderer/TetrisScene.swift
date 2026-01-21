@@ -6,11 +6,12 @@ public final class TetrisScene: SKScene {
     public static let fixedStepMs: Double = 16
     public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = 24
-    private var cellNodes: [[SKShapeNode]] = []
+    private var cellNodes: [[SKSpriteNode]] = []
     private var renderBuffer: RenderBuffer
     private var lastFlashAlpha: Double?
     private var clock: FixedStepClock
     private var frameClock: FrameClock
+    private var textureCache: TextureCache
     public var onFixedStep: ((Int) -> Void)?
     public var onFrame: ((Int) -> Void)?
     public var onRender: (() -> RenderState?)?
@@ -19,6 +20,7 @@ public final class TetrisScene: SKScene {
         self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
         self.renderBuffer = RenderBuffer()
+        self.textureCache = TextureCache(cellSize: cellSize)
         super.init(size: size)
         commonInit()
     }
@@ -27,6 +29,7 @@ public final class TetrisScene: SKScene {
         self.clock = FixedStepClock(stepMs: stepMs, maxDeltaMs: maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: maxDeltaMs)
         self.renderBuffer = RenderBuffer()
+        self.textureCache = TextureCache(cellSize: cellSize)
         super.init(size: size)
         commonInit()
     }
@@ -35,6 +38,7 @@ public final class TetrisScene: SKScene {
         self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
         self.renderBuffer = RenderBuffer()
+        self.textureCache = TextureCache(cellSize: cellSize)
         super.init(coder: coder)
         commonInit()
     }
@@ -84,33 +88,33 @@ public final class TetrisScene: SKScene {
         }
     }
 
-    private func applyRender(cell: CellRender, state: RenderState, node: SKShapeNode) {
+    private func applyRender(cell: CellRender, state: RenderState, node: SKSpriteNode) {
         if cell.isFlash {
             if state.flashAlpha <= 0 {
-                node.fillColor = .clear
-                node.strokeColor = .clear
+                clear(node: node)
             } else {
-                let flash = PiecePalette.flashColor.withAlphaComponent(CGFloat(state.flashAlpha))
-                node.fillColor = flash
-                node.strokeColor = flash
+                node.isHidden = false
+                node.texture = textureCache.texture(for: .flash)
+                node.alpha = CGFloat(state.flashAlpha)
             }
-        } else if cell.kind == nil && !cell.isGhost && !cell.isActive {
-            node.fillColor = .clear
-            node.strokeColor = .clear
-        } else {
-            node.fillColor = PiecePalette.color(for: cell.kind, ghost: cell.isGhost && !cell.isActive)
-            node.strokeColor = node.fillColor
+            return
         }
+        guard let kind = cell.kind else {
+            clear(node: node)
+            return
+        }
+        node.isHidden = false
+        node.alpha = 1
+        let isGhost = cell.isGhost && !cell.isActive
+        node.texture = textureCache.texture(for: .piece(kind: kind, ghost: isGhost))
     }
 
     private func buildGrid() {
-        cellNodes = Array(repeating: Array(repeating: SKShapeNode(), count: Board.width), count: Board.height)
+        cellNodes = Array(repeating: Array(repeating: SKSpriteNode(), count: Board.width), count: Board.height)
         for y in 0..<Board.height {
             for x in 0..<Board.width {
-                let node = SKShapeNode(rectOf: CGSize(width: cellSize, height: cellSize))
-                node.strokeColor = .clear
-                node.fillColor = .clear
-                node.lineWidth = 1
+                let node = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: cellSize, height: cellSize))
+                node.isHidden = true
                 let originX = CGFloat(x) * cellSize + cellSize / 2
                 let originY = CGFloat(Board.height - 1 - y) * cellSize + cellSize / 2
                 node.position = CGPoint(x: originX, y: originY)
@@ -124,6 +128,12 @@ public final class TetrisScene: SKScene {
         scaleMode = .resizeFill
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
+    }
+
+    private func clear(node: SKSpriteNode) {
+        node.texture = nil
+        node.alpha = 1
+        node.isHidden = true
     }
 
     private func shouldRender(state: RenderState) -> Bool {

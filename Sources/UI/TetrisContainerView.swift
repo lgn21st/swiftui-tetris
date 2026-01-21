@@ -115,6 +115,15 @@ public struct TetrisContainerView: View {
                     blue: ThemeConstants.appBackgroundBlue
                 )
             )
+            .focusedSceneValue(
+                \.commandActions,
+                CommandActions(
+                    startGame: { driver.commandStartGame() },
+                    restartGame: { driver.commandRestartGame() },
+                    togglePause: { driver.commandTogglePause() },
+                    toggleSettings: { driver.commandToggleSettings() }
+                )
+            )
             .onAppear { driver.start() }
             .onDisappear { driver.stop() }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in

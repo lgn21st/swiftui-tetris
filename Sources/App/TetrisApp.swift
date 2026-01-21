@@ -11,6 +11,9 @@ struct TetrisApp: App {
         }
         .defaultSize(width: WindowConfig.defaultWidth, height: WindowConfig.defaultHeight)
         .windowResizability(WindowConfig.allowsResize ? .automatic : .contentSize)
+        .commands {
+            TetrisCommands()
+        }
     }
 }
 
