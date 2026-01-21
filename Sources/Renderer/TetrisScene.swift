@@ -14,6 +14,7 @@ public final class TetrisScene: SKScene {
     private var frameClock: FrameClock
     private var textureCache: TextureCache
     private var scorePopupNodes: [SKLabelNode] = []
+    private var tSpinBadge: SKLabelNode?
     public var onFixedStep: ((Int) -> Void)?
     public var onFrame: ((Int) -> Void)?
     public var onRender: (() -> RenderState?)?
@@ -88,6 +89,8 @@ public final class TetrisScene: SKScene {
                 let node = cellNodes[cell.y][cell.x]
                 applyRender(cell: cell, state: state, node: node)
             }
+            renderScorePopups(state.scorePopups)
+            renderTSpinBadge(state)
             return
         }
         for index in renderBuffer.changedIndices {
@@ -98,6 +101,7 @@ public final class TetrisScene: SKScene {
             applyRender(cell: cell, state: state, node: node)
         }
         renderScorePopups(state.scorePopups)
+        renderTSpinBadge(state)
     }
 
     private func applyRender(cell: CellRender, state: RenderState, node: SKSpriteNode) {
@@ -163,6 +167,7 @@ public final class TetrisScene: SKScene {
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
         addGridlines()
+        addTSpinBadge()
     }
 
     private func renderScorePopups(_ popups: [ScorePopup]) {
@@ -194,6 +199,30 @@ public final class TetrisScene: SKScene {
             )
             node.position = position
         }
+    }
+
+    private func addTSpinBadge() {
+        let badge = SKLabelNode(fontNamed: "Menlo-Bold")
+        badge.fontSize = 18
+        badge.fontColor = .white
+        badge.zPosition = 12
+        badge.isHidden = true
+        addChild(badge)
+        tSpinBadge = badge
+    }
+
+    private func renderTSpinBadge(_ state: RenderState) {
+        guard let badge = tSpinBadge else { return }
+        guard state.tSpinKind != .none, state.tSpinAlpha > 0 else {
+            badge.isHidden = true
+            return
+        }
+        badge.text = state.tSpinKind == .mini ? "Mini T-Spin" : "T-Spin"
+        badge.alpha = CGFloat(state.tSpinAlpha)
+        badge.isHidden = false
+        let boardWidth = CGFloat(Board.width) * cellSize
+        let boardHeight = CGFloat(Board.height) * cellSize
+        badge.position = CGPoint(x: boardWidth / 2, y: boardHeight + cellSize * 0.6)
     }
 
     private func addGridlines() {

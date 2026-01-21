@@ -67,10 +67,11 @@ Legend:
 | Title hint blink | Optional | Start hint pulses on the title overlay (implemented). |
 | Onboarding hints | Optional | First-run overlay hints on the title screen (implemented). |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
-| HUD details | Optional | Last input, grounded, lock resets. |
+| HUD details | Optional | Diagnostics overlay shows last input/grounded/lock resets. |
 | HUD dividers | Optional | Section dividers for scan-friendly grouping (implemented). |
 | Lock bar | Optional | Visual bar + warning pulse (implemented). |
 | Line-clear shimmer | Optional | Shimmer overlay on cleared rows (implemented). |
+| T-Spin marker | Optional | T-Spin badge during line clear (implemented). |
 | Score popups | Optional | Floating score popup on line clears (implemented). |
 | Soft drop trail | Optional | Trail between active piece and ghost during soft drop (implemented). |
 | Active piece highlight | Optional | Subtle highlight pass for active blocks (implemented). |

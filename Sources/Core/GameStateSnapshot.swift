@@ -14,6 +14,7 @@ public struct GameStateSnapshot {
     public let lineClearTimerMs: Int
     public let lineClearRows: [Int]
     public let lineClearScore: Int
+    public let lastLineClearTSpin: TSpinKind
     public let landingFlashTimerMs: Int
     public let landingFlashBlocks: [(Int, Int)]
     public let softDropActive: Bool
@@ -38,6 +39,7 @@ public struct GameStateSnapshot {
         lineClearTimerMs: Int,
         lineClearRows: [Int],
         lineClearScore: Int,
+        lastLineClearTSpin: TSpinKind,
         landingFlashTimerMs: Int,
         landingFlashBlocks: [(Int, Int)],
         softDropActive: Bool,
@@ -61,6 +63,7 @@ public struct GameStateSnapshot {
         self.lineClearTimerMs = lineClearTimerMs
         self.lineClearRows = lineClearRows
         self.lineClearScore = lineClearScore
+        self.lastLineClearTSpin = lastLineClearTSpin
         self.landingFlashTimerMs = landingFlashTimerMs
         self.landingFlashBlocks = landingFlashBlocks
         self.softDropActive = softDropActive

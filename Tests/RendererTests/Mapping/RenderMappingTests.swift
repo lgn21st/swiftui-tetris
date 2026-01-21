@@ -61,6 +61,15 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertEqual(renderState.scorePopups[0].text, "+400")
     }
 
+    func testRenderMappingIncludesTSpinKindDuringLineClear() {
+        var state = GameState(config: GameConfig(ruleset: .modern))
+        state.applyLineClear(cleared: 1, clearedRows: [18], tSpin: .full)
+        state.lineClearTimerMs = GameConstants.lineClearPauseMs / 2
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+        XCTAssertEqual(renderState.tSpinKind, .full)
+        XCTAssertEqual(renderState.tSpinAlpha, 0.5, accuracy: 0.01)
+    }
+
     func testRenderMappingCopiesPauseAndGameOverFlags() {
         var state = GameState(config: GameConfig())
         state.paused = true

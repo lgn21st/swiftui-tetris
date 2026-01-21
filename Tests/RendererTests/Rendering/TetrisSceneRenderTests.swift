@@ -61,6 +61,8 @@ final class TetrisSceneRenderTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: isPaused,
             isGameOver: isGameOver

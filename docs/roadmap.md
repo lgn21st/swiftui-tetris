@@ -45,6 +45,8 @@
 - Active piece pulse tied to gravity interval.
 - Pausing clears soft drop active state.
 - Line-clear shimmer overlay during clear pause.
+- Diagnostics overlay now includes gameplay debug stats (last input/grounded/lock resets).
+- T-Spin badge renders during line clear pauses.
 - Render mapping now consumes a Core snapshot boundary.
 
 ## Best-Practice Alignment

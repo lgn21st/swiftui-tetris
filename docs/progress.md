@@ -120,3 +120,7 @@
 - 2026-01-22: Removed deprecated RenderComposer and its legacy tests.
 - 2026-01-22: Consolidated gameplay constants into GameConstants and updated defaults/tests.
 - 2026-01-22: Reorganized test directories by functional domain (Core/Renderer/UIIntegration).
+- 2026-01-22: Added T-Spin badge rendering during line clear pauses.
+- 2026-01-22: Split player HUD from diagnostics overlay.
+- 2026-01-21: Moved Hold/Next previews to the HUD footer and bumped side panel typography for readability.
+- 2026-01-22: Increased HUD typography sizes and switched to default system font for crisper rendering.

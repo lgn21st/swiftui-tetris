@@ -4,15 +4,13 @@ import XCTest
 final class GameStateSnapshotTests: XCTestCase {
     func testSnapshotCopiesCoreFields() {
         var state = GameState(config: GameConfig())
-        state.score = 1200
-        state.level = 3
-        state.lines = 15
         state.paused = true
         state.gameOver = true
         state.dropTimerMs = 320
-        state.lineClearTimerMs = 90
-        state.lineClearRows = [18]
-        state.lineClearScore = 400
+        state.applyLineClear(cleared: 1, clearedRows: [18], tSpin: .full)
+        state.score = 1200
+        state.level = 3
+        state.lines = 15
         state.landingFlashTimerMs = 60
         state.landingFlashBlocks = [(4, 10)]
         state.softDropActive = true
@@ -25,9 +23,10 @@ final class GameStateSnapshotTests: XCTestCase {
         XCTAssertTrue(snapshot.paused)
         XCTAssertTrue(snapshot.gameOver)
         XCTAssertEqual(snapshot.dropTimerMs, 320)
-        XCTAssertEqual(snapshot.lineClearTimerMs, 90)
+        XCTAssertEqual(snapshot.lineClearTimerMs, GameConstants.lineClearPauseMs)
         XCTAssertEqual(snapshot.lineClearRows, [18])
-        XCTAssertEqual(snapshot.lineClearScore, 400)
+        XCTAssertEqual(snapshot.lineClearScore, 40)
+        XCTAssertEqual(snapshot.lastLineClearTSpin, .full)
         XCTAssertEqual(snapshot.landingFlashTimerMs, 60)
         assertBlocksEqual(snapshot.landingFlashBlocks, [(4, 10)])
         XCTAssertTrue(snapshot.softDropActive)

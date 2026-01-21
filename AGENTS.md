@@ -27,7 +27,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Reorganized tests by functional domain.
+- Last update: Increased HUD typography sizes and switched to default system font for sharper rendering.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

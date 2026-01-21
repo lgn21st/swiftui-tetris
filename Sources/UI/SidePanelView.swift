@@ -11,21 +11,12 @@ public struct SidePanelView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: LayoutConstants.panelSectionSpacing) {
             VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
-                Text(state.lastInputText)
                 Text(state.scoreText)
                 Text(state.levelText)
                 Text(state.linesText)
                 Text(state.statusText)
                 Text(state.rulesetText)
                 Text(state.holdText)
-                Text(state.groundedText)
-                Text(state.lockResetsText)
-                if !state.isClassicRuleset {
-                    VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
-                        Text(state.comboText)
-                        Text(state.b2bText)
-                    }
-                }
             }
             let warningOpacity = 0.35 + 0.65 * state.lockWarningPulse
             let warningColor = Color.red.opacity(warningOpacity)
@@ -34,22 +25,25 @@ public struct SidePanelView: View {
             ProgressView(value: state.lockBarRatio)
                 .tint(state.lockWarningActive ? warningColor : normalColor)
             PanelDivider()
-            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
-                Text("Hold")
-                    .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
-                PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
-            }
-            PanelDivider()
-            VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
-                Text("Next")
-                    .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .monospaced))
-                ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
-                    PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
+            Spacer(minLength: 0)
+            VStack(alignment: .leading, spacing: LayoutConstants.panelSectionSpacing) {
+                VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                    Text("Hold")
+                        .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .default))
+                    PreviewGridView(state: PreviewGridState.from(kind: state.holdKind))
+                }
+                PanelDivider()
+                VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                    Text("Next")
+                        .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .default))
+                    ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
+                        PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
+                    }
                 }
             }
-            Spacer()
         }
-        .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .medium, design: .monospaced))
+        .font(.system(size: TypographyConstants.sidePanelFontSize, weight: .semibold, design: .default))
+        .monospacedDigit()
         .foregroundColor(
             Color(
                 red: ThemeConstants.panelTextRed,

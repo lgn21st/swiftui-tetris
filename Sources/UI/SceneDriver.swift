@@ -10,6 +10,7 @@ public final class SceneDriver: ObservableObject {
     private var gamepad: GamepadManager?
     private let fullScreenHandler: FullScreenHandling
     @Published public private(set) var hudState: HUDState
+    @Published public private(set) var hudDiagnosticsState: HUDDiagnosticsState
     @Published public private(set) var overlayState: OverlayState
     @Published public private(set) var diagnosticsState: DiagnosticsState
     @Published public private(set) var diagnosticsVisible: Bool
@@ -35,6 +36,7 @@ public final class SceneDriver: ObservableObject {
         let startedValue = false
         self.started = startedValue
         self.hudState = HUDState.from(state: loop.state, started: startedValue)
+        self.hudDiagnosticsState = HUDDiagnosticsState.from(state: loop.state)
         self.overlayState = OverlayState(
             isPaused: false,
             isGameOver: false,
@@ -125,6 +127,10 @@ public final class SceneDriver: ObservableObject {
         hudState = HUDState.from(
             state: loop.state,
             started: started,
+            lastInput: lastInputAction
+        )
+        hudDiagnosticsState = HUDDiagnosticsState.from(
+            state: loop.state,
             lastInput: lastInputAction
         )
     }
@@ -230,6 +236,10 @@ public final class SceneDriver: ObservableObject {
         hudState = HUDState.from(
             state: loop.state,
             started: started,
+            lastInput: lastInputAction
+        )
+        hudDiagnosticsState = HUDDiagnosticsState.from(
+            state: loop.state,
             lastInput: lastInputAction
         )
         overlayState = OverlayState(

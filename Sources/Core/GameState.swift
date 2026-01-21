@@ -18,6 +18,7 @@ public struct GameState {
     public var lineClearTimerMs: Int
     public var lineClearRows: [Int]
     public var lineClearScore: Int
+    public private(set) var lastLineClearTSpin: TSpinKind
     public var landingFlashTimerMs: Int
     public var landingFlashBlocks: [(Int, Int)]
     public var softDropActive: Bool
@@ -52,6 +53,7 @@ public struct GameState {
         self.lineClearTimerMs = 0
         self.lineClearRows = []
         self.lineClearScore = 0
+        self.lastLineClearTSpin = .none
         self.landingFlashTimerMs = 0
         self.landingFlashBlocks = []
         self.softDropActive = false
@@ -79,6 +81,7 @@ public struct GameState {
             }
             lineClearRows = []
             lineClearScore = 0
+            lastLineClearTSpin = .none
         }
 
         dropTimerMs += max(elapsedMs, 0)
@@ -294,6 +297,7 @@ public struct GameState {
             lineClearTimerMs = GameConstants.lineClearPauseMs
             lineClearRows = clearedRows
             lineClearScore = points
+            lastLineClearTSpin = tSpin
             soundEvents.append(.lineClear(cleared))
             lines += cleared
             if config.ruleset == .modern {
@@ -312,6 +316,7 @@ public struct GameState {
             backToBack = false
             lineClearRows = []
             lineClearScore = 0
+            lastLineClearTSpin = .none
         }
 
         if points > 0 {
@@ -420,6 +425,7 @@ public struct GameState {
             lineClearTimerMs: lineClearTimerMs,
             lineClearRows: lineClearRows,
             lineClearScore: lineClearScore,
+            lastLineClearTSpin: lastLineClearTSpin,
             landingFlashTimerMs: landingFlashTimerMs,
             landingFlashBlocks: landingFlashBlocks,
             softDropActive: softDropActive,

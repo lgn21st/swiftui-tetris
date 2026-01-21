@@ -18,6 +18,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -46,6 +48,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -73,6 +77,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -100,6 +106,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -125,6 +133,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [5],
             lineClearAlpha: 1,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -153,6 +163,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -178,6 +190,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -204,6 +218,8 @@ final class RenderBufferTests: XCTestCase {
             lineClearRows: [],
             lineClearAlpha: 0,
             scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
             activePulse: 0,
             isPaused: false,
             isGameOver: false

@@ -13,6 +13,8 @@ public struct RenderState {
     public var lineClearRows: [Int]
     public var lineClearAlpha: Double
     public var scorePopups: [ScorePopup]
+    public var tSpinKind: TSpinKind
+    public var tSpinAlpha: Double
     public var activePulse: Double
     public var isPaused: Bool
     public var isGameOver: Bool
@@ -30,6 +32,8 @@ public struct RenderState {
         lineClearRows: [Int],
         lineClearAlpha: Double,
         scorePopups: [ScorePopup],
+        tSpinKind: TSpinKind,
+        tSpinAlpha: Double,
         activePulse: Double,
         isPaused: Bool,
         isGameOver: Bool
@@ -46,6 +50,8 @@ public struct RenderState {
         self.lineClearRows = lineClearRows
         self.lineClearAlpha = lineClearAlpha
         self.scorePopups = scorePopups
+        self.tSpinKind = tSpinKind
+        self.tSpinAlpha = tSpinAlpha
         self.activePulse = activePulse
         self.isPaused = isPaused
         self.isGameOver = isGameOver
@@ -93,6 +99,8 @@ public enum RenderMapper {
         ? min(max(Double(snapshot.lineClearTimerMs) / Double(GameConstants.lineClearPauseMs), 0), 1)
         : 0
         let lineClearRows = snapshot.lineClearTimerMs > 0 ? snapshot.lineClearRows : []
+        let tSpinKind = snapshot.lineClearTimerMs > 0 ? snapshot.lastLineClearTSpin : .none
+        let tSpinAlpha = tSpinKind == .none ? 0 : lineClearAlpha
         let scorePopups = mapScorePopups(
             lineClearRows: lineClearRows,
             lineClearAlpha: lineClearAlpha,
@@ -116,6 +124,8 @@ public enum RenderMapper {
             lineClearRows: lineClearRows,
             lineClearAlpha: lineClearAlpha,
             scorePopups: scorePopups,
+            tSpinKind: tSpinKind,
+            tSpinAlpha: tSpinAlpha,
             activePulse: activePulse,
             isPaused: snapshot.paused,
             isGameOver: snapshot.gameOver

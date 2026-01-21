@@ -74,7 +74,10 @@ public struct TetrisContainerView: View {
                         value: driver.overlayState
                     )
                 if driver.diagnosticsVisible {
-                    DiagnosticsView(state: driver.diagnosticsState)
+                    DiagnosticsView(
+                        state: driver.diagnosticsState,
+                        hudState: driver.hudDiagnosticsState
+                    )
                         .frame(
                             width: LayoutConstants.baseSize.width,
                             height: LayoutConstants.baseSize.height,

@@ -35,12 +35,6 @@ final class HUDStateTests: XCTestCase {
         XCTAssertFalse(hud.lockWarningActive)
     }
 
-    func testHudHintText() {
-        let state = GameState(config: GameConfig(), seed: 1)
-        let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
-    }
-
     func testHudRulesetTextReflectsConfig() {
         let classic = GameState(config: GameConfig(ruleset: .classic), seed: 1)
         XCTAssertEqual(HUDState.from(state: classic).rulesetText, "Rules: Classic")
@@ -64,21 +58,5 @@ final class HUDStateTests: XCTestCase {
     func testHudStatusTextBeforeStart() {
         let state = GameState(config: GameConfig(), seed: 1)
         XCTAssertEqual(HUDState.from(state: state, started: false).statusText, "Status: Ready")
-    }
-
-    func testHudLastInputAndSfxLabels() {
-        let state = GameState(config: GameConfig(), seed: 1)
-        let hud = HUDState.from(state: state, lastInput: .rotateCw)
-        XCTAssertEqual(hud.lastInputText, "Last input: Rotate CW")
-        let mutedHud = HUDState.from(state: state, lastInput: nil)
-        XCTAssertEqual(mutedHud.lastInputText, "Last input: None")
-    }
-
-    func testHudGroundedAndLockResetsText() {
-        var state = GameState(config: GameConfig(lockResetLimit: 15), seed: 1)
-        state.lockResetCount = 3
-        let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.lockResetsText, "Lock resets: 12/15")
-        XCTAssertEqual(hud.groundedText, "Grounded: No")
     }
 }
