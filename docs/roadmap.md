@@ -28,9 +28,9 @@
 - Input repeat + pause/focus handling: complete with tests.
 - SpriteKit board rendering + landing flash + texture cache: complete with tests.
 - HUD/overlays and settings: complete with tests.
-- Audio: per-event gain + settings + persistence; pooled playback for overlapping SFX.
+- Audio: per-event gain + settings + persistence; AVAudioEngine buffers for overlapping SFX.
 - Window defaults + scaling: implemented; content stays centered on resize.
-- SwiftUI menu commands: start/restart/pause/settings/audio actions wired.
+- SwiftUI menu commands: start/restart/pause/settings actions wired.
 
 ## Refactor Track (Best Practices Alignment)
 ### R1: Loop Ownership (Done)

@@ -57,7 +57,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
    - Added tests for pooled playback behavior.
    - Replaced `AVAudioPlayer` with `AVAudioEngine` buffers.
 5) **UI Polish Pass (In Progress)**
-   - Added SwiftUI `Commands` for menu shortcuts (start/restart/pause/settings/audio).
+   - Added SwiftUI `Commands` for menu shortcuts (start/restart/pause/settings).
    - Extracted focus pause handling into `FocusPauseHandler`.
    - Confirm Settings focus, overlay transitions, and reduced motion behavior.
 
