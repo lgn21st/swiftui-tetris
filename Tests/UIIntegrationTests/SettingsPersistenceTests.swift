@@ -36,4 +36,27 @@ final class SettingsPersistenceTests: XCTestCase {
         let loaded = store.load()
         XCTAssertEqual(loaded, settings)
     }
+
+    func testSettingsStoreClampsDecodedValues() {
+        let storage = MemoryStore()
+        let store = UserDefaultsSettingsStore(storage: storage, key: "test")
+        let invalid = SettingsState(
+            volume: 2.5,
+            muted: false,
+            gainOverrides: [.hardDrop: 2.0],
+            sfxEnabled: [.move: false],
+            inputDasMs: 999,
+            inputArrMs: -10,
+            softDropArrMs: 200
+        )
+        store.save(invalid)
+
+        let loaded = store.load()
+        XCTAssertEqual(loaded.volume, 1.0)
+        XCTAssertEqual(loaded.inputDasMs, SettingsState.inputDasRange.upperBound)
+        XCTAssertEqual(loaded.inputArrMs, SettingsState.inputArrRange.lowerBound)
+        XCTAssertEqual(loaded.softDropArrMs, SettingsState.softDropArrRange.upperBound)
+        XCTAssertEqual(loaded.gainOverrides[.hardDrop], 1.0)
+        XCTAssertFalse(loaded.isSfxEnabled(for: SoundEventKind.move))
+    }
 }
