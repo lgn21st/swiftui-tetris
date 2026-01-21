@@ -68,3 +68,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Focus-loss auto-pause with UI integration tests.
 - Space-to-start behavior, lock bar warning pulse, and landing flash fade.
 - Title overlay start hint (“Press Space or Enter to start”).
+- Pause/settings hints, diagnostics overlay toggle, and window defaults.

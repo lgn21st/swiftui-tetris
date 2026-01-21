@@ -20,6 +20,9 @@ public struct TetrisContainerView: View {
                         set: { driver.settings = $0 }
                     ))
                 }
+                if driver.diagnosticsVisible {
+                    DiagnosticsView(state: driver.diagnosticsState)
+                }
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) }
@@ -27,6 +30,7 @@ public struct TetrisContainerView: View {
                 .frame(width: 0, height: 0)
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
+            .frame(minWidth: WindowConfig.minWidth, minHeight: WindowConfig.minHeight)
             .ignoresSafeArea()
             .onAppear { driver.start() }
             .onDisappear { driver.stop() }

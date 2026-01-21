@@ -13,6 +13,9 @@ public struct OverlayState: Equatable {
     }
 
     public var message: String {
+        if isGameOver { return "Press R to restart" }
+        if isSettings { return "S to close, M mute, +/- volume, 0 reset" }
+        if isPaused { return "Press P to resume, R to restart" }
         if isTitle { return "Press Space or Enter to start" }
         return ""
     }

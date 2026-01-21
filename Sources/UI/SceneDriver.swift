@@ -12,8 +12,11 @@ public final class SceneDriver: ObservableObject {
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
     @Published public var settings: SettingsState
+    @Published public private(set) var diagnosticsState: DiagnosticsState
+    @Published public private(set) var diagnosticsVisible: Bool
     private var started: Bool
     private var showSettings: Bool
+    private var diagnosticsTracker: DiagnosticsTracker
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -27,8 +30,11 @@ public final class SceneDriver: ObservableObject {
         self.hudState = HUDState.from(state: loop.state)
         self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
         self.settings = SettingsState()
+        self.diagnosticsState = DiagnosticsState.empty
+        self.diagnosticsVisible = false
         self.started = false
         self.showSettings = false
+        self.diagnosticsTracker = DiagnosticsTracker()
     }
 
     public func start() {
@@ -40,6 +46,7 @@ public final class SceneDriver: ObservableObject {
             let elapsed = Int(now.timeIntervalSince(self.lastTick ?? now) * 1000)
             self.lastTick = now
             let renderState = self.loop.step(elapsedMs: max(elapsed, 0))
+            self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: elapsed)
             let events = self.loop.state.takeSoundEvents()
             if let audio = self.audio, !self.settings.muted {
                 for event in events {
@@ -105,6 +112,10 @@ public final class SceneDriver: ObservableObject {
         }
         if key == "0" {
             settings.reset()
+            return
+        }
+        if key == "d" {
+            diagnosticsVisible.toggle()
             return
         }
         guard let action = KeyMapper.action(for: key) else { return }

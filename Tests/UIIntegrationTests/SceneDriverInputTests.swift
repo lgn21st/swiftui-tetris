@@ -19,4 +19,12 @@ final class SceneDriverInputTests: XCTestCase {
         XCTAssertFalse(filled)
         XCTAssertEqual(loop.state.score, 0)
     }
+
+    func testDiagnosticsToggle() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        XCTAssertFalse(driver.diagnosticsVisible)
+        driver.handleKeyDown("d")
+        XCTAssertTrue(driver.diagnosticsVisible)
+    }
 }
