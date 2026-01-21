@@ -29,4 +29,8 @@ public enum LayoutConstants {
     public static let settingsAnimationDuration: Double = 0.18
     public static let hudPadding: CGFloat = 8
     public static let hudCornerRadius: CGFloat = 6
+
+    public static func settingsAnimation(reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : .easeOut(duration: settingsAnimationDuration)
+    }
 }

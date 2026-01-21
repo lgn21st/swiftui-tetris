@@ -25,4 +25,9 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.contentWidth, 448)
         XCTAssertEqual(LayoutConstants.contentHeight, 480)
     }
+
+    func testSettingsAnimationRespectsReduceMotion() {
+        XCTAssertNil(LayoutConstants.settingsAnimation(reduceMotion: true))
+        XCTAssertNotNil(LayoutConstants.settingsAnimation(reduceMotion: false))
+    }
 }

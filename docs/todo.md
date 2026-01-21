@@ -10,7 +10,7 @@ None.
 
 ## UI / UX
 - Confirm overlay layering + interaction order across states (Title, Pause, Settings, Game Over).
-- Evaluate Settings overlay animation and accessibility (reduced motion, keyboard focus).
+- Evaluate Settings overlay keyboard focus behavior.
 
 ## Diagnostics / Tooling
 - Validate diagnostics overlay usefulness and key toggles during gameplay.

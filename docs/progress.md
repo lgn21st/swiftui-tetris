@@ -78,3 +78,4 @@
 - 2026-01-21: Added gamepad compatibility notes and release checklist item.
 - 2026-01-21: Added tests to ensure held input clears on focus loss and pause.
 - 2026-01-21: Added focus-loss repeat test to cover held key edge cases.
+- 2026-01-21: Disabled settings overlay animation when Reduce Motion is enabled.

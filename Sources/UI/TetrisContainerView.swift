@@ -5,6 +5,7 @@ import AppKit
 
 public struct TetrisContainerView: View {
     @StateObject private var driver = SceneDriver()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     public init() {}
 
@@ -95,7 +96,7 @@ public struct TetrisContainerView: View {
             )
             .scaleEffect(scale, anchor: LayoutConstants.scaleAnchor)
             .animation(
-                .easeOut(duration: LayoutConstants.settingsAnimationDuration),
+                LayoutConstants.settingsAnimation(reduceMotion: reduceMotion),
                 value: driver.overlayState.isSettings
             )
             .frame(
