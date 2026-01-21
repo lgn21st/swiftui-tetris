@@ -23,6 +23,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
   2) `swift run Packager --binary-path .build/release/App --output dist/SwiftUITeris.app --bundle-id com.example.swiftui-teris --name SwiftUITeris --version 0.1.0 --build 1`
   3) Optional: add `--icon-path assets/AppIcon.icns`, `--entitlements assets/App.entitlements`, and `--assets-path assets`
 - Details: `docs/cli-packaging.md`
+- Packager behavior is covered by `Tests/PackagingTests` (run via `swift test`).
 
 ## Assets
 - Project assets live under `assets/`.

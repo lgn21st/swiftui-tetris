@@ -47,4 +47,25 @@ final class PackagingTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: plistURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: bundledBinaryURL.path))
     }
+
+    func testCreateBundleThrowsWhenBinaryMissing() throws {
+        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let binaryURL = tempDir.appendingPathComponent("MissingBinary")
+
+        XCTAssertThrowsError(
+            try Packaging.createAppBundle(
+                binaryPath: binaryURL,
+                outputBundlePath: bundleURL,
+                bundleID: "com.example.tetris",
+                name: "SwiftUITeris",
+                version: "0.1.0",
+                build: "1"
+            )
+        )
+    }
 }
