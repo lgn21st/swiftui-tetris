@@ -20,3 +20,4 @@
 - 2026-01-21: Assets scaffolding, settings UI, and expanded HUD details.
 - 2026-01-21: Asset locator and audio resolution for CLI runs.
 - 2026-01-21: Landing flash rendering with Core + Renderer tests.
+- 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.

@@ -23,9 +23,9 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: landing flash rendering with Core + Renderer tests.
+- Last update: moved repo skill to `~/.codex/skills`.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
-  - Local skill file: `skills/swiftui-spritekit-tetris-dev/SKILL.md`
+  - Skill file: `~/.codex/skills/swiftui-spritekit-tetris-dev/SKILL.md`
 - Use skill `gpui-tetris-dev` only when analyzing or referencing gpui source behavior.

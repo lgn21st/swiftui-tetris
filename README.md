@@ -32,7 +32,7 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - `Renderer/`: SpriteKit scene and nodes.
 - `UI/`: SwiftUI container, panels, overlays.
 - `docs/`: rules and plan documents (see below).
-- `skills/`: local skill docs for this repo.
+- Skills live under `~/.codex/skills` (see `AGENTS.md`).
 
 ## Docs
 - `docs/feature-matrix.md`: parity checklist.

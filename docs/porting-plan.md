@@ -59,6 +59,7 @@
 - 2026-01-21: Added assets scaffolding, settings UI, and expanded HUD details.
 - 2026-01-21: Added asset locator and audio resolution for CLI runs.
 - 2026-01-21: Added landing flash rendering with Core + Renderer tests.
+- 2026-01-21: Moved repo skill to `~/.codex/skills` and revised instructions.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**
