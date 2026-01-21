@@ -14,6 +14,14 @@ This document captures the game rules and timing constants used by this project.
 - Lock reset limit: 15
 - Line clear pause: 180 ms
 - Landing flash: 120 ms
+- Input DAS: 150 ms (default)
+- Input ARR: 50 ms (default)
+- Soft drop ARR: 50 ms (default)
+
+## Input Settings Ranges
+- DAS range: 0..300 ms
+- ARR range: 0..100 ms
+- Soft drop ARR range: 0..100 ms
 
 ## Tetromino Shapes (Offsets)
 Rotation order: North, East, South, West.
