@@ -56,3 +56,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
 - Keyboard input capture, overlay state model, and sound event hooks.
 - HUD/overlay views and AVAudioPlayer-based audio playback.
+- Assets scaffolding, settings UI, and expanded HUD details.

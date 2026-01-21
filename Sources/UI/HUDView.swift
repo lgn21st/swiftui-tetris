@@ -14,6 +14,9 @@ public struct HUDView: View {
             Text(state.linesText)
             Text(state.holdText)
             Text(state.nextText)
+            Text(state.comboText)
+            Text(state.b2bText)
+            ProgressView(value: state.lockBarRatio)
         }
         .font(.system(size: 12, weight: .medium, design: .monospaced))
         .padding(8)

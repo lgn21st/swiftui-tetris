@@ -17,3 +17,4 @@
 - 2026-01-21: T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
 - 2026-01-21: Keyboard input capture, overlay state model, and sound event hooks.
 - 2026-01-21: HUD/overlay views and AVAudioPlayer-based audio playback.
+- 2026-01-21: Assets scaffolding, settings UI, and expanded HUD details.

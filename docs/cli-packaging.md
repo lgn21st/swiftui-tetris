@@ -36,3 +36,4 @@ swift run Packager \
 - If `--icon-path` is provided, the `.icns` file is copied into `Contents/Resources/` and referenced in `Info.plist`.
 - If `--entitlements` is provided, the file is copied to `Contents/Entitlements.plist` for later codesign usage.
 - If `dist/SwiftUITeris.app` already exists, delete it before re-running (or add a versioned output path).
+- Audio assets are expected under `assets/sfx/` (see `assets/README.md`).

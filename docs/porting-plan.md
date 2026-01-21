@@ -56,6 +56,7 @@
 - 2026-01-21: Added T-spin detection/scoring, render composition, input repeats, and SceneDriver loop.
 - 2026-01-21: Added keyboard input capture, overlay state model, and sound event hooks.
 - 2026-01-21: Added HUD/overlay views and AVAudioPlayer-based audio playback.
+- 2026-01-21: Added assets scaffolding, settings UI, and expanded HUD details.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

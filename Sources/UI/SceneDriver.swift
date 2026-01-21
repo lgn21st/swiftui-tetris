@@ -11,7 +11,9 @@ public final class SceneDriver: ObservableObject {
     private var lastTick: Date?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var overlayState: OverlayState
+    @Published public var settings: SettingsState
     private var started: Bool
+    private var showSettings: Bool
 
     public init(loop: GameLoop = GameLoop(), input: InputEngine = InputEngine(), audio: AudioEngine? = nil) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
@@ -19,8 +21,10 @@ public final class SceneDriver: ObservableObject {
         self.input = input
         self.audio = audio
         self.hudState = HUDState.from(state: loop.state)
-        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
+        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true, isSettings: false)
+        self.settings = SettingsState()
         self.started = false
+        self.showSettings = false
     }
 
     public func start() {
@@ -33,16 +37,17 @@ public final class SceneDriver: ObservableObject {
             self.lastTick = now
             let renderState = self.loop.step(elapsedMs: max(elapsed, 0))
             let events = self.loop.state.takeSoundEvents()
-            if let audio = self.audio {
+            if let audio = self.audio, !self.settings.muted {
                 for event in events {
                     audio.play(event)
                 }
             }
             self.hudState = HUDState.from(state: self.loop.state)
             self.overlayState = OverlayState(
-                isPaused: self.loop.state.paused,
+                isPaused: self.loop.state.paused || self.showSettings,
                 isGameOver: self.loop.state.gameOver,
-                isTitle: !self.started
+                isTitle: !self.started,
+                isSettings: self.showSettings
             )
             self.scene.render(state: renderState)
         }
@@ -60,6 +65,27 @@ public final class SceneDriver: ObservableObject {
                 started = true
                 loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
             }
+            return
+        }
+        if key == "s" {
+            showSettings.toggle()
+            loop.state.paused = showSettings
+            return
+        }
+        if key == "m" {
+            settings.toggleMute()
+            return
+        }
+        if key == "+" || key == "=" {
+            settings.adjustVolume(by: 0.1)
+            return
+        }
+        if key == "-" {
+            settings.adjustVolume(by: -0.1)
+            return
+        }
+        if key == "0" {
+            settings.reset()
             return
         }
         guard let action = KeyMapper.action(for: key) else { return }

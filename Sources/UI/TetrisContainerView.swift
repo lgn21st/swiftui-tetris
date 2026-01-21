@@ -13,6 +13,12 @@ public struct TetrisContainerView: View {
                 SpriteView(scene: driver.scene)
                 HUDView(state: driver.hudState)
                 OverlayView(state: driver.overlayState)
+                if driver.overlayState.isSettings {
+                    SettingsView(settings: Binding(
+                        get: { driver.settings },
+                        set: { driver.settings = $0 }
+                    ))
+                }
                 KeyCaptureView(
                     onKeyDown: { driver.handleKeyDown($0) },
                     onKeyUp: { driver.handleKeyUp($0) }
