@@ -24,7 +24,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: Added button press tracking to stabilize gamepad inputs.
+- Last update: Packager now bundles assets for packaged apps.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

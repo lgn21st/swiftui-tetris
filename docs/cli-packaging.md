@@ -34,13 +34,15 @@ swift run Packager \
   --version 0.1.0 \
   --build 1 \
   --icon-path assets/AppIcon.icns \
-  --entitlements assets/App.entitlements
+  --entitlements assets/App.entitlements \
+  --assets-path assets
 ```
 
 ## Notes
 - The packager writes `Contents/Info.plist` and copies the binary into `Contents/MacOS/`.
 - If `--icon-path` is provided, the `.icns` file is copied into `Contents/Resources/` and referenced in `Info.plist`.
 - If `--entitlements` is provided, the file is copied to `Contents/Entitlements.plist` for later codesign usage.
+- If `--assets-path` is provided, its contents are copied to `Contents/Resources/assets/`.
 - If `dist/SwiftUITeris.app` already exists, delete it before re-running (or add a versioned output path).
 - Audio assets are expected under `assets/sfx/` (see `assets/README.md`).
 - Packaging verified on 2026-01-21 with a release build + Packager run.

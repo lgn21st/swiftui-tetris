@@ -10,6 +10,7 @@ struct Arguments {
     var build: String
     var iconPath: URL?
     var entitlementsPath: URL?
+    var assetsPath: URL?
 }
 
 func parseArgs() -> Arguments? {
@@ -28,6 +29,7 @@ func parseArgs() -> Arguments? {
     var build: String = "1"
     var iconPath: String?
     var entitlementsPath: String?
+    var assetsPath: String?
 
     while let arg = nextValue() {
         switch arg {
@@ -47,6 +49,8 @@ func parseArgs() -> Arguments? {
             iconPath = nextValue()
         case "--entitlements":
             entitlementsPath = nextValue()
+        case "--assets-path":
+            assetsPath = nextValue()
         case "--help", "-h":
             return nil
         default:
@@ -63,7 +67,8 @@ func parseArgs() -> Arguments? {
         version: version,
         build: build,
         iconPath: iconPath.map { URL(fileURLWithPath: $0) },
-        entitlementsPath: entitlementsPath.map { URL(fileURLWithPath: $0) }
+        entitlementsPath: entitlementsPath.map { URL(fileURLWithPath: $0) },
+        assetsPath: assetsPath.map { URL(fileURLWithPath: $0) }
     )
 }
 
@@ -79,6 +84,7 @@ func printUsage() {
       --build <build>      CFBundleVersion (default: 1)
       --icon-path <path>   Path to .icns file (optional)
       --entitlements <path> Path to entitlements plist (optional)
+      --assets-path <path>  Path to assets folder (optional)
     """
     print(usage)
 }
@@ -97,7 +103,8 @@ do {
         version: args.version,
         build: args.build,
         iconPath: args.iconPath,
-        entitlementsPath: args.entitlementsPath
+        entitlementsPath: args.entitlementsPath,
+        assetsPath: args.assetsPath
     )
 } catch {
     fputs("Packaging failed: \(error)\n", stderr)

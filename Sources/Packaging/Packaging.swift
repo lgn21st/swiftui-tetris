@@ -55,7 +55,8 @@ public enum Packaging {
         version: String,
         build: String,
         iconPath: URL? = nil,
-        entitlementsPath: URL? = nil
+        entitlementsPath: URL? = nil,
+        assetsPath: URL? = nil
     ) throws {
         let fileManager = FileManager.default
         let contentsURL = outputBundlePath.appendingPathComponent("Contents", isDirectory: true)
@@ -91,6 +92,15 @@ public enum Packaging {
             try fileManager.copyItem(at: iconPath, to: destIconURL)
         }
 
+        if let assetsPath {
+            let destAssetsURL = resourcesURL.appendingPathComponent("assets", isDirectory: true)
+            if fileManager.fileExists(atPath: destAssetsURL.path) {
+                try fileManager.removeItem(at: destAssetsURL)
+            }
+            try fileManager.createDirectory(at: destAssetsURL, withIntermediateDirectories: true)
+            try copyDirectoryContents(from: assetsPath, to: destAssetsURL)
+        }
+
         if let entitlementsPath {
             let destEntitlementsURL = contentsURL.appendingPathComponent("Entitlements.plist")
             if fileManager.fileExists(atPath: destEntitlementsURL.path) {
@@ -104,6 +114,27 @@ public enum Packaging {
             let value = permissions.intValue | 0o111
             attributes[.posixPermissions] = NSNumber(value: value)
             try fileManager.setAttributes(attributes, ofItemAtPath: bundledBinaryURL.path)
+        }
+    }
+
+    private static func copyDirectoryContents(from source: URL, to destination: URL) throws {
+        let fileManager = FileManager.default
+        let contents = try fileManager.contentsOfDirectory(atPath: source.path)
+        for entry in contents {
+            let srcURL = source.appendingPathComponent(entry)
+            let destURL = destination.appendingPathComponent(entry)
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: srcURL.path, isDirectory: &isDirectory) {
+                if isDirectory.boolValue {
+                    try fileManager.createDirectory(at: destURL, withIntermediateDirectories: true)
+                    try copyDirectoryContents(from: srcURL, to: destURL)
+                } else {
+                    if fileManager.fileExists(atPath: destURL.path) {
+                        try fileManager.removeItem(at: destURL)
+                    }
+                    try fileManager.copyItem(at: srcURL, to: destURL)
+                }
+            }
         }
     }
 }

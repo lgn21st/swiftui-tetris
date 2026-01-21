@@ -41,4 +41,36 @@ final class PackagingResourcesTests: XCTestCase {
         XCTAssertTrue(plist.contains("CFBundleIconFile"))
         XCTAssertTrue(plist.contains("AppIcon.icns"))
     }
+
+    func testBundleCopiesAssetsFolder() throws {
+        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let binaryURL = tempDir.appendingPathComponent("App")
+        try "test".write(to: binaryURL, atomically: true, encoding: .utf8)
+
+        let assetsURL = tempDir.appendingPathComponent("assets", isDirectory: true)
+        let sfxURL = assetsURL.appendingPathComponent("sfx", isDirectory: true)
+        try FileManager.default.createDirectory(at: sfxURL, withIntermediateDirectories: true)
+        let soundURL = sfxURL.appendingPathComponent("move.wav")
+        try "sound".write(to: soundURL, atomically: true, encoding: .utf8)
+
+        try Packaging.createAppBundle(
+            binaryPath: binaryURL,
+            outputBundlePath: bundleURL,
+            bundleID: "com.example.tetris",
+            name: "SwiftUITeris",
+            version: "0.1.0",
+            build: "1",
+            assetsPath: assetsURL
+        )
+
+        let copiedSound = bundleURL
+            .appendingPathComponent("Contents/Resources/assets/sfx", isDirectory: true)
+            .appendingPathComponent("move.wav")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: copiedSound.path))
+    }
 }
