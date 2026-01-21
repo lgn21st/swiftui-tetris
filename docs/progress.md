@@ -53,3 +53,4 @@
 - 2026-01-21: Added window state persistence and Cmd+Ctrl+F fullscreen toggle with tests.
 - 2026-01-21: Added GameController gamepad mapping and input wiring with tests.
 - 2026-01-21: Marked M6 optional features complete.
+- 2026-01-21: Added button press tracking to avoid missed gamepad button events; added tests.

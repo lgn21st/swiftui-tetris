@@ -89,9 +89,17 @@ public final class GamepadManager {
     }
 
     private func bindButton(_ button: GCControllerButtonInput, as mapped: GamepadButton) {
-        button.pressedChangedHandler = { [weak self] _, _, pressed in
-            guard pressed else { return }
-            self?.handleButton(mapped)
+        var tracker = ButtonPressTracker()
+        let handle: (Float, Bool) -> Void = { [weak self] value, pressed in
+            if tracker.update(value: value, pressed: pressed) {
+                self?.handleButton(mapped)
+            }
+        }
+        button.pressedChangedHandler = { _, value, pressed in
+            handle(value, pressed)
+        }
+        button.valueChangedHandler = { _, value, pressed in
+            handle(value, pressed)
         }
     }
 

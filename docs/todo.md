@@ -6,6 +6,7 @@ Track areas where we intentionally used a basic implementation and plan to revis
 - Verify focus + input robustness after app deactivation/reactivation (esp. from CLI).
 - Expand non-character key handling (Esc, Tab, function keys, keypad +/-) if needed.
 - Validate key repeat behavior in edge cases (held keys across focus changes).
+- Confirm gamepad Y button behavior across common controllers.
 
 ## Audio / Assets / Packaging
 - Confirm audio path resolution inside packaged `.app` bundle.
@@ -20,4 +21,3 @@ Track areas where we intentionally used a basic implementation and plan to revis
 ## Diagnostics / Tooling
 - Validate diagnostics overlay usefulness and key toggles during gameplay.
 - Add optional CLI smoke-test checklist in docs once stable.
-
