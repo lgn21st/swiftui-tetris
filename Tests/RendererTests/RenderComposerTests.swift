@@ -3,6 +3,7 @@ import XCTest
 @testable import Core
 
 final class RenderComposerTests: XCTestCase {
+    @available(*, deprecated, message: "RenderComposer is deprecated; tests assert legacy behavior only.")
     func testActiveOverridesGhost() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
@@ -23,6 +24,7 @@ final class RenderComposerTests: XCTestCase {
         XCTAssertEqual(cell?.kind, .t)
     }
 
+    @available(*, deprecated, message: "RenderComposer is deprecated; tests assert legacy behavior only.")
     func testGhostFillsEmptyCell() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
@@ -42,6 +44,7 @@ final class RenderComposerTests: XCTestCase {
         XCTAssertEqual(cell?.kind, .i)
     }
 
+    @available(*, deprecated, message: "RenderComposer is deprecated; tests assert legacy behavior only.")
     func testFlashMarksCells() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(

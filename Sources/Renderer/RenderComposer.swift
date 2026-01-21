@@ -9,9 +9,11 @@ public struct CellRender: Equatable {
     public var isFlash: Bool
 }
 
+@available(*, deprecated, message: "Use RenderBuffer for in-place updates to avoid per-frame allocations.")
 public enum RenderComposer {
     public static func compose(from state: RenderState) -> [CellRender] {
         var cells: [CellRender] = []
+        cells.reserveCapacity(state.board.count * (state.board.first?.count ?? 0))
         for y in 0..<state.board.count {
             for x in 0..<state.board[y].count {
                 let kind = state.board[y][x]
