@@ -55,6 +55,23 @@ final class SettingsStateTests: XCTestCase {
         XCTAssertEqual(settings.softDropRepeatConfig(), RepeatConfig(dasMs: 0, arrMs: 30))
     }
 
+    func testInitClampsValues() {
+        let settings = SettingsState(
+            volume: 2.5,
+            muted: false,
+            gainOverrides: [.hardDrop: 2.0],
+            sfxEnabled: [:],
+            inputDasMs: 999,
+            inputArrMs: -10,
+            softDropArrMs: 200
+        )
+        XCTAssertEqual(settings.volume, 1.0)
+        XCTAssertEqual(settings.gainOverrides[.hardDrop], 1.0)
+        XCTAssertEqual(settings.inputDasMs, SettingsState.inputDasRange.upperBound)
+        XCTAssertEqual(settings.inputArrMs, SettingsState.inputArrRange.lowerBound)
+        XCTAssertEqual(settings.softDropArrMs, SettingsState.softDropArrRange.upperBound)
+    }
+
     func testSfxDefaultsEnabled() {
         let settings = SettingsState()
         XCTAssertTrue(settings.isSfxEnabled(for: SoundEventKind.hardDrop))

@@ -32,13 +32,13 @@ public struct SettingsState: Equatable, Codable {
         inputArrMs: Int = 50,
         softDropArrMs: Int = 50
     ) {
-        self.volume = volume
+        self.volume = min(1.0, max(0.0, volume))
         self.muted = muted
-        self.gainOverrides = gainOverrides
+        self.gainOverrides = gainOverrides.mapValues { min(1.0, max(0.0, $0)) }
         self.sfxEnabled = sfxEnabled
-        self.inputDasMs = inputDasMs
-        self.inputArrMs = inputArrMs
-        self.softDropArrMs = softDropArrMs
+        self.inputDasMs = Self.clamp(inputDasMs, to: Self.inputDasRange)
+        self.inputArrMs = Self.clamp(inputArrMs, to: Self.inputArrRange)
+        self.softDropArrMs = Self.clamp(softDropArrMs, to: Self.softDropArrRange)
     }
 
     public init(from decoder: Decoder) throws {
