@@ -15,7 +15,11 @@ public final class SceneDriver: ObservableObject {
     private var started: Bool
     private var showSettings: Bool
 
-    public init(loop: GameLoop = GameLoop(), input: InputEngine = InputEngine(), audio: AudioEngine? = nil) {
+    public init(
+        loop: GameLoop = GameLoop(),
+        input: InputEngine = InputEngine(),
+        audio: AudioEngine? = AudioEngine(baseURL: AssetLocator.sfxDirectory())
+    ) {
         self.scene = TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
         self.input = input

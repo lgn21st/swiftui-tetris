@@ -8,25 +8,31 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Keep logic and rendering decoupled; Core must be unit-testable.
 - Enforce strict TDD: every feature, improvement, or refactor must be protected by tests.
 
-## Run
-- Requires macOS + Xcode.
-- Create and open a SwiftUI App project, then run (details to be added).
-
-## CLI Commands
+## Run (CLI-first)
+- Requires macOS + Xcode toolchain (no Xcode UI required).
 - Tests: `swift test`
 - Build (debug): `swift build`
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
+
+## CLI Packaging
 - Package .app (CLI):
   1) `swift build -c release`
   2) `swift run Packager --binary-path .build/release/App --output dist/SwiftUITeris.app --bundle-id com.example.swiftui-teris --name SwiftUITeris --version 0.1.0 --build 1`
   3) Optional: add `--icon-path assets/AppIcon.icns` and `--entitlements assets/App.entitlements`
+- Details: `docs/cli-packaging.md`
+
+## Assets
+- Project assets live under `assets/`.
+- Audio playback resolves `assets/sfx` using the CLI working directory via `UI/AssetLocator`.
+- Keep `assets/README.md` and `assets/sfx/README.md` updated when assets change.
 
 ## Planned Structure
 - `Core/`: rules, timing, scoring, queue, rotation.
 - `Renderer/`: SpriteKit scene and nodes.
 - `UI/`: SwiftUI container, panels, overlays.
 - `docs/`: rules and plan documents (see below).
+- `skills/`: local skill docs for this repo.
 
 ## Docs
 - `docs/feature-matrix.md`: parity checklist.
@@ -57,3 +63,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Keyboard input capture, overlay state model, and sound event hooks.
 - HUD/overlay views and AVAudioPlayer-based audio playback.
 - Assets scaffolding, settings UI, and expanded HUD details.
+- Asset locator and audio resolution for CLI runs.

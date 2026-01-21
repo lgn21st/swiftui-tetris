@@ -57,6 +57,7 @@
 - 2026-01-21: Added keyboard input capture, overlay state model, and sound event hooks.
 - 2026-01-21: Added HUD/overlay views and AVAudioPlayer-based audio playback.
 - 2026-01-21: Added assets scaffolding, settings UI, and expanded HUD details.
+- 2026-01-21: Added asset locator and audio resolution for CLI runs.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

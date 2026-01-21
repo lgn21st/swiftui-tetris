@@ -23,8 +23,9 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/porting-plan.md` updated after each phase.
-- Last update: assets scaffolding, settings UI, and expanded HUD added.
+- Last update: asset locator and audio resolution for CLI runs.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.
+  - Local skill file: `skills/swiftui-spritekit-tetris-dev/SKILL.md`
 - Use skill `gpui-tetris-dev` only when analyzing or referencing gpui source behavior.

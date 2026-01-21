@@ -12,13 +12,7 @@ public final class AudioEngine {
 
     public func play(_ event: SoundEvent) {
         guard let fileName = SoundEventMapper.fileName(for: event) else { return }
-        let url: URL?
-        if let baseURL {
-            url = baseURL.appendingPathComponent(fileName)
-        } else {
-            url = Bundle.main.url(forResource: fileName, withExtension: nil)
-        }
-        guard let soundURL = url else { return }
+        let soundURL = resolveURL(for: event, fileName: fileName)
         let player: AVAudioPlayer
         if let cached = players[fileName] {
             player = cached
@@ -30,5 +24,17 @@ public final class AudioEngine {
         }
         player.currentTime = 0
         player.play()
+    }
+
+    public func resolveURL(for event: SoundEvent) -> URL? {
+        guard let fileName = SoundEventMapper.fileName(for: event) else { return nil }
+        return resolveURL(for: event, fileName: fileName)
+    }
+
+    private func resolveURL(for event: SoundEvent, fileName: String) -> URL {
+        if let baseURL {
+            return baseURL.appendingPathComponent(fileName)
+        }
+        return Bundle.main.url(forResource: fileName, withExtension: nil) ?? URL(fileURLWithPath: fileName)
     }
 }
