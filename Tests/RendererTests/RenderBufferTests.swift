@@ -17,6 +17,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -44,6 +45,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -70,6 +72,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 1,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -96,6 +99,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -120,6 +124,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [5],
             lineClearAlpha: 1,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -147,6 +152,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 1,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -171,6 +177,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -196,6 +203,7 @@ final class RenderBufferTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false

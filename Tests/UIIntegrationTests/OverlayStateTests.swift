@@ -26,4 +26,11 @@ final class OverlayStateTests: XCTestCase {
         let overlay = OverlayState(isPaused: false, isGameOver: true, isTitle: false)
         XCTAssertEqual(overlay.message, "Press R to restart")
     }
+
+    func testOverlayBlinksStartHintOnTitle() {
+        let overlay = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
+        XCTAssertTrue(overlay.shouldBlinkStartHint)
+        let paused = OverlayState(isPaused: true, isGameOver: false, isTitle: false)
+        XCTAssertFalse(paused.shouldBlinkStartHint)
+    }
 }

@@ -25,6 +25,10 @@
 - Board gridlines and HUD typography polish (implemented).
 - Line-clear shimmer overlay (implemented).
 - Onboarding hints on the title overlay (implemented).
+- Title start hint blink (implemented).
+- Backdrop vignette behind board + HUD (implemented).
+- Line-clear score popups (implemented).
+- Ambient loop with line-clear ducking (implemented).
 
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.

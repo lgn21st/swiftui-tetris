@@ -22,28 +22,40 @@ public struct TetrisContainerView: View {
                     width: LayoutConstants.baseSize.width,
                     height: LayoutConstants.baseSize.height
                 )
-                HStack(alignment: .top, spacing: LayoutConstants.baseGap) {
-                    SpriteView(scene: driver.scene)
-                        .frame(width: LayoutConstants.boardWidth, height: LayoutConstants.boardHeight)
-                        .background(
-                            Color(
-                                red: ThemeConstants.boardBackgroundRed,
-                                green: ThemeConstants.boardBackgroundGreen,
-                                blue: ThemeConstants.boardBackgroundBlue
-                            )
+                ZStack {
+                    GroupBackdropView()
+                        .frame(
+                            width: LayoutConstants.contentWidth,
+                            height: LayoutConstants.contentHeight
                         )
-                        .overlay(
-                            Rectangle().stroke(
+                    HStack(alignment: .top, spacing: LayoutConstants.baseGap) {
+                        SpriteView(scene: driver.scene)
+                            .frame(width: LayoutConstants.boardWidth, height: LayoutConstants.boardHeight)
+                            .background(
                                 Color(
-                                    red: ThemeConstants.borderColorRed,
-                                    green: ThemeConstants.borderColorGreen,
-                                    blue: ThemeConstants.borderColorBlue,
-                                    opacity: ThemeConstants.panelBorderOpacity
-                                ),
-                                lineWidth: LayoutConstants.boardBorderWidth
+                                    red: ThemeConstants.boardBackgroundRed,
+                                    green: ThemeConstants.boardBackgroundGreen,
+                                    blue: ThemeConstants.boardBackgroundBlue
+                                )
                             )
-                        )
-                    SidePanelView(state: driver.hudState)
+                            .overlay(
+                                Rectangle().stroke(
+                                    Color(
+                                        red: ThemeConstants.borderColorRed,
+                                        green: ThemeConstants.borderColorGreen,
+                                        blue: ThemeConstants.borderColorBlue,
+                                        opacity: ThemeConstants.panelBorderOpacity
+                                    ),
+                                    lineWidth: LayoutConstants.boardBorderWidth
+                                )
+                            )
+                        SidePanelView(state: driver.hudState)
+                    }
+                    .frame(
+                        width: LayoutConstants.contentWidth,
+                        height: LayoutConstants.contentHeight,
+                        alignment: .topLeading
+                    )
                 }
                 .frame(
                     width: LayoutConstants.contentWidth,
@@ -116,5 +128,59 @@ public struct TetrisContainerView: View {
                 driver.handleAppActiveChanged(isActive: false)
             }
         }
+    }
+}
+
+private struct GroupBackdropView: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: LayoutConstants.groupCornerRadius, style: .continuous)
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color(
+                            red: ThemeConstants.groupBackgroundStartRed,
+                            green: ThemeConstants.groupBackgroundStartGreen,
+                            blue: ThemeConstants.groupBackgroundStartBlue
+                        ),
+                        Color(
+                            red: ThemeConstants.groupBackgroundEndRed,
+                            green: ThemeConstants.groupBackgroundEndGreen,
+                            blue: ThemeConstants.groupBackgroundEndBlue
+                        )
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .overlay(
+                RadialGradient(
+                    colors: [
+                        Color.black.opacity(0),
+                        Color.black.opacity(ThemeConstants.groupVignetteOpacity)
+                    ],
+                    center: .center,
+                    startRadius: LayoutConstants.boardWidth * 0.2,
+                    endRadius: LayoutConstants.boardWidth * 0.9
+                )
+                .blendMode(.multiply)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: LayoutConstants.groupCornerRadius, style: .continuous)
+                    .stroke(
+                        Color(
+                            red: ThemeConstants.borderColorRed,
+                            green: ThemeConstants.borderColorGreen,
+                            blue: ThemeConstants.borderColorBlue
+                        )
+                        .opacity(ThemeConstants.panelBorderOpacity),
+                        lineWidth: LayoutConstants.groupBorderWidth
+                    )
+            )
+            .shadow(
+                color: .black.opacity(ThemeConstants.groupShadowOpacity),
+                radius: LayoutConstants.panelShadowRadius,
+                x: 0,
+                y: 4
+            )
     }
 }

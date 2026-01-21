@@ -32,9 +32,13 @@ public struct OverlayView: View {
                         .font(.system(size: TypographyConstants.overlayTitleSize, weight: .bold))
                         .foregroundColor(.white)
                     if !state.message.isEmpty {
-                        Text(state.message)
-                            .font(.system(size: TypographyConstants.overlayMessageSize, weight: .medium))
-                            .foregroundColor(.white.opacity(0.85))
+                        if state.shouldBlinkStartHint {
+                            BlinkingText(text: state.message)
+                        } else {
+                            Text(state.message)
+                                .font(.system(size: TypographyConstants.overlayMessageSize, weight: .medium))
+                                .foregroundColor(.white.opacity(0.85))
+                        }
                     }
                     if !state.onboardingHints.isEmpty {
                         VStack(spacing: 4) {
@@ -51,5 +55,22 @@ public struct OverlayView: View {
             }
             .transition(.opacity)
         }
+    }
+}
+
+private struct BlinkingText: View {
+    let text: String
+    @State private var visible = false
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: TypographyConstants.overlayMessageSize, weight: .medium))
+            .foregroundColor(.white.opacity(0.85))
+            .opacity(visible ? 1 : 0.15)
+            .onAppear { visible = true }
+            .animation(
+                .easeInOut(duration: 0.9).repeatForever(autoreverses: true),
+                value: visible
+            )
     }
 }

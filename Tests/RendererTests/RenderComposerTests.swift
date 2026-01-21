@@ -18,6 +18,7 @@ final class RenderComposerTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -44,6 +45,7 @@ final class RenderComposerTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -69,6 +71,7 @@ final class RenderComposerTests: XCTestCase {
             flashAlpha: 1,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -94,6 +97,7 @@ final class RenderComposerTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false
@@ -119,6 +123,7 @@ final class RenderComposerTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [6],
             lineClearAlpha: 1,
+            scorePopups: [],
             activePulse: 0,
             isPaused: false,
             isGameOver: false

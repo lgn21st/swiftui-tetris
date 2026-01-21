@@ -18,6 +18,14 @@ public enum ThemeConstants {
     public static let panelBackgroundRed: Double = 26.0 / 255.0
     public static let panelBackgroundGreen: Double = 26.0 / 255.0
     public static let panelBackgroundBlue: Double = 26.0 / 255.0
+    public static let groupBackgroundStartRed: Double = 24.0 / 255.0
+    public static let groupBackgroundStartGreen: Double = 24.0 / 255.0
+    public static let groupBackgroundStartBlue: Double = 24.0 / 255.0
+    public static let groupBackgroundEndRed: Double = 12.0 / 255.0
+    public static let groupBackgroundEndGreen: Double = 12.0 / 255.0
+    public static let groupBackgroundEndBlue: Double = 12.0 / 255.0
+    public static let groupVignetteOpacity: Double = 0.45
+    public static let groupShadowOpacity: Double = 0.25
     public static let panelTextRed: Double = 230.0 / 255.0
     public static let panelTextGreen: Double = 230.0 / 255.0
     public static let panelTextBlue: Double = 230.0 / 255.0

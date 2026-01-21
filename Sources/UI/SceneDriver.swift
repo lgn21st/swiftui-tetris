@@ -19,6 +19,7 @@ public final class SceneDriver: ObservableObject {
     private var latestRenderState: RenderState
     private let focusHandler: FocusPauseHandler
     private let masterVolume: Double
+    private var ambientDucked: Bool
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -45,6 +46,7 @@ public final class SceneDriver: ObservableObject {
         self.latestRenderState = RenderMapper.map(state: loop.state)
         self.focusHandler = FocusPauseHandler()
         self.masterVolume = 0.7
+        self.ambientDucked = false
         self.gamepad = GamepadManager(
             onLeftHeld: { [weak self] held in
                 self?.setGamepadLeftHeld(held)
@@ -73,6 +75,7 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func start() {
+        audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
         gamepad?.start()
     }
 
@@ -92,12 +95,18 @@ public final class SceneDriver: ObservableObject {
                 )
             }
         }
+        let shouldDuck = loop.state.lineClearTimerMs > 0
+        if shouldDuck != ambientDucked {
+            audio?.setAmbientDucking(enabled: shouldDuck)
+            ambientDucked = shouldDuck
+        }
         refreshDerivedState()
         scene.render(state: renderState)
     }
 
     public func stop() {
         gamepad?.stop()
+        audio?.setAmbientLoop(enabled: false, masterVolume: masterVolume)
     }
 
     func stateSnapshot() -> GameState {

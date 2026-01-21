@@ -13,6 +13,7 @@ public final class TetrisScene: SKScene {
     private var clock: FixedStepClock
     private var frameClock: FrameClock
     private var textureCache: TextureCache
+    private var scorePopupNodes: [SKLabelNode] = []
     public var onFixedStep: ((Int) -> Void)?
     public var onFrame: ((Int) -> Void)?
     public var onRender: (() -> RenderState?)?
@@ -96,6 +97,7 @@ public final class TetrisScene: SKScene {
             let node = cellNodes[cell.y][cell.x]
             applyRender(cell: cell, state: state, node: node)
         }
+        renderScorePopups(state.scorePopups)
     }
 
     private func applyRender(cell: CellRender, state: RenderState, node: SKSpriteNode) {
@@ -161,6 +163,37 @@ public final class TetrisScene: SKScene {
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
         addGridlines()
+    }
+
+    private func renderScorePopups(_ popups: [ScorePopup]) {
+        if popups.count > scorePopupNodes.count {
+            for _ in scorePopupNodes.count..<popups.count {
+                let node = SKLabelNode(fontNamed: "Menlo-Bold")
+                node.fontSize = 16
+                node.fontColor = .white
+                node.zPosition = 10
+                node.isHidden = true
+                addChild(node)
+                scorePopupNodes.append(node)
+            }
+        }
+        for (index, node) in scorePopupNodes.enumerated() {
+            guard index < popups.count else {
+                node.isHidden = true
+                continue
+            }
+            let popup = popups[index]
+            node.text = popup.text
+            node.alpha = CGFloat(popup.alpha)
+            node.isHidden = false
+            let position = CGPoint(
+                x: CGFloat(popup.x) * cellSize + cellSize / 2,
+                y: CGFloat(Board.height - 1) * cellSize
+                    - CGFloat(popup.y) * cellSize
+                    + cellSize / 2
+            )
+            node.position = position
+        }
     }
 
     private func addGridlines() {

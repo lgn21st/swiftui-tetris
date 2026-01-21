@@ -9,7 +9,7 @@ Use this checklist before cutting a release build.
 ## Manual QA (CLI-run)
 - `swift run App` launches a window immediately.
 - Keyboard: arrows, rotate, hard drop, hold, pause, restart.
-- Audio: confirm move/rotate/line clear events audible.
+- Audio: confirm move/rotate/line clear events audible; ambient loop plays and ducks on line clears.
 - Fullscreen: Cmd+Ctrl+F toggles correctly.
 - Window size: fixed to content size (no resize persistence).
 - Gamepad: dpad move/drop, A/B rotate, X hard drop, Y hold, menu pause, options restart.

@@ -108,3 +108,8 @@
 - 2026-01-22: Added line-clear shimmer overlay during the clear pause.
 - 2026-01-22: Added HUD section dividers to improve side panel scanability.
 - 2026-01-22: Added first-run onboarding hints on the title overlay.
+- 2026-01-22: Added a pulsing start hint on the title overlay.
+- 2026-01-22: Added a gradient + vignette backdrop behind the board and HUD group.
+- 2026-01-22: Added floating score popups during line clear pauses.
+- 2026-01-22: Added ambient loop with line-clear ducking.
+- 2026-01-22: Aligned feature matrix to mark implemented polish and architecture items.

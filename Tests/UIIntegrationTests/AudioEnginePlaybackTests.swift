@@ -52,6 +52,19 @@ final class AudioEnginePlaybackTests: XCTestCase {
         XCTAssertEqual(backend.nodes.count, 1)
         XCTAssertEqual(backend.nodes[0].playCount, 2)
     }
+
+    func testAmbientLoopSchedulesWithLoopingAndDucking() {
+        let backend = FakeAudioBackend()
+        let engine = AudioEngine(baseURL: nil, maxPlayersPerSound: 1, backend: backend)
+
+        engine.setAmbientLoop(enabled: true, masterVolume: 1.0)
+        XCTAssertEqual(backend.nodes.count, 1)
+        XCTAssertEqual(backend.nodes[0].lastScheduledLoops, true)
+        let initialVolume = backend.nodes[0].volume
+
+        engine.setAmbientDucking(enabled: true)
+        XCTAssertLessThan(backend.nodes[0].volume, initialVolume)
+    }
 }
 
 private final class FakeAudioBackend: AudioEngineBackend {
@@ -99,13 +112,21 @@ private final class FakeAudioNode: AudioPlaybackNode {
     var isPlaying: Bool = false
     private(set) var scheduleCount: Int = 0
     private(set) var playCount: Int = 0
+    private(set) var stopCount: Int = 0
+    private(set) var lastScheduledLoops: Bool = false
 
-    func schedule(_ buffer: SoundBuffer) {
+    func schedule(_ buffer: SoundBuffer, loops: Bool) {
         scheduleCount += 1
+        lastScheduledLoops = loops
     }
 
     func play() {
         playCount += 1
         isPlaying = true
+    }
+
+    func stop() {
+        stopCount += 1
+        isPlaying = false
     }
 }

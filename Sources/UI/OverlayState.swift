@@ -10,6 +10,10 @@ public struct OverlayState: Equatable {
         "Hold: C, Pause: P"
     ]
 
+    public var shouldBlinkStartHint: Bool {
+        isTitle
+    }
+
     public var title: String {
         if isGameOver { return "Game Over" }
         if isPaused { return "Paused" }

@@ -13,6 +13,8 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.hudSpacing, 6)
         XCTAssertEqual(LayoutConstants.panelCornerRadius, 8)
         XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
+        XCTAssertEqual(LayoutConstants.groupCornerRadius, 12)
+        XCTAssertEqual(LayoutConstants.groupBorderWidth, 1)
         XCTAssertEqual(LayoutConstants.overlayAnimationDuration, 0.12)
         XCTAssertEqual(LayoutConstants.hudPadding, 8)
         XCTAssertEqual(LayoutConstants.hudCornerRadius, 6)

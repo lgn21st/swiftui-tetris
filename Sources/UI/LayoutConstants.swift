@@ -23,6 +23,8 @@ public enum LayoutConstants {
     public static let hudSpacing: CGFloat = 6
     public static let panelCornerRadius: CGFloat = 8
     public static let panelShadowRadius: CGFloat = 10
+    public static let groupCornerRadius: CGFloat = 12
+    public static let groupBorderWidth: CGFloat = 1
     public static let panelBorderWidth: CGFloat = 1
     public static let boardBorderWidth: CGFloat = 1
     public static let overlayAnimationDuration: Double = 0.12

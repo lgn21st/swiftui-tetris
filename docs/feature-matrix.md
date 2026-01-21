@@ -61,19 +61,22 @@ Legend:
 | Base size | Yes | 480x720, cell=24. |
 | Layout | Yes | Board + right panel. |
 | Scaling | Yes | Uniform scale with min 0.6. |
+| Backdrop vignette | Optional | Gradient + vignette behind board + HUD (implemented). |
 | Overlays | Yes | Title, pause, game over. |
 | Overlay hints | Optional | Title/pause/game over messages. |
+| Title hint blink | Optional | Start hint pulses on the title overlay (implemented). |
 | Onboarding hints | Optional | First-run overlay hints on the title screen (implemented). |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
 | HUD details | Optional | Last input, grounded, lock resets. |
 | HUD dividers | Optional | Section dividers for scan-friendly grouping (implemented). |
 | Lock bar | Optional | Visual bar + warning pulse (implemented). |
 | Line-clear shimmer | Optional | Shimmer overlay on cleared rows (implemented). |
-| Soft drop trail | Optional | Trail between active piece and ghost during soft drop. |
-| Active piece highlight | Optional | Subtle highlight pass for active blocks. |
-| Board gridlines | Optional | Subtle gridline overlay behind board cells. |
-| HUD section typography | Optional | Distinct header sizing for Hold/Next sections. |
-| Active drop pulse | Optional | Subtle alpha pulse tied to gravity interval. |
+| Score popups | Optional | Floating score popup on line clears (implemented). |
+| Soft drop trail | Optional | Trail between active piece and ghost during soft drop (implemented). |
+| Active piece highlight | Optional | Subtle highlight pass for active blocks (implemented). |
+| Board gridlines | Optional | Subtle gridline overlay behind board cells (implemented). |
+| HUD section typography | Optional | Distinct header sizing for Hold/Next sections (implemented). |
+| Active drop pulse | Optional | Subtle alpha pulse tied to gravity interval (implemented). |
 | Ghost tint | Yes | Low alpha. |
 | Ghost outline | Optional | Outline stroke on ghost piece (implemented). |
 | Accessibility labels | Optional | Overlay labels for title + message. |
@@ -84,6 +87,7 @@ Legend:
 | Events | Optional | Move/Rotate/SoftDrop/HardDrop/Hold/LineClear/GameOver. |
 | Gains | Optional | Per-event gain mapping (defaults). |
 | Master volume | Optional | Fixed default 0.7. |
+| Ambient loop | Optional | Ambient loop with line-clear ducking (implemented). |
 
 ## Diagnostics and Testing
 | Feature | Required | Notes |
@@ -95,9 +99,9 @@ Legend:
 ## Engine Architecture
 | Feature | Required | Notes |
 | --- | --- | --- |
-| SpriteKit-driven loop | Optional | Migrate to `SKScene.update(_:)` fixed timestep. |
-| Render node reuse | Optional | Pre-allocate nodes; cached textures for piece rendering. |
-| Input router | Optional | Unified keyboard/gamepad mapping layer. |
+| SpriteKit-driven loop | Optional | `SKScene.update(_:)` fixed timestep (implemented). |
+| Render node reuse | Optional | Pre-allocate nodes; cached textures for piece rendering (implemented). |
+| Input router | Optional | Unified keyboard/gamepad mapping layer (implemented). |
 | Audio engine | Optional | AVAudioEngine buffers for low-latency SFX (implemented). |
 
 ## Core Checklist

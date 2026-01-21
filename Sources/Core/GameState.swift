@@ -19,6 +19,7 @@ public struct GameState {
     public var lockTimerMs: Int
     public var lineClearTimerMs: Int
     public var lineClearRows: [Int]
+    public var lineClearScore: Int
     public var landingFlashTimerMs: Int
     public var landingFlashBlocks: [(Int, Int)]
     public var softDropActive: Bool
@@ -52,6 +53,7 @@ public struct GameState {
         self.lockTimerMs = 0
         self.lineClearTimerMs = 0
         self.lineClearRows = []
+        self.lineClearScore = 0
         self.landingFlashTimerMs = 0
         self.landingFlashBlocks = []
         self.softDropActive = false
@@ -78,6 +80,7 @@ public struct GameState {
                 return
             }
             lineClearRows = []
+            lineClearScore = 0
         }
 
         dropTimerMs += max(elapsedMs, 0)
@@ -292,6 +295,7 @@ public struct GameState {
         if cleared > 0 {
             lineClearTimerMs = GameState.lineClearPauseMs
             lineClearRows = clearedRows
+            lineClearScore = points
             soundEvents.append(.lineClear(cleared))
             lines += cleared
             if config.ruleset == .modern {
@@ -309,6 +313,7 @@ public struct GameState {
             combo = -1
             backToBack = false
             lineClearRows = []
+            lineClearScore = 0
         }
 
         if points > 0 {

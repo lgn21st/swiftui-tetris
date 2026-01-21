@@ -60,6 +60,7 @@ final class TetrisSceneRenderTests: XCTestCase {
             flashAlpha: 0,
             lineClearRows: [],
             lineClearAlpha: 0,
+            scorePopups: [],
             activePulse: 0,
             isPaused: isPaused,
             isGameOver: isGameOver

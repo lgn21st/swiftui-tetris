@@ -12,6 +12,7 @@ public struct RenderState {
     public var flashAlpha: Double
     public var lineClearRows: [Int]
     public var lineClearAlpha: Double
+    public var scorePopups: [ScorePopup]
     public var activePulse: Double
     public var isPaused: Bool
     public var isGameOver: Bool
@@ -28,6 +29,7 @@ public struct RenderState {
         flashAlpha: Double,
         lineClearRows: [Int],
         lineClearAlpha: Double,
+        scorePopups: [ScorePopup],
         activePulse: Double,
         isPaused: Bool,
         isGameOver: Bool
@@ -43,9 +45,24 @@ public struct RenderState {
         self.flashAlpha = flashAlpha
         self.lineClearRows = lineClearRows
         self.lineClearAlpha = lineClearAlpha
+        self.scorePopups = scorePopups
         self.activePulse = activePulse
         self.isPaused = isPaused
         self.isGameOver = isGameOver
+    }
+}
+
+public struct ScorePopup: Equatable {
+    public var text: String
+    public var x: Double
+    public var y: Double
+    public var alpha: Double
+
+    public init(text: String, x: Double, y: Double, alpha: Double) {
+        self.text = text
+        self.x = x
+        self.y = y
+        self.alpha = alpha
     }
 }
 
@@ -76,6 +93,11 @@ public enum RenderMapper {
         ? min(max(Double(state.lineClearTimerMs) / Double(GameState.lineClearPauseMs), 0), 1)
         : 0
         let lineClearRows = state.lineClearTimerMs > 0 ? state.lineClearRows : []
+        let scorePopups = mapScorePopups(
+            lineClearRows: lineClearRows,
+            lineClearAlpha: lineClearAlpha,
+            lineClearScore: state.lineClearScore
+        )
         let trailBlocks = hideActive ? [] : softDropTrailBlocks(
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
@@ -93,6 +115,7 @@ public enum RenderMapper {
             flashAlpha: flashAlpha,
             lineClearRows: lineClearRows,
             lineClearAlpha: lineClearAlpha,
+            scorePopups: scorePopups,
             activePulse: activePulse,
             isPaused: state.paused,
             isGameOver: state.gameOver
@@ -135,5 +158,23 @@ public enum RenderMapper {
                 if lhs.1 == rhs.1 { return lhs.0 < rhs.0 }
                 return lhs.1 < rhs.1
             }
+    }
+
+    private static func mapScorePopups(
+        lineClearRows: [Int],
+        lineClearAlpha: Double,
+        lineClearScore: Int
+    ) -> [ScorePopup] {
+        guard lineClearScore > 0, !lineClearRows.isEmpty else { return [] }
+        let avgRow = Double(lineClearRows.reduce(0, +)) / Double(lineClearRows.count)
+        let centerX = Double(Board.width - 1) / 2.0
+        return [
+            ScorePopup(
+                text: "+\(lineClearScore)",
+                x: centerX,
+                y: avgRow,
+                alpha: lineClearAlpha
+            )
+        ]
     }
 }

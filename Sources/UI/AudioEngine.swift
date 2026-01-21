@@ -3,6 +3,8 @@ import AVFoundation
 
 public protocol AudioPlaying {
     func play(_ event: SoundEvent, masterVolume: Double, gainOverride: Double?)
+    func setAmbientLoop(enabled: Bool, masterVolume: Double)
+    func setAmbientDucking(enabled: Bool)
 }
 
 public protocol SoundBuffer {
@@ -13,8 +15,9 @@ public protocol SoundBuffer {
 public protocol AudioPlaybackNode {
     var volume: Float { get set }
     var isPlaying: Bool { get }
-    func schedule(_ buffer: SoundBuffer)
+    func schedule(_ buffer: SoundBuffer, loops: Bool)
     func play()
+    func stop()
 }
 
 public protocol AudioEngineBackend {
@@ -49,12 +52,17 @@ private final class AVAudioPlayerNodeAdapter: AudioPlaybackNode {
 
     var isPlaying: Bool { node.isPlaying }
 
-    func schedule(_ buffer: SoundBuffer) {
-        node.scheduleBuffer(buffer.pcmBuffer, at: nil, options: .interrupts, completionHandler: nil)
+    func schedule(_ buffer: SoundBuffer, loops: Bool) {
+        let options: AVAudioPlayerNodeBufferOptions = loops ? .loops : .interrupts
+        node.scheduleBuffer(buffer.pcmBuffer, at: nil, options: options, completionHandler: nil)
     }
 
     func play() {
         node.play()
+    }
+
+    func stop() {
+        node.stop()
     }
 }
 
@@ -111,6 +119,14 @@ public final class AudioEngine: AudioPlaying {
     private let backend: AudioEngineBackend
     private var buffers: [String: SoundBuffer]
     private var players: [String: [AudioPlaybackNode]]
+    private var ambientPlayer: AudioPlaybackNode?
+    private var ambientBuffer: SoundBuffer?
+    private var ambientEnabled: Bool = false
+    private var ambientDucked: Bool = false
+    private var ambientMasterVolume: Double = 1.0
+    private let ambientFileName = "ambient_loop.wav"
+    private let ambientGain: Double = 0.2
+    private let ambientDuckMultiplier: Double = 0.35
 
     public init(
         baseURL: URL? = nil,
@@ -146,8 +162,39 @@ public final class AudioEngine: AudioPlaying {
         players[fileName] = pool
         backend.startIfNeeded()
         player.volume = resolvedVolume(for: event, master: masterVolume, gainOverride: gainOverride)
-        player.schedule(buffer)
+        player.schedule(buffer, loops: false)
         player.play()
+    }
+
+    public func setAmbientLoop(enabled: Bool, masterVolume: Double = 1.0) {
+        ambientEnabled = enabled
+        ambientMasterVolume = masterVolume
+        guard enabled else {
+            ambientPlayer?.stop()
+            ambientPlayer?.volume = 0
+            return
+        }
+        let buffer = ambientBuffer ?? loadBuffer(fileName: ambientFileName)
+        guard let buffer else { return }
+        ambientBuffer = buffer
+        if ambientPlayer == nil {
+            let created = backend.makePlayerNode()
+            backend.attach(created)
+            backend.connect(created, format: buffer.format)
+            ambientPlayer = created
+        }
+        backend.startIfNeeded()
+        updateAmbientVolume()
+        if ambientPlayer?.isPlaying == false {
+            ambientPlayer?.schedule(buffer, loops: true)
+            ambientPlayer?.play()
+        }
+    }
+
+    public func setAmbientDucking(enabled: Bool) {
+        guard ambientDucked != enabled else { return }
+        ambientDucked = enabled
+        updateAmbientVolume()
     }
 
     public func resolveURL(for event: SoundEvent) -> URL? {
@@ -176,6 +223,13 @@ public final class AudioEngine: AudioPlaying {
         guard let buffer = backend.loadBuffer(from: url) else { return nil }
         buffers[fileName] = buffer
         return buffer
+    }
+
+    private func updateAmbientVolume() {
+        guard ambientEnabled else { return }
+        let duck = ambientDucked ? ambientDuckMultiplier : 1
+        let volume = min(max(ambientMasterVolume * ambientGain * duck, 0), 1)
+        ambientPlayer?.volume = Float(volume)
     }
 
     public func resolvedVolume(for event: SoundEvent, master: Double, gainOverride: Double? = nil) -> Float {
