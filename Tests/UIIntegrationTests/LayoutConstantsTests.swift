@@ -15,6 +15,7 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
         XCTAssertEqual(LayoutConstants.settingsEnterScale, 0.96)
         XCTAssertEqual(LayoutConstants.settingsAnimationDuration, 0.18)
+        XCTAssertEqual(LayoutConstants.overlayAnimationDuration, 0.12)
         XCTAssertEqual(LayoutConstants.hudPadding, 8)
         XCTAssertEqual(LayoutConstants.hudCornerRadius, 6)
         XCTAssertEqual(LayoutConstants.panelBorderWidth, 1)
@@ -29,5 +30,10 @@ final class LayoutConstantsTests: XCTestCase {
     func testSettingsAnimationRespectsReduceMotion() {
         XCTAssertNil(LayoutConstants.settingsAnimation(reduceMotion: true))
         XCTAssertNotNil(LayoutConstants.settingsAnimation(reduceMotion: false))
+    }
+
+    func testOverlayAnimationRespectsReduceMotion() {
+        XCTAssertNil(LayoutConstants.overlayAnimation(reduceMotion: true))
+        XCTAssertNotNil(LayoutConstants.overlayAnimation(reduceMotion: false))
     }
 }

@@ -41,6 +41,7 @@ public struct OverlayView: View {
                     .accessibilityLabel(Self.accessibilityLabel(for: state))
                 }
             }
+            .transition(.opacity)
         }
     }
 }

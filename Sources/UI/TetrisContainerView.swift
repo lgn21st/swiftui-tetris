@@ -57,6 +57,10 @@ public struct TetrisContainerView: View {
                         height: LayoutConstants.baseSize.height,
                         alignment: .topLeading
                     )
+                    .animation(
+                        LayoutConstants.overlayAnimation(reduceMotion: reduceMotion),
+                        value: driver.overlayState
+                    )
                 if driver.overlayState.isSettings {
                     SettingsView(settings: Binding(
                         get: { driver.settings },

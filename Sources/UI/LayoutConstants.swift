@@ -27,10 +27,15 @@ public enum LayoutConstants {
     public static let boardBorderWidth: CGFloat = 1
     public static let settingsEnterScale: CGFloat = 0.96
     public static let settingsAnimationDuration: Double = 0.18
+    public static let overlayAnimationDuration: Double = 0.12
     public static let hudPadding: CGFloat = 8
     public static let hudCornerRadius: CGFloat = 6
 
     public static func settingsAnimation(reduceMotion: Bool) -> Animation? {
         reduceMotion ? nil : .easeOut(duration: settingsAnimationDuration)
+    }
+
+    public static func overlayAnimation(reduceMotion: Bool) -> Animation? {
+        reduceMotion ? nil : .easeOut(duration: overlayAnimationDuration)
     }
 }

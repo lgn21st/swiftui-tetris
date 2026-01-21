@@ -110,5 +110,6 @@
 - 2026-01-21: Added input coverage for Escape closing the Settings overlay.
 - 2026-01-21: Added overlay accessibility label composition with tests.
 - 2026-01-21: Suppressed overlay accessibility label while Settings overlay is open.
+- 2026-01-21: Added overlay fade animation with Reduce Motion support.
 - 2026-01-21: Switched SpriteKit rendering to cached textures (TextureCache + sprite nodes).
 - 2026-01-21: Extracted focus pause handling into FocusPauseHandler with tests.
