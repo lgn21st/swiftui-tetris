@@ -123,9 +123,9 @@
 - 2026-01-21: Added input repeat settings (DAS/ARR/soft drop ARR) with persistence and tests.
 - 2026-01-21: Added per-event SFX toggles in Settings; audio playback honors toggles.
 - 2026-01-21: Added preflight notes to codesign/notarize checklist.
-- 2026-01-21: Added Settings quick reference to README.
-- 2026-01-21: Updated release checklist to cover input repeat sliders and SFX toggles.
-- 2026-01-21: Documented input repeat defaults and ranges in rules spec.
+- 2026-01-22: Added Settings quick reference to README.
+- 2026-01-22: Updated release checklist to cover input repeat sliders and SFX toggles.
+- 2026-01-22: Documented input repeat defaults and ranges in rules spec.
 - 2026-01-22: Clamped decoded Settings values on load with tests.
 - 2026-01-22: Documented ARR=0 behavior (disables repeat) in rules spec.
 - 2026-01-22: Added tests for repeat config helpers and SFX event toggles.
@@ -136,3 +136,6 @@
 - 2026-01-22: Updated HUD hint text to include Settings and Mute shortcuts.
 - 2026-01-22: Documented SFX toggle behavior in feature matrix.
 - 2026-01-22: Added ARR=0 repeat note to README settings quick reference.
+- 2026-01-22: Clarified ARR=0 behavior in feature matrix input repeat row.
+- 2026-01-22: Normalized progress log dates for recent Settings updates.
+- 2026-01-22: Clarified SFX toggle/slider behavior in README settings quick reference.

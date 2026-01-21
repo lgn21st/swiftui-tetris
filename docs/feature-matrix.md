@@ -55,7 +55,7 @@ Legend:
 | Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
-| Input repeat settings | Optional | Configurable DAS/ARR/soft drop ARR in Settings. |
+| Input repeat settings | Optional | Configurable DAS/ARR/soft drop ARR in Settings (ARR=0 disables repeat). |
 
 ## UI and Layout
 | Feature | Required | Notes |
