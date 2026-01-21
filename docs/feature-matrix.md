@@ -61,7 +61,7 @@ Legend:
 | --- | --- | --- | --- |
 | Base size | 480x720, cell=24 | Yes | Keep logical base for scaling. |
 | Layout | Board + right panel | Yes | SpriteKit board, SwiftUI side panel. |
-| Scaling | Uniform scale with min 0.6 | Yes | Min window size set to 0.6 of base. |
+| Scaling | Uniform scale with min 0.6 | Yes | Implemented layout scale based on window size. |
 | Overlays | Title, pause, settings, game over | Yes | SwiftUI ZStack overlays. |
 | HUD labels | Score/Level/Lines/Status/Ruleset | Yes | Bind to GameState. |
 | Lock bar | Visual bar + warning pulse | Optional | Implemented in SwiftUI HUD. |

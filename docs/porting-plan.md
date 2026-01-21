@@ -65,8 +65,8 @@
 - 2026-01-21: Added title overlay start hint (“Press Space or Enter to start”).
 - 2026-01-21: Added pause/settings hints, diagnostics overlay toggle, and window defaults.
 - 2026-01-21: Added per-event SFX gain mapping with master volume control.
-- 2026-01-21: Added CLI run fallback script for sandboxed SwiftPM.
 - 2026-01-21: Added app activation on launch for CLI runs.
+- 2026-01-21: Added proportional layout scaling based on window size.
 
 ### M2: SpriteKit Board Rendering
 **Deliverables**

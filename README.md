@@ -14,7 +14,6 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Build (debug): `swift build`
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
-- If `swift run` is blocked by sandbox permissions, use `scripts/run_app.sh` or run the binary from `$(swift build --show-bin-path)/App`.
 
 ## CLI Packaging
 - Package .app (CLI):
@@ -72,3 +71,4 @@ macOS native Tetris port from gpui-tetris to SwiftUI + SpriteKit. The priority i
 - Pause/settings hints, diagnostics overlay toggle, and window defaults.
 - Per-event SFX gain mapping with master volume control.
 - App activation on launch to surface the window when running from CLI.
+- Proportional layout scaling based on window size.

@@ -10,6 +10,7 @@ public struct TetrisContainerView: View {
 
     public var body: some View {
         GeometryReader { proxy in
+            let scale = LayoutScale.scale(for: proxy.size)
             ZStack {
                 SpriteView(scene: driver.scene)
                 HUDView(state: driver.hudState)
@@ -29,6 +30,8 @@ public struct TetrisContainerView: View {
                 )
                 .frame(width: 0, height: 0)
             }
+            .frame(width: WindowConfig.defaultWidth, height: WindowConfig.defaultHeight)
+            .scaleEffect(scale)
             .frame(width: proxy.size.width, height: proxy.size.height)
             .frame(minWidth: WindowConfig.minWidth, minHeight: WindowConfig.minHeight)
             .ignoresSafeArea()
