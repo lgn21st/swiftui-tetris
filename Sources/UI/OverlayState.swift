@@ -2,6 +2,13 @@ public struct OverlayState: Equatable {
     public var isPaused: Bool
     public var isGameOver: Bool
     public var isTitle: Bool
+    public var onboardingHints: [String] = []
+
+    public static let defaultOnboardingHints = [
+        "Move: Left/Right, Rotate: Up",
+        "Soft drop: Down, Hard drop: Space",
+        "Hold: C, Pause: P"
+    ]
 
     public var title: String {
         if isGameOver { return "Game Over" }

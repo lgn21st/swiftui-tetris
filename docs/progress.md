@@ -107,3 +107,4 @@
 - 2026-01-22: Added ghost outline stroke for clearer landing guidance.
 - 2026-01-22: Added line-clear shimmer overlay during the clear pause.
 - 2026-01-22: Added HUD section dividers to improve side panel scanability.
+- 2026-01-22: Added first-run onboarding hints on the title overlay.

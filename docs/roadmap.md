@@ -24,6 +24,7 @@
 - Fullscreen toggle, diagnostics overlay.
 - Board gridlines and HUD typography polish (implemented).
 - Line-clear shimmer overlay (implemented).
+- Onboarding hints on the title overlay (implemented).
 
 ## Current Status (Snapshot)
 - Core rules, timing, scoring, RNG, hold/queue: complete with tests.

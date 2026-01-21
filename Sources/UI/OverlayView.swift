@@ -11,8 +11,14 @@ public struct OverlayView: View {
         let title = state.title
         let message = state.message
         if title.isEmpty { return "" }
-        if message.isEmpty { return title }
-        return "\(title). \(message)"
+        var parts = [title]
+        if !message.isEmpty {
+            parts.append(message)
+        }
+        if !state.onboardingHints.isEmpty {
+            parts.append(state.onboardingHints.joined(separator: " "))
+        }
+        return parts.joined(separator: ". ")
     }
 
     public var body: some View {
@@ -29,6 +35,15 @@ public struct OverlayView: View {
                         Text(state.message)
                             .font(.system(size: TypographyConstants.overlayMessageSize, weight: .medium))
                             .foregroundColor(.white.opacity(0.85))
+                    }
+                    if !state.onboardingHints.isEmpty {
+                        VStack(spacing: 4) {
+                            ForEach(state.onboardingHints, id: \.self) { hint in
+                                Text(hint)
+                            }
+                        }
+                        .font(.system(size: TypographyConstants.overlayHintSize, weight: .medium, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.7))
                     }
                 }
                 .accessibilityElement(children: .combine)

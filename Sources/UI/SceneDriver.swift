@@ -32,7 +32,12 @@ public final class SceneDriver: ObservableObject {
         let startedValue = false
         self.started = startedValue
         self.hudState = HUDState.from(state: loop.state, started: startedValue)
-        self.overlayState = OverlayState(isPaused: false, isGameOver: false, isTitle: true)
+        self.overlayState = OverlayState(
+            isPaused: false,
+            isGameOver: false,
+            isTitle: true,
+            onboardingHints: OverlayState.defaultOnboardingHints
+        )
         self.diagnosticsState = DiagnosticsState.empty
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
@@ -221,7 +226,8 @@ public final class SceneDriver: ObservableObject {
         overlayState = OverlayState(
             isPaused: loop.state.paused,
             isGameOver: loop.state.gameOver,
-            isTitle: !started
+            isTitle: !started,
+            onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
         )
     }
 

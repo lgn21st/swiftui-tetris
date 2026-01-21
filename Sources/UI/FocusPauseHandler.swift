@@ -13,7 +13,8 @@ public struct FocusPauseHandler {
             return OverlayState(
                 isPaused: state.paused,
                 isGameOver: state.gameOver,
-                isTitle: !started
+                isTitle: !started,
+                onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
             )
         }
         state.paused = true
@@ -21,7 +22,8 @@ public struct FocusPauseHandler {
         return OverlayState(
             isPaused: true,
             isGameOver: state.gameOver,
-            isTitle: !started
+            isTitle: !started,
+            onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
         )
     }
 }

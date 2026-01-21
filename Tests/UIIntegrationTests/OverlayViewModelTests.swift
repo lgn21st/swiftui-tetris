@@ -14,4 +14,17 @@ final class OverlayViewModelTests: XCTestCase {
             "Paused. Press P to resume · R to restart"
         )
     }
+
+    func testOverlayAccessibilityLabelIncludesOnboardingHints() {
+        let state = OverlayState(
+            isPaused: false,
+            isGameOver: false,
+            isTitle: true,
+            onboardingHints: ["Move: Left/Right", "Rotate: Up"]
+        )
+        XCTAssertEqual(
+            OverlayView.accessibilityLabel(for: state),
+            "Title. Press Space or Enter to start. Move: Left/Right Rotate: Up"
+        )
+    }
 }

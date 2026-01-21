@@ -9,7 +9,7 @@ None.
 None.
 
 ## UI / UX
-- First-run onboarding hints (contextual overlays).
+None.
 
 ## Diagnostics / Tooling
 None.

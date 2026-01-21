@@ -63,6 +63,7 @@ Legend:
 | Scaling | Yes | Uniform scale with min 0.6. |
 | Overlays | Yes | Title, pause, game over. |
 | Overlay hints | Optional | Title/pause/game over messages. |
+| Onboarding hints | Optional | First-run overlay hints on the title screen (implemented). |
 | HUD labels | Yes | Score/Level/Lines/Status/Ruleset. |
 | HUD details | Optional | Last input, grounded, lock resets. |
 | HUD dividers | Optional | Section dividers for scan-friendly grouping (implemented). |
