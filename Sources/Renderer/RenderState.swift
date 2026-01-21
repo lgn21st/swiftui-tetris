@@ -67,58 +67,58 @@ public struct ScorePopup: Equatable {
 }
 
 public enum RenderMapper {
-    public static func map(state: GameState) -> RenderState {
-        let board = state.board.cells.map { row in
+    public static func map(snapshot: GameStateSnapshot) -> RenderState {
+        let board = snapshot.boardCells.map { row in
             row.map { $0.filled ? $0.kind : nil }
         }
-        let hideActive = state.lineClearTimerMs > 0
-        let activeBlocks = hideActive ? [] : state.active.blocks(rotation: state.active.rotation).map { (dx, dy) in
-            (state.active.x + dx, state.active.y + dy)
+        let hideActive = snapshot.lineClearTimerMs > 0
+        let activeBlocks = hideActive ? [] : snapshot.active.blocks(rotation: snapshot.active.rotation).map { (dx, dy) in
+            (snapshot.active.x + dx, snapshot.active.y + dy)
         }
-        let ghostBlocks = hideActive ? [] : state.ghostBlocks()
-        let flashBlocks = state.landingFlashTimerMs > 0 ? state.landingFlashBlocks : []
-        let flashAlpha = state.landingFlashTimerMs > 0
-        ? min(max(Double(state.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
+        let ghostBlocks = hideActive ? [] : snapshot.ghostBlocks
+        let flashBlocks = snapshot.landingFlashTimerMs > 0 ? snapshot.landingFlashBlocks : []
+        let flashAlpha = snapshot.landingFlashTimerMs > 0
+        ? min(max(Double(snapshot.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
         : 0
         let activePulse = hideActive ? 0 : activePulseValue(
-            dropTimerMs: state.dropTimerMs,
+            dropTimerMs: snapshot.dropTimerMs,
             intervalMs: Timing.dropInterval(
-                level: state.level,
-                baseDropMs: state.config.baseDropMs,
-                softDrop: state.softDropActive,
-                softDropMultiplier: state.config.softDropMultiplier
+                level: snapshot.level,
+                baseDropMs: snapshot.config.baseDropMs,
+                softDrop: snapshot.softDropActive,
+                softDropMultiplier: snapshot.config.softDropMultiplier
             )
         )
-        let lineClearAlpha = state.lineClearTimerMs > 0
-        ? min(max(Double(state.lineClearTimerMs) / Double(GameState.lineClearPauseMs), 0), 1)
+        let lineClearAlpha = snapshot.lineClearTimerMs > 0
+        ? min(max(Double(snapshot.lineClearTimerMs) / Double(GameState.lineClearPauseMs), 0), 1)
         : 0
-        let lineClearRows = state.lineClearTimerMs > 0 ? state.lineClearRows : []
+        let lineClearRows = snapshot.lineClearTimerMs > 0 ? snapshot.lineClearRows : []
         let scorePopups = mapScorePopups(
             lineClearRows: lineClearRows,
             lineClearAlpha: lineClearAlpha,
-            lineClearScore: state.lineClearScore
+            lineClearScore: snapshot.lineClearScore
         )
         let trailBlocks = hideActive ? [] : softDropTrailBlocks(
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
-            isSoftDropActive: state.softDropActive
+            isSoftDropActive: snapshot.softDropActive
         )
         return RenderState(
             board: board,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
-            activeKind: hideActive ? nil : state.active.kind,
-            ghostKind: hideActive ? nil : state.active.kind,
+            activeKind: hideActive ? nil : snapshot.active.kind,
+            ghostKind: hideActive ? nil : snapshot.active.kind,
             softDropTrailBlocks: trailBlocks,
-            softDropTrailKind: trailBlocks.isEmpty ? nil : state.active.kind,
+            softDropTrailKind: trailBlocks.isEmpty ? nil : snapshot.active.kind,
             flashBlocks: flashBlocks,
             flashAlpha: flashAlpha,
             lineClearRows: lineClearRows,
             lineClearAlpha: lineClearAlpha,
             scorePopups: scorePopups,
             activePulse: activePulse,
-            isPaused: state.paused,
-            isGameOver: state.gameOver
+            isPaused: snapshot.paused,
+            isGameOver: snapshot.gameOver
         )
     }
 

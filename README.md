@@ -38,4 +38,4 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Status
-Core and optional features are implemented and covered by tests, including fullscreen + diagnostics overlay, soft drop trail, line-clear shimmer, score popups, an ambient loop with ducking, onboarding hints, title hint blink, HUD dividers, ghost outline stroke, active-piece highlight textures, lock-bar warning pulse, board gridlines, a group backdrop vignette, and an active-piece pulse.
+Core and optional features are implemented and covered by tests, including fullscreen + diagnostics overlay, soft drop trail, line-clear shimmer, score popups, an ambient loop with ducking, onboarding hints, title hint blink, HUD dividers, ghost outline stroke, active-piece highlight textures, lock-bar warning pulse, board gridlines, a group backdrop vignette, and an active-piece pulse. Render mapping now consumes a Core snapshot boundary.

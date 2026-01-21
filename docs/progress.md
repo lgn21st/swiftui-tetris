@@ -116,3 +116,4 @@
 - 2026-01-22: Added command toggles for diagnostics overlay and fullscreen.
 - 2026-01-22: Packaging verification blocked here by sandboxed SwiftPM manifest (use local CLI with writable cache).
 - 2026-01-22: Trimmed SwiftUI menu commands back to restart/pause only.
+- 2026-01-22: Introduced Core snapshot boundary and switched render mapping to use it.

@@ -404,4 +404,31 @@ public struct GameState {
         soundEvents.removeAll()
         return events
     }
+
+    public func snapshot() -> GameStateSnapshot {
+        GameStateSnapshot(
+            boardCells: board.cells,
+            active: active,
+            paused: paused,
+            gameOver: gameOver,
+            score: score,
+            level: level,
+            lines: lines,
+            hold: hold,
+            canHold: canHold,
+            nextQueue: nextQueue,
+            dropTimerMs: dropTimerMs,
+            lockTimerMs: lockTimerMs,
+            lineClearTimerMs: lineClearTimerMs,
+            lineClearRows: lineClearRows,
+            lineClearScore: lineClearScore,
+            landingFlashTimerMs: landingFlashTimerMs,
+            landingFlashBlocks: landingFlashBlocks,
+            softDropActive: softDropActive,
+            softDropTimeoutMs: softDropTimeoutMs,
+            lockResetCount: lockResetCount,
+            ghostBlocks: ghostCache,
+            config: config
+        )
+    }
 }

@@ -10,6 +10,7 @@
 - `docs/feature-matrix.md`: feature checklist.
 - `docs/roadmap.md`: goals and validation checklist.
 - `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment plan.
+- `docs/evaluation.md`: comprehensive project evaluation (architecture, visuals, UX, code quality).
 - `docs/todo.md`: tech-debt and improvement backlog.
 
 ## Architecture Expectations
@@ -26,7 +27,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Trimmed menu commands back to restart/pause only.
+- Last update: Added Core snapshot boundary for rendering and updated mapping/tests.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

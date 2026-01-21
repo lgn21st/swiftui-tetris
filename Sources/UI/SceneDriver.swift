@@ -45,7 +45,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
-        self.latestRenderState = RenderMapper.map(state: loop.state)
+        self.latestRenderState = RenderMapper.map(snapshot: loop.state.snapshot())
         self.focusHandler = FocusPauseHandler()
         self.masterVolume = 0.7
         self.ambientDucked = false

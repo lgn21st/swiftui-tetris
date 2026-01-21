@@ -45,6 +45,7 @@
 - Active piece pulse tied to gravity interval.
 - Pausing clears soft drop active state.
 - Line-clear shimmer overlay during clear pause.
+- Render mapping now consumes a Core snapshot boundary.
 
 ## Best-Practice Alignment
 - Architecture alignment work is complete; details live in `docs/architecture.md`.
@@ -70,6 +71,12 @@
 - CLI-first workflow (no Xcode UI required).
 - Keep docs updated after each phase.
 - No behavior changes without updating `docs/rules-spec.md` and tests.
+
+## Priority Focus (Next)
+- P0: T-spin visual marker + line-clear particle effects.
+- P0: Split player HUD from diagnostics overlay.
+- P1: 3D/gradient block shading and line-clear animation polish.
+- P2: Core snapshot boundary and remove deprecated render code.
 
 ## Dependencies
 - SwiftUI (UI + overlays)
