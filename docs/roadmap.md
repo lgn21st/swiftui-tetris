@@ -39,6 +39,7 @@
 - Overlay hints include settings shortcut on title/pause/game over screens.
 - Settings volume slider shows percent value.
 - Active piece pulse tied to gravity interval.
+- Settings input section includes summary line.
 - Pausing clears soft drop active state.
 
 ## Best-Practice Alignment

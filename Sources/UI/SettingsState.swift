@@ -86,6 +86,10 @@ public struct SettingsState: Equatable, Codable {
         String(format: "%.0f%%", volume * 100.0)
     }
 
+    public var inputSummaryText: String {
+        "DAS \(inputDasMs) ms · ARR \(inputArrMs) ms · Soft \(softDropArrMs) ms"
+    }
+
     public mutating func reset() {
         muted = false
         volume = 0.7

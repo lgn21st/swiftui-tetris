@@ -32,6 +32,9 @@ public struct SettingsView: View {
             Divider().background(Color.white.opacity(0.4))
             Text("Input Repeat")
                 .font(.system(size: TypographyConstants.settingsSectionSize, weight: .semibold))
+            Text(settings.inputSummaryText)
+                .font(.system(size: TypographyConstants.settingsSectionSize * 0.85, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
             HStack {
                 Text("DAS")
                     .frame(width: 90, alignment: .leading)

@@ -116,4 +116,9 @@ final class SettingsStateTests: XCTestCase {
         settings.volume = 0.0
         XCTAssertEqual(settings.volumePercentText, "0%")
     }
+
+    func testInputSummaryTextFormatsValues() {
+        let settings = SettingsState(inputDasMs: 150, inputArrMs: 50, softDropArrMs: 40)
+        XCTAssertEqual(settings.inputSummaryText, "DAS 150 ms · ARR 50 ms · Soft 40 ms")
+    }
 }

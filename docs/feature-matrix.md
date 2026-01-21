@@ -53,6 +53,7 @@ Legend:
 | Mute | Optional | M. |
 | Volume | Optional | +/- adjust; 0 reset. |
 | Settings volume label | Optional | Display volume as percent next to slider. |
+| Settings input summary | Optional | Display DAS/ARR/Soft ARR summary under input section. |
 | Fullscreen | Optional | Cmd+Ctrl+F. |
 | Menu commands | Optional | Cmd+ shortcuts for start/restart/pause/settings. |
 | Focus loss | Yes | Auto-pause on app inactive. |
