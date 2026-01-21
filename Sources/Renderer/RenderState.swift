@@ -8,6 +8,8 @@ public struct RenderState {
     public var ghostKind: TetrominoType?
     public var flashBlocks: [(Int, Int)]
     public var flashAlpha: Double
+    public var isPaused: Bool
+    public var isGameOver: Bool
 
     public init(
         board: [[TetrominoType?]],
@@ -16,7 +18,9 @@ public struct RenderState {
         activeKind: TetrominoType?,
         ghostKind: TetrominoType?,
         flashBlocks: [(Int, Int)],
-        flashAlpha: Double
+        flashAlpha: Double,
+        isPaused: Bool,
+        isGameOver: Bool
     ) {
         self.board = board
         self.activeBlocks = activeBlocks
@@ -25,6 +29,8 @@ public struct RenderState {
         self.ghostKind = ghostKind
         self.flashBlocks = flashBlocks
         self.flashAlpha = flashAlpha
+        self.isPaused = isPaused
+        self.isGameOver = isGameOver
     }
 }
 
@@ -49,7 +55,9 @@ public enum RenderMapper {
             activeKind: hideActive ? nil : state.active.kind,
             ghostKind: hideActive ? nil : state.active.kind,
             flashBlocks: flashBlocks,
-            flashAlpha: flashAlpha
+            flashAlpha: flashAlpha,
+            isPaused: state.paused,
+            isGameOver: state.gameOver
         )
     }
 }

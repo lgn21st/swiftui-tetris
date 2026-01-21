@@ -93,3 +93,4 @@
 - 2026-01-21: Normalized render step naming and diagnostics to align with fixed-step timing.
 - 2026-01-21: Render now occurs per SpriteKit frame via scene render callback.
 - 2026-01-21: Diagnostics now use SpriteKit frame delta (frame clock) for FPS/tick reporting.
+- 2026-01-21: Render gating now respects pause/game over state at the scene layer.

@@ -12,7 +12,9 @@ final class RenderComposerTests: XCTestCase {
             activeKind: .t,
             ghostKind: .t,
             flashBlocks: [],
-            flashAlpha: 0
+            flashAlpha: 0,
+            isPaused: false,
+            isGameOver: false
         )
         let cells = RenderComposer.compose(from: state)
         let cell = cells.first { $0.x == 1 && $0.y == 1 }
@@ -30,7 +32,9 @@ final class RenderComposerTests: XCTestCase {
             activeKind: nil,
             ghostKind: .i,
             flashBlocks: [],
-            flashAlpha: 0
+            flashAlpha: 0,
+            isPaused: false,
+            isGameOver: false
         )
         let cells = RenderComposer.compose(from: state)
         let cell = cells.first { $0.x == 2 && $0.y == 2 }
@@ -47,7 +51,9 @@ final class RenderComposerTests: XCTestCase {
             activeKind: nil,
             ghostKind: nil,
             flashBlocks: [(0, 0)],
-            flashAlpha: 1
+            flashAlpha: 1,
+            isPaused: false,
+            isGameOver: false
         )
         let cells = RenderComposer.compose(from: state)
         let cell = cells.first { $0.x == 0 && $0.y == 0 }

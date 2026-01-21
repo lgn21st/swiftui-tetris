@@ -48,4 +48,13 @@ final class RenderMappingTests: XCTestCase {
         XCTAssertNil(renderState.activeKind)
         XCTAssertNil(renderState.ghostKind)
     }
+
+    func testRenderMappingCopiesPauseAndGameOverFlags() {
+        var state = GameState(config: GameConfig())
+        state.paused = true
+        state.gameOver = true
+        let renderState = RenderMapper.map(state: state)
+        XCTAssertTrue(renderState.isPaused)
+        XCTAssertTrue(renderState.isGameOver)
+    }
 }

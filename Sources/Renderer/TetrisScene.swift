@@ -44,7 +44,7 @@ public final class TetrisScene: SKScene {
         if steps > 0 {
             onFixedStep?(steps)
         }
-        if let renderState = onRender?() {
+        if let renderState = onRender?(), shouldRender(state: renderState) {
             render(state: renderState)
         }
     }
@@ -94,5 +94,10 @@ public final class TetrisScene: SKScene {
         scaleMode = .resizeFill
         backgroundColor = RenderTheme.boardBackgroundColor
         buildGrid()
+    }
+
+    private func shouldRender(state: RenderState) -> Bool {
+        if state.isGameOver { return true }
+        return !state.isPaused
     }
 }
