@@ -15,7 +15,7 @@ final class GameTickTests: XCTestCase {
         var state = GameState(config: GameConfig())
         state.activateSoftDrop()
         XCTAssertTrue(state.softDropActive)
-        state.tick(elapsedMs: 150, softDrop: false)
+        state.tick(elapsedMs: GameConstants.softDropGraceMs, softDrop: false)
         XCTAssertFalse(state.softDropActive)
     }
 

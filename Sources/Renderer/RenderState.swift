@@ -78,7 +78,7 @@ public enum RenderMapper {
         let ghostBlocks = hideActive ? [] : snapshot.ghostBlocks
         let flashBlocks = snapshot.landingFlashTimerMs > 0 ? snapshot.landingFlashBlocks : []
         let flashAlpha = snapshot.landingFlashTimerMs > 0
-        ? min(max(Double(snapshot.landingFlashTimerMs) / Double(GameState.landingFlashDurationMs), 0), 1)
+        ? min(max(Double(snapshot.landingFlashTimerMs) / Double(GameConstants.landingFlashDurationMs), 0), 1)
         : 0
         let activePulse = hideActive ? 0 : activePulseValue(
             dropTimerMs: snapshot.dropTimerMs,
@@ -90,7 +90,7 @@ public enum RenderMapper {
             )
         )
         let lineClearAlpha = snapshot.lineClearTimerMs > 0
-        ? min(max(Double(snapshot.lineClearTimerMs) / Double(GameState.lineClearPauseMs), 0), 1)
+        ? min(max(Double(snapshot.lineClearTimerMs) / Double(GameConstants.lineClearPauseMs), 0), 1)
         : 0
         let lineClearRows = snapshot.lineClearTimerMs > 0 ? snapshot.lineClearRows : []
         let scorePopups = mapScorePopups(

@@ -9,12 +9,12 @@ public struct GameConfig: Equatable {
     public var rules: RulesConfig
 
     public init(
-        tickMs: Int = 16,
-        softDropMultiplier: Int = 10,
-        lockDelayMs: Int = 450,
-        lockResetLimit: Int = 15,
-        baseDropMs: Int = 1000,
-        softDropGraceMs: Int = 150,
+        tickMs: Int = GameConstants.tickMs,
+        softDropMultiplier: Int = GameConstants.softDropMultiplier,
+        lockDelayMs: Int = GameConstants.lockDelayMs,
+        lockResetLimit: Int = GameConstants.lockResetLimit,
+        baseDropMs: Int = GameConstants.baseDropMs,
+        softDropGraceMs: Int = GameConstants.softDropGraceMs,
         ruleset: Ruleset = .classic,
         rules: RulesConfig = RulesConfig()
     ) {

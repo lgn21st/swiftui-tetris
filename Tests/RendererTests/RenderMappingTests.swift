@@ -21,7 +21,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingIncludesLandingFlash() {
         var state = GameState(config: GameConfig())
-        state.landingFlashTimerMs = 120
+        state.landingFlashTimerMs = GameConstants.landingFlashDurationMs
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.flashBlocks.count, 1)
@@ -31,7 +31,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingComputesFlashAlpha() {
         var state = GameState(config: GameConfig())
-        state.landingFlashTimerMs = 60
+        state.landingFlashTimerMs = GameConstants.landingFlashDurationMs / 2
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.flashAlpha, 0.5, accuracy: 0.01)
@@ -41,7 +41,7 @@ final class RenderMappingTests: XCTestCase {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
-        state.lineClearTimerMs = 180
+        state.lineClearTimerMs = GameConstants.lineClearPauseMs
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertTrue(renderState.activeBlocks.isEmpty)
         XCTAssertTrue(renderState.ghostBlocks.isEmpty)
@@ -51,7 +51,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingIncludesLineClearRowsAndAlpha() {
         var state = GameState(config: GameConfig())
-        state.lineClearTimerMs = 90
+        state.lineClearTimerMs = GameConstants.lineClearPauseMs / 2
         state.lineClearRows = [18]
         state.lineClearScore = 400
         let renderState = RenderMapper.map(snapshot: state.snapshot())

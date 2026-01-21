@@ -1,6 +1,4 @@
 public struct GameState {
-    public static let landingFlashDurationMs = 120
-    public static let lineClearPauseMs = 180
     public var board: Board
     public var active: Tetromino
     public var paused: Bool
@@ -293,7 +291,7 @@ public struct GameState {
         }
 
         if cleared > 0 {
-            lineClearTimerMs = GameState.lineClearPauseMs
+            lineClearTimerMs = GameConstants.lineClearPauseMs
             lineClearRows = clearedRows
             lineClearScore = points
             soundEvents.append(.lineClear(cleared))
@@ -332,7 +330,7 @@ public struct GameState {
     }
 
     private mutating func setLandingFlash() {
-        landingFlashTimerMs = GameState.landingFlashDurationMs
+        landingFlashTimerMs = GameConstants.landingFlashDurationMs
         landingFlashBlocks = active.blocks(rotation: active.rotation).map { (dx, dy) in
             (active.x + dx, active.y + dy)
         }

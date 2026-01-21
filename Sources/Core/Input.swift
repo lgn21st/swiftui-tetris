@@ -2,7 +2,7 @@ public struct RepeatConfig: Equatable {
     public var dasMs: Int
     public var arrMs: Int
 
-    public init(dasMs: Int = 150, arrMs: Int = 50) {
+    public init(dasMs: Int = GameConstants.defaultDasMs, arrMs: Int = GameConstants.defaultArrMs) {
         self.dasMs = dasMs
         self.arrMs = arrMs
     }

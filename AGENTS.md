@@ -27,7 +27,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Added Core snapshot boundary for rendering and updated mapping/tests.
+- Last update: Removed RenderComposer and centralized Core constants.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

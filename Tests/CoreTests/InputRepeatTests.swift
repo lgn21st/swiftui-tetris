@@ -10,7 +10,7 @@ final class InputRepeatTests: XCTestCase {
 
     func testRepeatAfterDasAndArr() {
         var state = RepeatState()
-        let config = RepeatConfig(dasMs: 150, arrMs: 50)
+        let config = RepeatConfig(dasMs: GameConstants.defaultDasMs, arrMs: GameConstants.defaultArrMs)
         _ = state.press()
 
         XCTAssertEqual(state.tick(elapsedMs: 149, config: config), 0)
@@ -21,7 +21,7 @@ final class InputRepeatTests: XCTestCase {
 
     func testReleaseResetsState() {
         var state = RepeatState()
-        let config = RepeatConfig(dasMs: 150, arrMs: 50)
+        let config = RepeatConfig(dasMs: GameConstants.defaultDasMs, arrMs: GameConstants.defaultArrMs)
         _ = state.press()
         _ = state.tick(elapsedMs: 200, config: config)
         state.release()
