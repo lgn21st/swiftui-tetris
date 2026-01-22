@@ -21,15 +21,15 @@ Use this checklist before cutting a release build.
   ```sh
   swift run Packager \
     --binary-path .build/release/App \
-    --output dist/SwiftUITeris.app \
-    --bundle-id com.example.swiftui-teris \
-    --name SwiftUITeris \
+    --output dist/SwiftUITetris.app \
+    --bundle-id com.example.swiftui-tetris \
+    --name SwiftUITetris \
     --version 0.1.0 \
     --build 1 \
     --icon-path assets/AppIcon.icns \
     --assets-path assets
   ```
-- Open `dist/SwiftUITeris.app` and re-run QA checks for audio, input, fullscreen.
+- Open `dist/SwiftUITetris.app` and re-run QA checks for audio, input, fullscreen.
 - Verify icon in Finder (may require `touch` + `killall Finder`).
 - Confirm CLI vs packaged behavior (see `docs/runtime-differences.md`).
 - Codesign + notarize for distribution (see `docs/codesign-notarize.md`).

@@ -4,11 +4,11 @@ import XCTest
 final class PackagingResourcesTests: XCTestCase {
     func testBundleCopiesIconAndEntitlements() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITetris.app", isDirectory: true)
         let binaryURL = tempDir.appendingPathComponent("App")
         try "test".write(to: binaryURL, atomically: true, encoding: .utf8)
 
@@ -22,7 +22,7 @@ final class PackagingResourcesTests: XCTestCase {
             binaryPath: binaryURL,
             outputBundlePath: bundleURL,
             bundleID: "com.example.tetris",
-            name: "SwiftUITeris",
+            name: "SwiftUITetris",
             version: "0.1.0",
             build: "1",
             iconPath: iconURL,
@@ -44,11 +44,11 @@ final class PackagingResourcesTests: XCTestCase {
 
     func testBundleCopiesAssetsFolder() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITetris.app", isDirectory: true)
         let binaryURL = tempDir.appendingPathComponent("App")
         try "test".write(to: binaryURL, atomically: true, encoding: .utf8)
 
@@ -62,7 +62,7 @@ final class PackagingResourcesTests: XCTestCase {
             binaryPath: binaryURL,
             outputBundlePath: bundleURL,
             bundleID: "com.example.tetris",
-            name: "SwiftUITeris",
+            name: "SwiftUITetris",
             version: "0.1.0",
             build: "1",
             assetsPath: assetsURL

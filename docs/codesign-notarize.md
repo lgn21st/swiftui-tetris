@@ -9,43 +9,43 @@ Use this checklist to codesign, notarize, and staple the packaged app. These ste
 
 ## Preflight
 - Verify the packaged app includes assets and icon metadata before signing.
-- Confirm `dist/SwiftUITeris.app` launches locally.
+- Confirm `dist/SwiftUITetris.app` launches locally.
 
 ## Codesign
 ```sh
 codesign --deep --force --options runtime \
   --entitlements assets/App.entitlements \
   --sign "Developer ID Application: Your Name (TEAMID)" \
-  dist/SwiftUITeris.app
+  dist/SwiftUITetris.app
 ```
 
 If you used the Packager `--entitlements` flag, the file is copied to:
-`dist/SwiftUITeris.app/Contents/Entitlements.plist`
+`dist/SwiftUITetris.app/Contents/Entitlements.plist`
 Use that path for audit/verification after signing.
 
 ## Zip for notarization
 ```sh
-ditto -c -k --keepParent dist/SwiftUITeris.app dist/SwiftUITeris.zip
+ditto -c -k --keepParent dist/SwiftUITetris.app dist/SwiftUITetris.zip
 ```
 
 ## Notarize
 ```sh
-xcrun notarytool submit dist/SwiftUITeris.zip \
+xcrun notarytool submit dist/SwiftUITetris.zip \
   --keychain-profile "AC_NOTARY_PROFILE" \
   --wait
 ```
 
 ## Staple
 ```sh
-xcrun stapler staple dist/SwiftUITeris.app
+xcrun stapler staple dist/SwiftUITetris.app
 ```
 
 ## Verify
 ```sh
-codesign -dv --verbose=4 dist/SwiftUITeris.app
-spctl -a -vv dist/SwiftUITeris.app
-plutil -p dist/SwiftUITeris.app/Contents/Info.plist | grep CFBundleIconFile
-test -f dist/SwiftUITeris.app/Contents/Entitlements.plist
+codesign -dv --verbose=4 dist/SwiftUITetris.app
+spctl -a -vv dist/SwiftUITetris.app
+plutil -p dist/SwiftUITetris.app/Contents/Info.plist | grep CFBundleIconFile
+test -f dist/SwiftUITetris.app/Contents/Entitlements.plist
 ```
 
 ## Notes

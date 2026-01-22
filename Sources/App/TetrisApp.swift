@@ -6,7 +6,7 @@ struct TetrisApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        WindowGroup("SwiftUITeris") {
+        WindowGroup("SwiftUITetris") {
             TetrisContainerView()
         }
         .defaultSize(width: WindowConfig.defaultWidth, height: WindowConfig.defaultHeight)

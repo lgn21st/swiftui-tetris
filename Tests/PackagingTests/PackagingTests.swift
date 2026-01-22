@@ -5,7 +5,7 @@ final class PackagingTests: XCTestCase {
     func testInfoPlistContainsRequiredKeys() {
         let plist = Packaging.infoPlist(
             bundleID: "com.example.tetris",
-            name: "SwiftUITeris",
+            name: "SwiftUITetris",
             execName: "App",
             version: "0.1.0",
             build: "1"
@@ -22,11 +22,11 @@ final class PackagingTests: XCTestCase {
 
     func testCreateBundleWritesFiles() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITetris.app", isDirectory: true)
         let binaryURL = tempDir.appendingPathComponent("App")
         try "test".write(to: binaryURL, atomically: true, encoding: .utf8)
 
@@ -34,7 +34,7 @@ final class PackagingTests: XCTestCase {
             binaryPath: binaryURL,
             outputBundlePath: bundleURL,
             bundleID: "com.example.tetris",
-            name: "SwiftUITeris",
+            name: "SwiftUITetris",
             version: "0.1.0",
             build: "1"
         )
@@ -50,11 +50,11 @@ final class PackagingTests: XCTestCase {
 
     func testCreateBundleThrowsWhenBinaryMissing() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("swiftui-teris-tests", isDirectory: true)
+            .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
 
-        let bundleURL = tempDir.appendingPathComponent("SwiftUITeris.app", isDirectory: true)
+        let bundleURL = tempDir.appendingPathComponent("SwiftUITetris.app", isDirectory: true)
         let binaryURL = tempDir.appendingPathComponent("MissingBinary")
 
         XCTAssertThrowsError(
@@ -62,7 +62,7 @@ final class PackagingTests: XCTestCase {
                 binaryPath: binaryURL,
                 outputBundlePath: bundleURL,
                 bundleID: "com.example.tetris",
-                name: "SwiftUITeris",
+                name: "SwiftUITetris",
                 version: "0.1.0",
                 build: "1"
             )

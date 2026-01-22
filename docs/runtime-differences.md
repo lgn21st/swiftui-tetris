@@ -12,7 +12,7 @@ Use this document to track differences, known issues, and verification steps.
   - Window appears and input works.
   - Audio plays.
   - Assets load from `assets/` via `AssetLocator`.
-- Launch packaged app (`dist/SwiftUITeris.app`) and confirm:
+- Launch packaged app (`dist/SwiftUITetris.app`) and confirm:
   - App icon appears correctly (Finder cache may require a relaunch).
   - Audio plays; assets load from `Contents/Resources/assets/`.
   - Input works (keyboard + gamepad if available).

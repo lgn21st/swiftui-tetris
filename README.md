@@ -1,4 +1,4 @@
-# swiftui-teris
+# swiftui-tetris
 
 macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, crisp input feel, and clean UI.
 

@@ -23,8 +23,8 @@ func parseArgs() -> Arguments? {
 
     var binaryPath: String?
     var outputPath: String?
-    var bundleID: String = "com.example.swiftui-teris"
-    var name: String = "SwiftUITeris"
+    var bundleID: String = "com.example.swiftui-tetris"
+    var name: String = "SwiftUITetris"
     var version: String = "0.1.0"
     var build: String = "1"
     var iconPath: String?
@@ -78,8 +78,8 @@ func printUsage() {
       Packager --binary-path <path> --output <path> [options]
 
     Options:
-      --bundle-id <id>     Bundle identifier (default: com.example.swiftui-teris)
-      --name <name>        App name (default: SwiftUITeris)
+      --bundle-id <id>     Bundle identifier (default: com.example.swiftui-tetris)
+      --name <name>        App name (default: SwiftUITetris)
       --version <ver>      CFBundleShortVersionString (default: 0.1.0)
       --build <build>      CFBundleVersion (default: 1)
       --icon-path <path>   Path to .icns file (optional)
