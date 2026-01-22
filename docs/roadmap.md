@@ -85,129 +85,30 @@ A focused SpriteKit implementation review was completed on 2026-01-22. The core 
 **Verification**:
 - Paused state does not render or mutate render buffers unexpectedly.
 
-#### P1: Magic Numbers Consolidation
+#### P1: Magic Numbers Consolidation (Completed)
 
-**Scope**: Centralize all hardcoded constants into `GameConstants` and new `RenderConstants`.
-
-**Files affected**:
-- `Sources/Renderer/TetrisScene.swift`
-- `Sources/Renderer/TextureCache.swift`
-- `Sources/UI/HUDState.swift`
-- `Sources/UI/SidePanelView.swift`
-
-**Actions**:
-1. Create `RenderConstants.swift` with visual-related constants:
-   - `cellSize: CGFloat = 24`
-   - `badgeFontSize: CGFloat = 18`
-   - `popupFontSize: CGFloat = 16`
-   - `gridlineWidth: CGFloat = 1`
-   - `zPositions` for various layers
-
-2. Move `gridlineWidth` and `gridlineZ` from `RenderTheme` to `RenderConstants`
-
-3. Replace all hardcoded values with constants in affected files
+**Outcome**:
+- Added `RenderConstants` and moved renderer literals into centralized constants.
+- Gridline width/z moved from `RenderTheme` to `RenderConstants`.
+- Introduced `LayoutConstants.nextPreviewCell` for preview sizing.
 
 **Verification**:
-- No numeric literals (24, 18, 16, 5, etc.) in renderer/UI files
-- All constants are defined in one location
+- Renderer uses `RenderConstants` for cell size, z positions, and font sizes.
+- `RenderConstantsTests` covers default values.
 
-#### P1: GameState Property Access Control
+#### P1: GameState Property Access Control (Completed)
 
-**Scope**: Reduce `GameState` public API surface and enforce snapshot-based access.
-
-**Current state**:
-```
-GameState has 20+ public properties:
-- Core state: board, active, paused, gameOver, score, level, lines
-- Timing: dropTimerMs, lockTimerMs, lineClearTimerMs
-- Visuals: landingFlashTimerMs, landingFlashBlocks, softDropActive
-- Config: config, rng
-```
-
-**Actions**:
-1. Change timing-related properties to `private(set)`:
-   - `dropTimerMs`
-   - `lockTimerMs`
-   - `lineClearTimerMs`
-   - `landingFlashTimerMs`
-   - `softDropTimeoutMs`
-   - `lockResetCount`
-
-2. Keep as public (required for game loop):
-   - `board`
-   - `active`
-   - `paused`
-   - `gameOver`
-   - `score`, `level`, `lines`
-
-3. Ensure all external access uses `snapshot()` method
+**Outcome**:
+- Timer-related fields are now `public private(set)`.
+- Tests use `setTimersForTesting(...)` to configure timers safely.
 
 **Verification**:
-- `GameState` properties limited to essential public API
-- Renderer and UI components use `snapshot()` exclusively
+- External code cannot mutate timer fields directly.
+- Snapshot remains the primary read path for renderer/UI.
 
 ### Optional Cleanup (Defer/When Touching Files)
 
-#### P1: Magic Numbers Consolidation
-
-**Scope**: Centralize all hardcoded constants into `GameConstants` and new `RenderConstants`.
-
-**Files affected**:
-- `Sources/Renderer/TetrisScene.swift`
-- `Sources/Renderer/TextureCache.swift`
-- `Sources/UI/HUDState.swift`
-- `Sources/UI/SidePanelView.swift`
-
-**Actions**:
-1. Create `RenderConstants.swift` with visual-related constants:
-   - `cellSize: CGFloat = 24`
-   - `badgeFontSize: CGFloat = 18`
-   - `popupFontSize: CGFloat = 16`
-   - `gridlineWidth: CGFloat = 1`
-   - `zPositions` for various layers
-
-2. Move `gridlineWidth` and `gridlineZ` from `RenderTheme` to `RenderConstants`
-
-3. Replace all hardcoded values with constants in affected files
-
-**Verification**:
-- No numeric literals (24, 18, 16, 5, etc.) in renderer/UI files
-- All constants are defined in one location
-
-#### P1: GameState Property Access Control
-
-**Scope**: Reduce `GameState` public API surface and enforce snapshot-based access.
-
-**Current state**:
-```
-GameState has 20+ public properties:
-- Core state: board, active, paused, gameOver, score, level, lines
-- Timing: dropTimerMs, lockTimerMs, lineClearTimerMs
-- Visuals: landingFlashTimerMs, landingFlashBlocks, softDropActive
-- Config: config, rng
-```
-
-**Actions**:
-1. Change timing-related properties to `private(set)`:
-   - `dropTimerMs`
-   - `lockTimerMs`
-   - `lineClearTimerMs`
-   - `landingFlashTimerMs`
-   - `softDropTimeoutMs`
-   - `lockResetCount`
-
-2. Keep as public (required for game loop):
-   - `board`
-   - `active`
-   - `paused`
-   - `gameOver`
-   - `score`, `level`, `lines`
-
-3. Ensure all external access uses `snapshot()` method
-
-**Verification**:
-- `GameState` properties limited to essential public API
-- Renderer and UI components use `snapshot()` exclusively
+No optional cleanup items remain at this time.
 
 ### Tech Debt Priority Summary
 
