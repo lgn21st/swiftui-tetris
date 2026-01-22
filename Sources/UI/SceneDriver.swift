@@ -27,9 +27,10 @@ public final class SceneDriver: ObservableObject {
         loop: GameLoop = GameLoop(),
         input: InputEngine = InputEngine(),
         audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
-        fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler()
+        fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler(),
+        scene: TetrisScene? = nil
     ) {
-        self.scene = TetrisScene(size: TetrisScene.defaultSize)
+        self.scene = scene ?? TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
         self.input = input
         self.audio = audio
@@ -110,7 +111,6 @@ public final class SceneDriver: ObservableObject {
             ambientDucked = shouldDuck
         }
         refreshDerivedState()
-        scene.render(state: renderState)
     }
 
     public func stop() {

@@ -21,6 +21,7 @@ public final class TetrisScene: SKScene {
     private var textureCache: TextureCache
     private var scorePopupNodes: [SKLabelNode] = []
     private var tSpinBadge: SKLabelNode?
+    internal private(set) var debugRenderCount: Int = 0
     public var onFixedStep: ((Int) -> Void)?
     public var onFrame: ((Int) -> Void)?
     public var onRender: (() -> RenderState?)?
@@ -69,6 +70,7 @@ public final class TetrisScene: SKScene {
 
 
     public func render(state: RenderState) {
+        debugRenderCount += 1
         renderBuffer.update(from: state)
         let flashAlphaChanged = lastFlashAlpha != state.flashAlpha
         lastFlashAlpha = state.flashAlpha

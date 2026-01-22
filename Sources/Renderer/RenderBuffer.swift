@@ -10,6 +10,8 @@ public final class RenderBuffer {
     private var previousCells: [CellRender]
     private var previousBoardKinds: [TetrominoType?]
     private var previousDynamicIndices: [Int]
+    private var touched: [Bool]
+    private var dynamicIndices: [Int]
 
     public init(width: Int = Board.width, height: Int = Board.height) {
         self.width = width
@@ -36,13 +38,18 @@ public final class RenderBuffer {
         self.previousCells = initial
         self.previousBoardKinds = Array(repeating: nil, count: width * height)
         self.previousDynamicIndices = []
+        self.touched = Array(repeating: false, count: width * height)
+        self.dynamicIndices = []
     }
 
     public func update(from state: RenderState) {
         flashIndices.removeAll(keepingCapacity: true)
         lineClearIndices.removeAll(keepingCapacity: true)
         changedIndices.removeAll(keepingCapacity: true)
-        var touched = Array(repeating: false, count: cells.count)
+        dynamicIndices.removeAll(keepingCapacity: true)
+        for index in touched.indices {
+            touched[index] = false
+        }
         for index in previousDynamicIndices {
             cells[index].isGhost = false
             cells[index].isActive = false
@@ -64,13 +71,12 @@ public final class RenderBuffer {
             }
         }
 
-        var newDynamicIndices: [Int] = []
         for (x, y) in state.flashBlocks {
             guard x >= 0, y >= 0, x < width, y < height else { continue }
             let index = y * width + x
             cells[index].isFlash = true
             flashIndices.append(index)
-            newDynamicIndices.append(index)
+            dynamicIndices.append(index)
             touched[index] = true
         }
 
@@ -80,7 +86,7 @@ public final class RenderBuffer {
                 let index = row * width + x
                 cells[index].isLineClear = true
                 lineClearIndices.append(index)
-                newDynamicIndices.append(index)
+                dynamicIndices.append(index)
                 touched[index] = true
             }
         }
@@ -89,7 +95,7 @@ public final class RenderBuffer {
             guard x >= 0, y >= 0, x < width, y < height else { continue }
             let index = y * width + x
             cells[index].isActive = true
-            newDynamicIndices.append(index)
+            dynamicIndices.append(index)
             touched[index] = true
         }
 
@@ -101,11 +107,11 @@ public final class RenderBuffer {
             if cells[index].kind == nil {
                 cells[index].kind = state.ghostKind
             }
-            newDynamicIndices.append(index)
+            dynamicIndices.append(index)
             touched[index] = true
         }
 
-        previousDynamicIndices = newDynamicIndices
+        previousDynamicIndices = dynamicIndices
 
         for index in cells.indices where touched[index] {
             if cells[index] != previousCells[index] {
@@ -113,5 +119,13 @@ public final class RenderBuffer {
                 previousCells[index] = cells[index]
             }
         }
+    }
+
+    internal func debugTouchedCapacity() -> Int {
+        touched.capacity
+    }
+
+    internal func debugDynamicCapacity() -> Int {
+        dynamicIndices.capacity
     }
 }

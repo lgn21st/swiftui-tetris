@@ -194,4 +194,33 @@ final class RenderBufferTests: XCTestCase {
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 2 }
         XCTAssertNil(cell?.kind)
     }
+
+    func testUpdateReusesInternalBuffers() {
+        let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
+        let state = RenderState(
+            board: board,
+            activeBlocks: [(1, 1)],
+            ghostBlocks: [(2, 2)],
+            activeKind: .t,
+            ghostKind: .i,
+            flashBlocks: [(0, 0)],
+            flashAlpha: 1,
+            lineClearRows: [3],
+            lineClearAlpha: 1,
+            scorePopups: [],
+            tSpinKind: .none,
+            tSpinAlpha: 0,
+            activePulse: 0,
+            isGrounded: false,
+            isPaused: false,
+            isGameOver: false
+        )
+        let buffer = RenderBuffer()
+        buffer.update(from: state)
+        let touchedCapacity = buffer.debugTouchedCapacity()
+        let dynamicCapacity = buffer.debugDynamicCapacity()
+        buffer.update(from: state)
+        XCTAssertEqual(buffer.debugTouchedCapacity(), touchedCapacity)
+        XCTAssertEqual(buffer.debugDynamicCapacity(), dynamicCapacity)
+    }
 }

@@ -9,7 +9,7 @@ final class SidePanelStateTests: XCTestCase {
         state.nextQueue = [.i, .o, .s, .z, .l, .j]
         let hud = HUDState.from(state: state)
         XCTAssertEqual(hud.holdKind, .t)
-        XCTAssertEqual(hud.nextKinds, [.i])
+        XCTAssertEqual(hud.nextKinds, [.i, .o, .s])
     }
 
     func testHudStateIncludesStatusAndRulesetText() {
