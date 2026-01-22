@@ -22,6 +22,7 @@ public final class SceneDriver: ObservableObject {
     private let masterVolume: Double
     private var ambientDucked: Bool
     private var diagnosticsAccumMs: Int
+    internal private(set) var debugRenderStateVersion: Int
 
     public init(
         loop: GameLoop = GameLoop(),
@@ -50,6 +51,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
         self.latestRenderState = RenderMapper.map(snapshot: loop.state.snapshot())
+        self.debugRenderStateVersion = 0
         self.focusHandler = FocusPauseHandler()
         self.masterVolume = 0.7
         self.ambientDucked = false
@@ -93,8 +95,12 @@ public final class SceneDriver: ObservableObject {
         let elapsed = max(elapsedMs, 0)
         let canAccept = !loop.state.paused && !loop.state.gameOver
         input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
-        let renderState = loop.stepFrame(elapsedMs: elapsed)
-        latestRenderState = renderState
+        let shouldUpdateRenderState = !loop.state.paused || loop.state.gameOver
+        let renderState = shouldUpdateRenderState ? loop.stepFrame(elapsedMs: elapsed) : latestRenderState
+        if shouldUpdateRenderState {
+            latestRenderState = renderState
+            debugRenderStateVersion += 1
+        }
         let events = loop.state.takeSoundEvents()
         if let audio = audio {
             for event in events {
