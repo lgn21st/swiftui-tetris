@@ -21,6 +21,7 @@ public enum LayoutConstants {
     public static let panelDividerPadding: CGFloat = 6
     public static let overlaySpacing: CGFloat = 8
     public static let hudSpacing: CGFloat = 6
+    public static let nextPreviewCell: CGFloat = 10
     public static let panelCornerRadius: CGFloat = 8
     public static let panelShadowRadius: CGFloat = 10
     public static let groupCornerRadius: CGFloat = 12

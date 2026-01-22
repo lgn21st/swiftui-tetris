@@ -20,6 +20,4 @@ public enum RenderTheme {
         alpha: 1.0
     )
     public static let flashBorderColor = SKColor(white: 1.0, alpha: 0.9)
-    public static let gridlineWidth: CGFloat = 1
-    public static let gridlineZ: CGFloat = -1
 }

@@ -45,7 +45,7 @@ public struct SidePanelView: View {
                         ForEach(0..<paddedNextKinds.count, id: \.self) { index in
                             PreviewGridView(
                                 state: PreviewGridState.from(kind: paddedNextKinds[index]),
-                                cellSize: 10
+                                cellSize: LayoutConstants.nextPreviewCell
                             )
                         }
                     }

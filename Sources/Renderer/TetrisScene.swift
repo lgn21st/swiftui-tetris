@@ -5,7 +5,7 @@ public final class TetrisScene: SKScene {
     public static let defaultSize = CGSize(width: 480, height: 720)
     public static let fixedStepMs: Double = 16
     public static let maxDeltaMs: Double = 250
-    private let cellSize: CGFloat = 24
+    private let cellSize: CGFloat = RenderConstants.cellSize
     private static let activeNodeCount = 4
     private static let maxScorePopupNodes = 6
     private var cellNodes: [[SKSpriteNode]] = []
@@ -218,7 +218,7 @@ public final class TetrisScene: SKScene {
     private func buildActiveOverlayNodes() {
         activeNodes = (0..<Self.activeNodeCount).map { _ in
             let node = SKSpriteNode(texture: nil, color: .clear, size: CGSize(width: cellSize, height: cellSize))
-            node.zPosition = 5
+            node.zPosition = RenderConstants.activeOverlayZ
             node.isHidden = true
             addChild(node)
             return node
@@ -231,9 +231,9 @@ public final class TetrisScene: SKScene {
         if capped.count > scorePopupNodes.count {
             for _ in scorePopupNodes.count..<capped.count {
                 let node = SKLabelNode(fontNamed: "Menlo-Bold")
-                node.fontSize = 16
+                node.fontSize = RenderConstants.scorePopupFontSize
                 node.fontColor = .white
-                node.zPosition = 10
+                node.zPosition = RenderConstants.scorePopupZ
                 node.isHidden = true
                 addChild(node)
                 scorePopupNodes.append(node)
@@ -260,9 +260,9 @@ public final class TetrisScene: SKScene {
 
     private func addTSpinBadge() {
         let badge = SKLabelNode(fontNamed: "Menlo-Bold")
-        badge.fontSize = 18
+        badge.fontSize = RenderConstants.tSpinBadgeFontSize
         badge.fontColor = .white
-        badge.zPosition = 12
+        badge.zPosition = RenderConstants.tSpinBadgeZ
         badge.isHidden = true
         addChild(badge)
         tSpinBadge = badge
@@ -286,8 +286,8 @@ public final class TetrisScene: SKScene {
         let gridPath = BoardGrid.path(cellSize: cellSize)
         let gridNode = SKShapeNode(path: gridPath)
         gridNode.strokeColor = RenderTheme.gridlineColor
-        gridNode.lineWidth = RenderTheme.gridlineWidth
-        gridNode.zPosition = RenderTheme.gridlineZ
+        gridNode.lineWidth = RenderConstants.gridlineWidth
+        gridNode.zPosition = RenderConstants.gridlineZ
         gridNode.isAntialiased = false
         addChild(gridNode)
     }

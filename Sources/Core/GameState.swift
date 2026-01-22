@@ -13,17 +13,17 @@ public struct GameState {
     public var canHold: Bool
     public var nextQueue: [TetrominoType]
 
-    public var dropTimerMs: Int
-    public var lockTimerMs: Int
-    public var lineClearTimerMs: Int
+    public private(set) var dropTimerMs: Int
+    public private(set) var lockTimerMs: Int
+    public private(set) var lineClearTimerMs: Int
     public var lineClearRows: [Int]
     public var lineClearScore: Int
     public private(set) var lastLineClearTSpin: TSpinKind
-    public var landingFlashTimerMs: Int
+    public private(set) var landingFlashTimerMs: Int
     public var landingFlashBlocks: [(Int, Int)]
     public var softDropActive: Bool
-    public var softDropTimeoutMs: Int
-    public var lockResetCount: Int
+    public private(set) var softDropTimeoutMs: Int
+    public private(set) var lockResetCount: Int
     public var activeMovedSinceSpawn: Bool
 
     public private(set) var ghostCache: [(Int, Int)]
@@ -440,5 +440,21 @@ public struct GameState {
             ghostBlocks: ghostCache,
             config: config
         )
+    }
+
+    internal mutating func setTimersForTesting(
+        dropTimerMs: Int? = nil,
+        lockTimerMs: Int? = nil,
+        lineClearTimerMs: Int? = nil,
+        landingFlashTimerMs: Int? = nil,
+        softDropTimeoutMs: Int? = nil,
+        lockResetCount: Int? = nil
+    ) {
+        if let dropTimerMs { self.dropTimerMs = dropTimerMs }
+        if let lockTimerMs { self.lockTimerMs = lockTimerMs }
+        if let lineClearTimerMs { self.lineClearTimerMs = lineClearTimerMs }
+        if let landingFlashTimerMs { self.landingFlashTimerMs = landingFlashTimerMs }
+        if let softDropTimeoutMs { self.softDropTimeoutMs = softDropTimeoutMs }
+        if let lockResetCount { self.lockResetCount = lockResetCount }
     }
 }

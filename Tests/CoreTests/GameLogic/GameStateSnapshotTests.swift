@@ -6,12 +6,12 @@ final class GameStateSnapshotTests: XCTestCase {
         var state = GameState(config: GameConfig())
         state.paused = true
         state.gameOver = true
-        state.dropTimerMs = 320
+        state.setTimersForTesting(dropTimerMs: 320)
         state.applyLineClear(cleared: 1, clearedRows: [18], tSpin: .full)
         state.score = 1200
         state.level = 3
         state.lines = 15
-        state.landingFlashTimerMs = 60
+        state.setTimersForTesting(landingFlashTimerMs: 60)
         state.landingFlashBlocks = [(4, 10)]
         state.softDropActive = true
         state.activeMovedSinceSpawn = true

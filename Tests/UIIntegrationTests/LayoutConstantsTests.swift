@@ -11,6 +11,7 @@ final class LayoutConstantsTests: XCTestCase {
         XCTAssertEqual(LayoutConstants.panelDividerPadding, 6)
         XCTAssertEqual(LayoutConstants.overlaySpacing, 8)
         XCTAssertEqual(LayoutConstants.hudSpacing, 6)
+        XCTAssertEqual(LayoutConstants.nextPreviewCell, 10)
         XCTAssertEqual(LayoutConstants.panelCornerRadius, 8)
         XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
         XCTAssertEqual(LayoutConstants.groupCornerRadius, 12)

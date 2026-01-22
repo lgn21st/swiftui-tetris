@@ -33,7 +33,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingIncludesLandingFlashBlocks() {
         var state = GameState(config: GameConfig())
-        state.landingFlashTimerMs = GameConstants.landingFlashDurationMs
+        state.setTimersForTesting(landingFlashTimerMs: GameConstants.landingFlashDurationMs)
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.flashBlocks.count, 1)
@@ -44,7 +44,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingComputesFlashAlphaFromTimer() {
         var state = GameState(config: GameConfig())
-        state.landingFlashTimerMs = GameConstants.landingFlashDurationMs / 2
+        state.setTimersForTesting(landingFlashTimerMs: GameConstants.landingFlashDurationMs / 2)
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.flashAlpha, 0.5, accuracy: 0.01)
@@ -54,7 +54,7 @@ final class RenderMappingTests: XCTestCase {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
-        state.lineClearTimerMs = GameConstants.lineClearPauseMs
+        state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertTrue(renderState.activeBlocks.isEmpty)
         XCTAssertTrue(renderState.ghostBlocks.isEmpty)
@@ -64,7 +64,7 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingIncludesLineClearRowsAndAlpha() {
         var state = GameState(config: GameConfig())
-        state.lineClearTimerMs = GameConstants.lineClearPauseMs / 2
+        state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs / 2)
         state.lineClearRows = [18]
         state.lineClearScore = 400
         let renderState = RenderMapper.map(snapshot: state.snapshot())
@@ -77,7 +77,7 @@ final class RenderMappingTests: XCTestCase {
     func testRenderMappingIncludesTSpinKindDuringLineClear() {
         var state = GameState(config: GameConfig(ruleset: .modern))
         state.applyLineClear(cleared: 1, clearedRows: [18], tSpin: .full)
-        state.lineClearTimerMs = GameConstants.lineClearPauseMs / 2
+        state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs / 2)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.tSpinKind, .full)
         XCTAssertEqual(renderState.tSpinAlpha, 0.5, accuracy: 0.01)
@@ -94,14 +94,14 @@ final class RenderMappingTests: XCTestCase {
 
     func testRenderMappingComputesActivePulse() {
         var state = GameState(config: GameConfig(), seed: 1)
-        state.dropTimerMs = 0
+        state.setTimersForTesting(dropTimerMs: 0)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.activePulse, 0, accuracy: 0.001)
     }
 
     func testRenderMappingComputesActivePulseAtMidInterval() {
         var state = GameState(config: GameConfig(), seed: 1)
-        state.dropTimerMs = 500
+        state.setTimersForTesting(dropTimerMs: 500)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertEqual(renderState.activePulse, 1, accuracy: 0.001)
     }
@@ -110,7 +110,7 @@ final class RenderMappingTests: XCTestCase {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .l, x: 4, y: 0)
         state.updateGhostCache()
-        state.lockTimerMs = GameConstants.lockDelayMs / 2
+        state.setTimersForTesting(lockTimerMs: GameConstants.lockDelayMs / 2)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertTrue(renderState.ghostBlocks.isEmpty)
         XCTAssertNil(renderState.ghostKind)
@@ -120,7 +120,6 @@ final class RenderMappingTests: XCTestCase {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .o, x: 4, y: Board.height - 2)
         state.updateGhostCache()
-        state.lockTimerMs = 0
         let renderState = RenderMapper.map(snapshot: state.snapshot())
         XCTAssertTrue(renderState.ghostBlocks.isEmpty)
         XCTAssertNil(renderState.ghostKind)

@@ -4,8 +4,7 @@ import XCTest
 final class GameTickTests: XCTestCase {
     func testLineClearPauseBlocksGravity() {
         var state = GameState(config: GameConfig())
-        state.lineClearTimerMs = 100
-        state.dropTimerMs = 200
+        state.setTimersForTesting(dropTimerMs: 200, lineClearTimerMs: 100)
         state.tick(elapsedMs: 50, softDrop: false)
         XCTAssertEqual(state.dropTimerMs, 200)
         XCTAssertEqual(state.lineClearTimerMs, 50)

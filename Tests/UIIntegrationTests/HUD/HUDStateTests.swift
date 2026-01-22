@@ -23,14 +23,14 @@ final class HUDStateTests: XCTestCase {
 
     func testHudLockWarningActivatesNearLock() {
         var state = GameState(config: GameConfig(), seed: 1)
-        state.lockTimerMs = 400
+        state.setTimersForTesting(lockTimerMs: 400)
         let hud = HUDState.from(state: state)
         XCTAssertTrue(hud.lockWarningActive)
     }
 
     func testHudLockWarningInactiveEarly() {
         var state = GameState(config: GameConfig(), seed: 1)
-        state.lockTimerMs = 100
+        state.setTimersForTesting(lockTimerMs: 100)
         let hud = HUDState.from(state: state)
         XCTAssertFalse(hud.lockWarningActive)
     }

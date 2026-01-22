@@ -12,7 +12,7 @@ final class HUDDiagnosticsStateTests: XCTestCase {
 
     func testDiagnosticsStateIncludesGroundedAndLockResets() {
         var state = GameState(config: GameConfig(lockResetLimit: 15), seed: 1)
-        state.lockResetCount = 3
+        state.setTimersForTesting(lockResetCount: 3)
         let diag = HUDDiagnosticsState.from(state: state)
         XCTAssertEqual(diag.lockResetsText, "Lock resets: 12/15")
         XCTAssertEqual(diag.groundedText, "Grounded: No")
