@@ -34,10 +34,20 @@ public struct SidePanelView: View {
                 }
                 PanelDivider()
                 VStack(alignment: .leading, spacing: LayoutConstants.panelItemSpacing) {
+                    let paddedNextKinds: [TetrominoType?] = {
+                        let base = state.nextKinds.map { Optional($0) }
+                        if base.count >= 3 { return Array(base.prefix(3)) }
+                        return base + Array(repeating: nil, count: 3 - base.count)
+                    }()
                     Text("Next")
                         .font(.system(size: TypographyConstants.sidePanelSectionFontSize, weight: .semibold, design: .default))
-                    ForEach(Array(state.nextKinds.enumerated()), id: \.offset) { _, kind in
-                        PreviewGridView(state: PreviewGridState.from(kind: kind), cellSize: 10)
+                    HStack(spacing: LayoutConstants.panelItemSpacing) {
+                        ForEach(0..<paddedNextKinds.count, id: \.self) { index in
+                            PreviewGridView(
+                                state: PreviewGridState.from(kind: paddedNextKinds[index]),
+                                cellSize: 10
+                            )
+                        }
                     }
                 }
             }

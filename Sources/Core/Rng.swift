@@ -28,7 +28,7 @@ public enum QueueRng {
             let j = rng.nextRange(i + 1)
             bag.swapAt(i, j)
         }
-        queue.append(contentsOf: bag)
+        queue.append(contentsOf: bag.prefix(2))
     }
 
     public static func ensureQueue(rng: inout SimpleRng, queue: inout [TetrominoType], minimum: Int = 1) {

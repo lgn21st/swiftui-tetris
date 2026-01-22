@@ -58,7 +58,7 @@ public struct HUDState: Equatable {
             lockWarningActive: lockWarningActive,
             lockWarningPulse: lockWarningPulse,
             holdKind: state.hold,
-            nextKinds: Array(state.nextQueue.prefix(1)),
+            nextKinds: Array(state.nextQueue.prefix(3)),
             isClassicRuleset: isClassicRuleset
         )
     }

@@ -5,7 +5,7 @@ This document captures the game rules and timing constants used by this project.
 ## Core Constants
 - Board: width=10, height=20
 - Spawn position: (x=3, y=0)
-- Next queue size: 1
+- Next queue size: 3
 - Tick step: 16 ms (default GameConfig.tick_ms)
 - Base drop ms: 1000 (default GameConfig.base_drop_ms)
 - Soft drop multiplier: 10
@@ -66,9 +66,9 @@ L:
 - Try kicks in order; first valid placement wins.
 
 ## RNG and Queue
-- 7-bag shuffle (Fisher-Yates) fills queue.
+- 2-piece bag (first 2 of a shuffled 7-bag) fills queue.
 - LCG RNG (Numerical Recipes constants) for deterministic tests.
-- Queue is kept at length >= 1 by refilling bags.
+- Queue is refilled to length >= 1 before draws; it can be empty after a draw.
 
 ## Actions
 GameAction:

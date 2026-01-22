@@ -59,4 +59,10 @@ final class HUDStateTests: XCTestCase {
         let state = GameState(config: GameConfig(), seed: 1)
         XCTAssertEqual(HUDState.from(state: state, started: false).statusText, "Status: Ready")
     }
+
+    func testHudNextKindsShowsThree() {
+        let state = GameState(config: GameConfig(), seed: 1)
+        let hud = HUDState.from(state: state)
+        XCTAssertEqual(hud.nextKinds.count, 3)
+    }
 }

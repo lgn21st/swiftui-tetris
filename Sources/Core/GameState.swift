@@ -35,7 +35,7 @@ public struct GameState {
         self.board = Board()
         self.rng = SimpleRng(seed: seed)
         self.nextQueue = []
-        QueueRng.ensureQueue(rng: &self.rng, queue: &self.nextQueue, minimum: 1)
+        QueueRng.ensureQueue(rng: &self.rng, queue: &self.nextQueue, minimum: 4)
         let spawn = spawnPosition()
         let firstKind = nextQueue.isEmpty ? TetrominoType.i : nextQueue.removeFirst()
         self.active = Tetromino(kind: firstKind, x: spawn.x, y: spawn.y)
@@ -360,7 +360,7 @@ public struct GameState {
     }
 
     public mutating func spawnNext() {
-        QueueRng.ensureQueue(rng: &rng, queue: &nextQueue, minimum: 1)
+        QueueRng.ensureQueue(rng: &rng, queue: &nextQueue, minimum: 4)
         let next = nextQueue.removeFirst()
         active = spawnPiece(kind: next)
         canHold = true
