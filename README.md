@@ -33,6 +33,17 @@ When the controller releases or disconnects, the oldest observer is auto-promote
 Protocol summary: `docs/adapter-protocol.md`.
 JSON schema: `docs/adapter-protocol.schema.json`.
 
+Example (tcp with tuning):
+```
+TETRIS_AI_TRANSPORT=tcp \
+TETRIS_AI_HOST=127.0.0.1 \
+TETRIS_AI_PORT=7777 \
+TETRIS_AI_IDLE_TIMEOUT_MS=0 \
+TETRIS_AI_MAX_PENDING=128 \
+TETRIS_AI_OBSERVATION_MS=50 \
+swift run App
+```
+
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.
 - Packaged apps should include assets and icon metadata.

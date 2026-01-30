@@ -9,6 +9,7 @@
 - Added explicit control claim/release, observation throttling, and command backpressure handling.
 - Added path-based place planner (SRS kick aware), auto-promotion of observers, and protocol JSON schema.
 - Added adapter environment overrides for idle timeout, command backpressure, and observation throttling.
+- Documented adapter env examples and added protocol message examples.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.
