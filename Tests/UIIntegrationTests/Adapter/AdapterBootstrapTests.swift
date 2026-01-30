@@ -12,6 +12,7 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertEqual(config?.idleTimeoutMs, 2000)
         XCTAssertEqual(config?.maxPendingCommands, 64)
         XCTAssertNil(config?.observationIntervalMs)
+        XCTAssertEqual(config?.logPath, "auto")
     }
 
     func testConfigurationDefaultsToUnixPathWithDefaults() {
@@ -25,6 +26,7 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertEqual(config?.idleTimeoutMs, 2000)
         XCTAssertEqual(config?.maxPendingCommands, 64)
         XCTAssertNil(config?.observationIntervalMs)
+        XCTAssertEqual(config?.logPath, "auto")
     }
 
     func testConfigurationParsesOverridesForTcp() {

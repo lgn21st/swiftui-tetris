@@ -15,7 +15,7 @@
 - Losing focus no longer auto-pauses the game; input is still reset.
 - Added protocol integration checklist to `docs/adapter-protocol.md`.
 - Commands now ack after mapping/apply; invalid place/hold errors are surfaced to clients.
-- Added adapter wire logging via `TETRIS_AI_LOG_PATH`.
+- Added adapter wire logging via `TETRIS_AI_LOG_PATH` (defaults to `auto`).
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

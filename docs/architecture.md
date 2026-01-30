@@ -64,7 +64,7 @@ Where to edit:
   - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
   - `TETRIS_AI_HOST=127.0.0.1`
   - `TETRIS_AI_PORT=7777`
-  - `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (or `auto`)
+  - `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (default `auto`)
 
 ### Tests (TDD)
 1) Add or update a test in Tests/.
