@@ -1,6 +1,7 @@
 import Foundation
 import Renderer
 import Core
+import Adapter
 
 public final class SceneDriver: ObservableObject {
     public let scene: TetrisScene
@@ -9,6 +10,7 @@ public final class SceneDriver: ObservableObject {
     private let audio: AudioPlaying?
     private var gamepad: GamepadManager?
     private let fullScreenHandler: FullScreenHandling
+    private let adapter: AdapterHandling?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var hudDiagnosticsState: HUDDiagnosticsState
     @Published public private(set) var overlayState: OverlayState
@@ -29,13 +31,15 @@ public final class SceneDriver: ObservableObject {
         input: InputEngine = InputEngine(),
         audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
         fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler(),
-        scene: TetrisScene? = nil
+        scene: TetrisScene? = nil,
+        adapter: AdapterHandling? = nil
     ) {
         self.scene = scene ?? TetrisScene(size: TetrisScene.defaultSize)
         self.loop = loop
         self.input = input
         self.audio = audio
         self.fullScreenHandler = fullScreenHandler
+        self.adapter = adapter
         let startedValue = false
         self.started = startedValue
         self.hudState = HUDState.from(state: loop.state, started: startedValue)
@@ -94,6 +98,7 @@ public final class SceneDriver: ObservableObject {
     func tick(elapsedMs: Int, fixedSteps: Int = 1) {
         let elapsed = max(elapsedMs, 0)
         let canAccept = !loop.state.paused && !loop.state.gameOver
+        adapter?.poll(elapsedMs: elapsed, state: &loop.state)
         input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
         let shouldUpdateRenderState = !loop.state.paused || loop.state.gameOver
         let renderState = shouldUpdateRenderState ? loop.stepFrame(elapsedMs: elapsed) : latestRenderState
@@ -101,6 +106,7 @@ public final class SceneDriver: ObservableObject {
             latestRenderState = renderState
             debugRenderStateVersion += 1
         }
+        adapter?.emit(snapshot: loop.state.snapshot())
         let events = loop.state.takeSoundEvents()
         if let audio = audio {
             for event in events {

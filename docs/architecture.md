@@ -10,6 +10,7 @@ The game is split into three layers:
 1) Core (rules and state)
 2) Renderer (SpriteKit drawing)
 3) UI (SwiftUI views, input, audio)
+4) Adapter (protocol/transport boundary for external AI clients)
 
 Flow:
 ```
@@ -18,6 +19,12 @@ Input (keyboard/gamepad)
         -> RenderState snapshot
         -> SpriteKit draws
         -> SwiftUI overlays HUD
+
+External AI (tetris-ai)
+        -> Adapter (command mapping)
+        -> Core state updates
+        -> Snapshot mapping
+        -> Adapter (observation streaming)
 ```
 
 ### Folder Map
@@ -38,6 +45,7 @@ Where to edit:
 - TetrisScene.update(_:) runs every frame.
 - A fixed timestep clock advances Core logic (16ms).
 - Rendering happens after logic.
+ - Adapter polls for commands before each fixed step and emits observations after snapshot.
 
 ### Tests (TDD)
 1) Add or update a test in Tests/.
