@@ -7,7 +7,7 @@ struct TetrisApp: App {
 
     var body: some Scene {
         WindowGroup("SwiftUITetris") {
-            TetrisContainerView()
+            TetrisContainerView(adapter: AdapterBootstrap.fromEnvironment())
         }
         .defaultSize(width: WindowConfig.defaultWidth, height: WindowConfig.defaultHeight)
         .windowResizability(WindowConfig.allowsResize ? .automatic : .contentSize)

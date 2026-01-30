@@ -1,5 +1,10 @@
 # Progress Log
 
+## 2026-01-30
+- Added Adapter layer for external AI control with unix/tcp transports and JSON line framing.
+- Wired Adapter into SceneDriver (poll before tick, emit after snapshot).
+- Added protocol codec and mapping tests for command/observation flow.
+
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.
 - Restored landing flash outline with timer‑based alpha.

@@ -93,6 +93,7 @@ public final class SceneDriver: ObservableObject {
     public func start() {
         audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
         gamepad?.start()
+        (adapter as? AdapterLifecycle)?.start()
     }
 
     func tick(elapsedMs: Int, fixedSteps: Int = 1) {
@@ -128,6 +129,7 @@ public final class SceneDriver: ObservableObject {
     public func stop() {
         gamepad?.stop()
         audio?.setAmbientLoop(enabled: false, masterVolume: masterVolume)
+        (adapter as? AdapterLifecycle)?.stop()
     }
 
     func stateSnapshot() -> GameState {

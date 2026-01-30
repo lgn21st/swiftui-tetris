@@ -105,6 +105,7 @@ Legend:
 | Render node reuse | Optional | Pre-allocate nodes; cached textures for piece rendering (implemented). |
 | Input router | Optional | Unified keyboard/gamepad mapping layer (implemented). |
 | Audio engine | Optional | AVAudioEngine buffers for low-latency SFX (implemented). |
+| External AI adapter | Optional | Adapter + unix/tcp transport for tetris-ai integration (implemented). |
 
 ## Core Checklist
 - Board + tetromino rules + SRS rotation.

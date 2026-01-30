@@ -17,6 +17,7 @@ Architecture and tests are strong; no outstanding issues remain from that review
 ### Maintenance
 
 Ongoing: small polish, bug fixes, and keep tests green.
+Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revisions.
 
 ---
 

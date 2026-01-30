@@ -47,6 +47,15 @@ Where to edit:
 - Rendering happens after logic.
  - Adapter polls for commands before each fixed step and emits observations after snapshot.
 
+### External AI Transport
+- Adapter can listen on Unix domain sockets or TCP localhost.
+- Transport is line-delimited JSON (one message per line).
+- Runtime config via environment:
+  - `TETRIS_AI_TRANSPORT=unix|tcp`
+  - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
+  - `TETRIS_AI_HOST=127.0.0.1`
+  - `TETRIS_AI_PORT=7777`
+
 ### Tests (TDD)
 1) Add or update a test in Tests/.
 2) Implement the change in code.

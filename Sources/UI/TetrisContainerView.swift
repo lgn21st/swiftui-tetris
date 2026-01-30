@@ -2,12 +2,15 @@ import SwiftUI
 import SpriteKit
 import Renderer
 import AppKit
+import Adapter
 
 public struct TetrisContainerView: View {
-    @StateObject private var driver = SceneDriver()
+    @StateObject private var driver: SceneDriver
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    public init() {}
+    public init(adapter: AdapterHandling? = nil) {
+        _driver = StateObject(wrappedValue: SceneDriver(adapter: adapter))
+    }
 
     public var body: some View {
         GeometryReader { proxy in

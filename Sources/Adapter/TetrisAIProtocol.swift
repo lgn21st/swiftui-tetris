@@ -1,6 +1,7 @@
 import Core
+import Foundation
 
-public enum TetrisAIPieceKind: String, CaseIterable, Equatable {
+public enum TetrisAIPieceKind: String, CaseIterable, Equatable, Codable {
     case i = "I"
     case o = "O"
     case t = "T"
@@ -34,7 +35,7 @@ public enum TetrisAIPieceKind: String, CaseIterable, Equatable {
     }
 }
 
-public enum TetrisAIRotation: String, CaseIterable, Equatable {
+public enum TetrisAIRotation: String, CaseIterable, Equatable, Codable {
     case north
     case east
     case south
@@ -59,7 +60,7 @@ public enum TetrisAIRotation: String, CaseIterable, Equatable {
     }
 }
 
-public enum TetrisAIAction: String, Equatable {
+public enum TetrisAIAction: String, Equatable, Codable {
     case moveLeft
     case moveRight
     case softDrop
@@ -71,12 +72,12 @@ public enum TetrisAIAction: String, Equatable {
     case restart
 }
 
-public enum TetrisAICommand: Equatable {
+public enum TetrisAICommand: Equatable, Codable {
     case action(actions: [TetrisAIAction])
     case place(x: Int, rotation: TetrisAIRotation, useHold: Bool)
 }
 
-public struct TetrisAIObservation: Equatable {
+public struct TetrisAIObservation: Equatable, Codable {
     public var seq: Int
     public var tsMs: Int
     public var playable: Bool
@@ -114,9 +115,23 @@ public struct TetrisAIObservation: Equatable {
         self.lines = lines
         self.timers = timers
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case seq
+        case tsMs = "ts"
+        case playable
+        case board
+        case active
+        case next
+        case hold
+        case score
+        case level
+        case lines
+        case timers
+    }
 }
 
-public struct TetrisAIObservationBoard: Equatable {
+public struct TetrisAIObservationBoard: Equatable, Codable {
     public var width: Int
     public var height: Int
     public var cells: [[Int]]
@@ -141,7 +156,7 @@ public struct TetrisAIObservationBoard: Equatable {
     }
 }
 
-public struct TetrisAIObservationActive: Equatable {
+public struct TetrisAIObservationActive: Equatable, Codable {
     public var kind: TetrisAIPieceKind
     public var rotation: TetrisAIRotation
     public var x: Int
@@ -155,7 +170,7 @@ public struct TetrisAIObservationActive: Equatable {
     }
 }
 
-public struct TetrisAIObservationTimers: Equatable {
+public struct TetrisAIObservationTimers: Equatable, Codable {
     public var dropMs: Int
     public var lockMs: Int
     public var lineClearMs: Int
@@ -164,6 +179,12 @@ public struct TetrisAIObservationTimers: Equatable {
         self.dropMs = dropMs
         self.lockMs = lockMs
         self.lineClearMs = lineClearMs
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case dropMs = "drop_ms"
+        case lockMs = "lock_ms"
+        case lineClearMs = "line_clear_ms"
     }
 }
 
