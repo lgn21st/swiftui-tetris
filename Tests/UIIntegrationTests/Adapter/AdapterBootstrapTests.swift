@@ -34,7 +34,8 @@ final class AdapterBootstrapTests: XCTestCase {
             "TETRIS_AI_PORT": "8888",
             "TETRIS_AI_IDLE_TIMEOUT_MS": "0",
             "TETRIS_AI_MAX_PENDING": "12",
-            "TETRIS_AI_OBSERVATION_MS": "50"
+            "TETRIS_AI_OBSERVATION_MS": "50",
+            "TETRIS_AI_LOG_PATH": "/tmp/adapter.log"
         ]
 
         let config = AdapterBootstrap.configuration(from: env)
@@ -43,6 +44,7 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertNil(config?.idleTimeoutMs)
         XCTAssertEqual(config?.maxPendingCommands, 12)
         XCTAssertEqual(config?.observationIntervalMs, 50)
+        XCTAssertEqual(config?.logPath, "/tmp/adapter.log")
     }
 
     func testConfigurationReturnsNilWhenDisabled() {

@@ -16,6 +16,7 @@ Schema: `docs/adapter-protocol.schema.json`.
 - Place mode: validate `x`, `rotation`, `useHold`; apply before tick; reply `invalid_command` on illegal placements.
 - Backpressure: if command queue is full, return `backpressure` and continue streaming observations.
 - Determinism: apply commands before `GameState.tick` on each fixed step; do not let rendering/UI mutate core.
+- Debugging: optionally enable wire logging via `TETRIS_AI_LOG_PATH` to capture raw adapter traffic.
 
 ## Handshake
 ### hello (client -> game)

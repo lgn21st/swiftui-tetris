@@ -37,6 +37,9 @@ public enum AdapterBootstrap {
         if let value = env["TETRIS_AI_OBSERVATION_MS"], let parsed = Int(value), parsed >= 0 {
             config.observationIntervalMs = parsed
         }
+        if let value = env["TETRIS_AI_LOG_PATH"], !value.isEmpty {
+            config.logPath = value
+        }
         return config
     }
 }

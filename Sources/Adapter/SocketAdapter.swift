@@ -11,6 +11,7 @@ public struct SocketAdapterConfiguration: Equatable {
     public var idleTimeoutMs: Int?
     public var maxPendingCommands: Int
     public var observationIntervalMs: Int?
+    public var logPath: String?
 
     public init(
         transport: SocketTransportConfiguration,
@@ -21,7 +22,8 @@ public struct SocketAdapterConfiguration: Equatable {
         features: [String] = ["hold", "next", "score", "timers"],
         idleTimeoutMs: Int? = 2000,
         maxPendingCommands: Int = 64,
-        observationIntervalMs: Int? = nil
+        observationIntervalMs: Int? = nil,
+        logPath: String? = nil
     ) {
         self.transport = transport
         self.protocolVersion = protocolVersion
@@ -32,6 +34,7 @@ public struct SocketAdapterConfiguration: Equatable {
         self.idleTimeoutMs = idleTimeoutMs
         self.maxPendingCommands = maxPendingCommands
         self.observationIntervalMs = observationIntervalMs
+        self.logPath = logPath
     }
 }
 
@@ -52,6 +55,8 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private let timeSource: () -> Int
     private var seq: Int
     private let queue = DispatchQueue(label: "adapter.socket.state")
+    private let logQueue = DispatchQueue(label: "adapter.socket.log")
+    private var logHandle: FileHandle?
     private var pendingCommands: [PendingCommand] = []
     private var clients: [UUID: ClientState] = [:]
     private var controllerId: UUID?
@@ -72,6 +77,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         )
         self.timeSource = timeSource
         self.seq = 0
+        self.logHandle = SocketAdapter.openLogHandle(path: configuration.logPath, timeSource: timeSource)
         self.transport.onReceive = { [weak self] connectionId, data in
             self?.handleIncoming(connectionId: connectionId, data: data)
         }
@@ -87,6 +93,10 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
 
     public func stop() {
         transport.stop()
+        if let handle = logHandle {
+            try? handle.close()
+            logHandle = nil
+        }
     }
 
     public func poll(elapsedMs: Int, state: inout GameState) {
@@ -129,12 +139,13 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         seq += 1
         let observation = ObservationMapper.map(snapshot: snapshot, seq: seq, tsMs: now)
         if let data = try? WireCodec.encode(.observation(observation)) {
-            transport.broadcast(line: data, to: targets)
+            broadcastLine(line: data, to: targets)
         }
         lastObservationTs = now
     }
 
     private func handleIncoming(connectionId: UUID, data: Data) {
+        logEvent(direction: "recv", connectionId: connectionId, line: data)
         guard let message = try? WireCodec.decode(data) else { return }
         switch message {
         case .hello(let hello):
@@ -183,7 +194,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             )
         )
         if let data = try? WireCodec.encode(.welcome(welcome)) {
-            transport.send(line: data, to: connectionId)
+            sendLine(line: data, to: connectionId)
         }
     }
 
@@ -275,15 +286,53 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private func sendAck(connectionId: UUID, seq: Int, status: String) {
         let ack = TetrisAIAck(seq: seq, tsMs: timeSource(), status: status)
         if let data = try? WireCodec.encode(.ack(ack)) {
-            transport.send(line: data, to: connectionId)
+            sendLine(line: data, to: connectionId)
         }
     }
 
     private func sendError(connectionId: UUID, seq: Int, code: String, message: String) {
         let error = TetrisAIErrorMessage(seq: seq, tsMs: timeSource(), code: code, message: message)
         if let data = try? WireCodec.encode(.error(error)) {
-            transport.send(line: data, to: connectionId)
+            sendLine(line: data, to: connectionId)
         }
+    }
+
+    private func sendLine(line: Data, to connectionId: UUID) {
+        logEvent(direction: "send", connectionId: connectionId, line: line)
+        transport.send(line: line, to: connectionId)
+    }
+
+    private func broadcastLine(line: Data, to connectionIds: [UUID]) {
+        for connectionId in connectionIds {
+            sendLine(line: line, to: connectionId)
+        }
+    }
+
+    private func logEvent(direction: String, connectionId: UUID, line: Data) {
+        guard let handle = logHandle else { return }
+        logQueue.async {
+            let lineString = String(data: line, encoding: .utf8)
+            var payload: [String: Any] = [
+                "ts_ms": self.timeSource(),
+                "direction": direction,
+                "connection_id": connectionId.uuidString
+            ]
+            if let lineString {
+                payload["line"] = lineString
+            } else {
+                payload["line_base64"] = line.base64EncodedString()
+            }
+            guard let data = try? JSONSerialization.data(withJSONObject: payload, options: []) else { return }
+            handle.write(data)
+            handle.write(Data([0x0A]))
+        }
+    }
+
+    private static func openLogHandle(path: String?, timeSource: () -> Int) -> FileHandle? {
+        guard let path else { return nil }
+        let resolved = path == "auto" ? "/tmp/tetris-ai-adapter-\(timeSource()).jsonl" : path
+        FileManager.default.createFile(atPath: resolved, contents: nil)
+        return FileHandle(forWritingAtPath: resolved)
     }
 
     private func mapCommandError(_ error: CommandMappingError) -> (code: String, message: String) {
