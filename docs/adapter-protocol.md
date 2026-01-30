@@ -3,6 +3,20 @@
 Transport: line-delimited JSON (one message per line).
 Schema: `docs/adapter-protocol.schema.json`.
 
+## Integration Checklist (Game Adapter)
+- Socket lifecycle: start listener on app launch; clean up on shutdown; support reconnect without restart.
+- Handshake: enforce `hello` first; validate `protocol_version` major; reply with `welcome` including `game_id` and `capabilities`.
+- Controller rules: first `hello` becomes controller; reject command/control from observers with `not_controller`; promote next observer on controller disconnect; support `claim`/`release`.
+- Framing: newline-delimited JSON; reject empty/partial frames; reply with `invalid_command` on parse/shape errors.
+- Sequencing: maintain monotonic `seq` per sender; echo command `seq` in `ack` or `error`.
+- Timestamps: `ts` in unix ms; keep monotonic but not necessarily synchronized.
+- Observations: send full snapshot (board + active + next + hold + score/level/lines/timers) at fixed step or throttled interval; include `playable` gate.
+- Piece kinds: accept lowercase or uppercase in incoming payloads; emit consistent case in outgoing snapshots.
+- Action mode: implement `moveLeft`, `moveRight`, `softDrop`, `hardDrop`, `rotateCw`, `rotateCcw`, `hold`, `pause`, `restart`.
+- Place mode: validate `x`, `rotation`, `useHold`; apply before tick; reply `invalid_command` on illegal placements.
+- Backpressure: if command queue is full, return `backpressure` and continue streaming observations.
+- Determinism: apply commands before `GameState.tick` on each fixed step; do not let rendering/UI mutate core.
+
 ## Handshake
 ### hello (client -> game)
 Fields: `type`, `seq`, `ts`, `client`, `protocol_version`, `formats`, `requested`.
@@ -22,6 +36,8 @@ Example:
 ### command (client -> game)
 - `mode=action`: `actions: ["moveLeft", "rotateCw", ...]`
 - `mode=place`: `place: { "x": 3, "rotation": "east", "useHold": false }`
+Notes:
+- Commands are acknowledged after they are mapped and applied during the adapter poll tick.
 Examples:
 ```
 {"type":"command","seq":2,"ts":1738291200200,"mode":"action","actions":["moveLeft","rotateCw","hardDrop"]}
@@ -65,4 +81,7 @@ Example:
 - `not_controller`: non-controller sent command/release
 - `controller_active`: controller already assigned
 - `invalid_command`: missing payload
+- `invalid_place`: place command could not be mapped/applied
+- `hold_unavailable`: hold requested when unavailable
+- `snapshot_required`: snapshot required for mapping
 - `backpressure`: command queue full

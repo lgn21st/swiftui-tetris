@@ -1,5 +1,6 @@
 import XCTest
 import Core
+import Foundation
 @testable import Adapter
 
 final class SocketAdapterProtocolTests: XCTestCase {
@@ -192,6 +193,9 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         try client.send(lineData: try WireCodec.encode(.command(command)))
 
+        var state = GameState(config: GameConfig(), seed: 1)
+        adapter.poll(elapsedMs: 16, state: &state)
+
         guard let line = try client.readLine(timeoutMs: 500) else {
             XCTFail("Expected ack")
             return
@@ -203,6 +207,60 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
         XCTAssertEqual(ack.seq, 42)
         XCTAssertEqual(ack.status, "ok")
+    }
+
+    func testInvalidPlaceReceivesErrorAfterPoll() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        let hello = TetrisAIHello(
+            seq: 1,
+            tsMs: 1,
+            client: .init(name: "tetris-ai", version: "0.1.0"),
+            protocolVersion: "1.0.0",
+            formats: [.json],
+            requested: .init(streamObservations: true, commandMode: .place)
+        )
+        try client.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client.readLine(timeoutMs: 500)
+
+        let command = TetrisAICommandEnvelope(
+            seq: 7,
+            tsMs: 1,
+            mode: .place,
+            actions: nil,
+            place: .init(x: 99, rotation: .north, useHold: false)
+        )
+        try client.send(lineData: try WireCodec.encode(.command(command)))
+
+        var state = GameState(config: GameConfig(), seed: 1)
+        var line: Data?
+        for _ in 0..<5 {
+            adapter.poll(elapsedMs: 16, state: &state)
+            if let value = try client.readLine(timeoutMs: 50) {
+                line = value
+                break
+            }
+            Thread.sleep(forTimeInterval: 0.01)
+        }
+
+        guard let line else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error message")
+            return
+        }
+        XCTAssertEqual(error.code, "invalid_place")
     }
 
     func testControlReleaseAndClaim() throws {
@@ -286,6 +344,8 @@ final class SocketAdapterProtocolTests: XCTestCase {
             place: nil
         )
         try client2.send(lineData: try WireCodec.encode(.command(command)))
+        var state = GameState(config: GameConfig(), seed: 1)
+        adapter.poll(elapsedMs: 16, state: &state)
         guard let line = try client2.readLine(timeoutMs: 500) else {
             XCTFail("Expected ack")
             return
@@ -328,7 +388,6 @@ final class SocketAdapterProtocolTests: XCTestCase {
             place: nil
         )
         try client.send(lineData: try WireCodec.encode(.command(command)))
-        _ = try client.readLine(timeoutMs: 500)
 
         try client.send(lineData: try WireCodec.encode(.command(command)))
         guard let line = try client.readLine(timeoutMs: 500) else {

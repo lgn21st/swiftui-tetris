@@ -41,12 +41,18 @@ public protocol AdapterLifecycle {
 }
 
 public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
+    private struct PendingCommand {
+        let connectionId: UUID
+        let seq: Int
+        let command: TetrisAICommand
+    }
+
     private let configuration: SocketAdapterConfiguration
     private let transport: SocketServerTransport
     private let timeSource: () -> Int
     private var seq: Int
     private let queue = DispatchQueue(label: "adapter.socket.state")
-    private var pendingCommands: [TetrisAICommand] = []
+    private var pendingCommands: [PendingCommand] = []
     private var clients: [UUID: ClientState] = [:]
     private var controllerId: UUID?
     private var lastObservationTs: Int?
@@ -84,18 +90,25 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     public func poll(elapsedMs: Int, state: inout GameState) {
-        let commands = queue.sync { () -> [TetrisAICommand] in
+        let commands = queue.sync { () -> [PendingCommand] in
             let drained = pendingCommands
             pendingCommands = []
             return drained
         }
 
-        for command in commands {
+        for pending in commands {
             let snapshot = state.snapshot()
-            if let actions = try? CommandMapper.map(command: command, snapshot: snapshot) {
+            do {
+                let actions = try CommandMapper.map(command: pending.command, snapshot: snapshot)
                 for action in actions {
                     state.apply(action: action)
                 }
+                sendAck(connectionId: pending.connectionId, seq: pending.seq, status: "ok")
+            } catch let error as CommandMappingError {
+                let mapped = mapCommandError(error)
+                sendError(connectionId: pending.connectionId, seq: pending.seq, code: mapped.code, message: mapped.message)
+            } catch {
+                sendError(connectionId: pending.connectionId, seq: pending.seq, code: "invalid_command", message: "Failed to map command.")
             }
         }
     }
@@ -209,9 +222,8 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             return
         }
         queue.sync {
-            pendingCommands.append(parsed)
+            pendingCommands.append(PendingCommand(connectionId: connectionId, seq: command.seq, command: parsed))
         }
-        sendAck(connectionId: connectionId, seq: command.seq, status: "ok")
     }
 
     private func handleControl(connectionId: UUID, control: TetrisAIControl) {
@@ -271,6 +283,19 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         let error = TetrisAIErrorMessage(seq: seq, tsMs: timeSource(), code: code, message: message)
         if let data = try? WireCodec.encode(.error(error)) {
             transport.send(line: data, to: connectionId)
+        }
+    }
+
+    private func mapCommandError(_ error: CommandMappingError) -> (code: String, message: String) {
+        switch error {
+        case .unsupportedMode:
+            return ("invalid_command", "Unsupported command mode.")
+        case .snapshotRequired:
+            return ("snapshot_required", "Snapshot required for command.")
+        case .holdUnavailable:
+            return ("hold_unavailable", "Hold unavailable.")
+        case .invalidPlace:
+            return ("invalid_place", "Invalid place command.")
         }
     }
 
