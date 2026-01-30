@@ -41,7 +41,8 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private var seq: Int
     private let queue = DispatchQueue(label: "adapter.socket.state")
     private var pendingCommands: [TetrisAICommand] = []
-    private var handshakeComplete = false
+    private var clients: [UUID: ClientState] = [:]
+    private var controllerId: UUID?
 
     public var boundPort: Int? { transport.boundPort }
     public var boundPath: String? { transport.boundPath }
@@ -57,8 +58,11 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         )
         self.timeSource = timeSource
         self.seq = 0
-        self.transport.onReceive = { [weak self] data in
-            self?.handleIncoming(data: data)
+        self.transport.onReceive = { [weak self] connectionId, data in
+            self?.handleIncoming(connectionId: connectionId, data: data)
+        }
+        self.transport.onDisconnect = { [weak self] connectionId in
+            self?.handleDisconnect(connectionId: connectionId)
         }
         start()
     }
@@ -89,32 +93,51 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     public func emit(snapshot: GameStateSnapshot) {
-        guard handshakeComplete else { return }
+        let targets = queue.sync { () -> [UUID] in
+            clients
+                .filter { $0.value.handshakeComplete && $0.value.streamObservations }
+                .map { $0.key }
+        }
+        guard !targets.isEmpty else { return }
         seq += 1
         let observation = ObservationMapper.map(snapshot: snapshot, seq: seq, tsMs: timeSource())
         if let data = try? WireCodec.encode(.observation(observation)) {
-            transport.send(line: data)
+            transport.broadcast(line: data, to: targets)
         }
     }
 
-    private func handleIncoming(data: Data) {
+    private func handleIncoming(connectionId: UUID, data: Data) {
         guard let message = try? WireCodec.decode(data) else { return }
         switch message {
         case .hello(let hello):
-            handleHello(hello)
+            handleHello(connectionId: connectionId, hello: hello)
         case .command(let command):
-            handleCommand(command)
+            handleCommand(connectionId: connectionId, command: command)
         default:
             break
         }
     }
 
-    private func handleHello(_ hello: TetrisAIHello) {
+    private func handleHello(connectionId: UUID, hello: TetrisAIHello) {
         guard compatibleMajorVersion(server: configuration.protocolVersion, client: hello.protocolVersion) else {
-            sendError(seq: hello.seq, code: "protocol_mismatch", message: "Incompatible protocol version.")
+            sendError(connectionId: connectionId, seq: hello.seq, code: "protocol_mismatch", message: "Incompatible protocol version.")
             return
         }
-        handshakeComplete = true
+        _ = queue.sync { () -> ClientRole in
+            let assignedRole: ClientRole
+            if controllerId == nil {
+                controllerId = connectionId
+                assignedRole = .controller
+            } else {
+                assignedRole = .observer
+            }
+            clients[connectionId] = ClientState(
+                handshakeComplete: true,
+                streamObservations: hello.requested.streamObservations,
+                role: assignedRole
+            )
+            return assignedRole
+        }
         let welcome = TetrisAIWelcome(
             seq: hello.seq,
             tsMs: timeSource(),
@@ -127,13 +150,17 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             )
         )
         if let data = try? WireCodec.encode(.welcome(welcome)) {
-            transport.send(line: data)
+            transport.send(line: data, to: connectionId)
         }
     }
 
-    private func handleCommand(_ command: TetrisAICommandEnvelope) {
-        guard handshakeComplete else {
-            sendError(seq: command.seq, code: "handshake_required", message: "Send hello before commands.")
+    private func handleCommand(connectionId: UUID, command: TetrisAICommandEnvelope) {
+        guard isHandshakeComplete(connectionId: connectionId) else {
+            sendError(connectionId: connectionId, seq: command.seq, code: "handshake_required", message: "Send hello before commands.")
+            return
+        }
+        guard isController(connectionId: connectionId) else {
+            sendError(connectionId: connectionId, seq: command.seq, code: "not_controller", message: "Only controller may send commands.")
             return
         }
         let parsed: TetrisAICommand?
@@ -153,30 +180,30 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         }
 
         guard let parsed else {
-            sendError(seq: command.seq, code: "invalid_command", message: "Missing command payload.")
+            sendError(connectionId: connectionId, seq: command.seq, code: "invalid_command", message: "Missing command payload.")
             return
         }
         queue.sync {
             pendingCommands.append(parsed)
         }
-        sendAck(seq: command.seq, status: "ok")
+        sendAck(connectionId: connectionId, seq: command.seq, status: "ok")
     }
 
     public static func defaultTimeSource() -> Int {
         Int(Date().timeIntervalSince1970 * 1000)
     }
 
-    private func sendAck(seq: Int, status: String) {
+    private func sendAck(connectionId: UUID, seq: Int, status: String) {
         let ack = TetrisAIAck(seq: seq, tsMs: timeSource(), status: status)
         if let data = try? WireCodec.encode(.ack(ack)) {
-            transport.send(line: data)
+            transport.send(line: data, to: connectionId)
         }
     }
 
-    private func sendError(seq: Int, code: String, message: String) {
+    private func sendError(connectionId: UUID, seq: Int, code: String, message: String) {
         let error = TetrisAIErrorMessage(seq: seq, tsMs: timeSource(), code: code, message: message)
         if let data = try? WireCodec.encode(.error(error)) {
-            transport.send(line: data)
+            transport.send(line: data, to: connectionId)
         }
     }
 
@@ -187,4 +214,36 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         guard let serverMajor = major(server), let clientMajor = major(client) else { return false }
         return serverMajor == clientMajor
     }
+
+    private func isHandshakeComplete(connectionId: UUID) -> Bool {
+        queue.sync {
+            clients[connectionId]?.handshakeComplete ?? false
+        }
+    }
+
+    private func isController(connectionId: UUID) -> Bool {
+        queue.sync {
+            controllerId == connectionId
+        }
+    }
+
+    private func handleDisconnect(connectionId: UUID) {
+        queue.sync {
+            clients.removeValue(forKey: connectionId)
+            if controllerId == connectionId {
+                controllerId = nil
+            }
+        }
+    }
+}
+
+private struct ClientState {
+    var handshakeComplete: Bool
+    var streamObservations: Bool
+    var role: ClientRole
+}
+
+private enum ClientRole {
+    case controller
+    case observer
 }

@@ -1,4 +1,5 @@
 import XCTest
+import Core
 @testable import Adapter
 
 final class SocketAdapterProtocolTests: XCTestCase {
@@ -33,6 +34,99 @@ final class SocketAdapterProtocolTests: XCTestCase {
             return
         }
         XCTAssertEqual(welcome.protocolVersion, "1.0.0")
+    }
+
+    func testSecondClientCannotCommand() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client1 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        let hello = TetrisAIHello(
+            seq: 1,
+            tsMs: 1,
+            client: .init(name: "tetris-ai", version: "0.1.0"),
+            protocolVersion: "1.0.0",
+            formats: [.json],
+            requested: .init(streamObservations: true, commandMode: .action)
+        )
+        try client1.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client1.readLine(timeoutMs: 500)
+
+        let client2 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client2.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client2.readLine(timeoutMs: 500)
+
+        let command = TetrisAICommandEnvelope(
+            seq: 9,
+            tsMs: 1,
+            mode: .action,
+            actions: [.moveLeft],
+            place: nil
+        )
+        try client2.send(lineData: try WireCodec.encode(.command(command)))
+        guard let line = try client2.readLine(timeoutMs: 500) else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error")
+            return
+        }
+        XCTAssertEqual(error.code, "not_controller")
+    }
+
+    func testObservationBroadcastsToAllClients() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let hello = TetrisAIHello(
+            seq: 1,
+            tsMs: 1,
+            client: .init(name: "tetris-ai", version: "0.1.0"),
+            protocolVersion: "1.0.0",
+            formats: [.json],
+            requested: .init(streamObservations: true, commandMode: .action)
+        )
+
+        let client1 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client1.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client1.readLine(timeoutMs: 500)
+
+        let client2 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client2.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client2.readLine(timeoutMs: 500)
+
+        let snapshot = GameState(config: GameConfig(), seed: 1).snapshot()
+        adapter.emit(snapshot: snapshot)
+
+        guard let line1 = try client1.readLine(timeoutMs: 500) else {
+            XCTFail("Expected observation")
+            return
+        }
+        guard let line2 = try client2.readLine(timeoutMs: 500) else {
+            XCTFail("Expected observation")
+            return
+        }
+
+        if case .observation = try WireCodec.decode(line1) {} else {
+            XCTFail("Expected observation")
+        }
+        if case .observation = try WireCodec.decode(line2) {} else {
+            XCTFail("Expected observation")
+        }
     }
 
     func testCommandBeforeHelloReceivesError() throws {

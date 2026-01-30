@@ -5,7 +5,7 @@ final class SocketTransportTests: XCTestCase {
     func testTcpTransportReceivesLinesFromClient() throws {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
         let receiveExpectation = expectation(description: "received")
-        transport.onReceive = { data in
+        transport.onReceive = { _, data in
             let text = String(data: data, encoding: .utf8)
             if text == "ping" {
                 receiveExpectation.fulfill()
@@ -29,7 +29,7 @@ final class SocketTransportTests: XCTestCase {
         let path = "/tmp/swiftui-tetris-ai.sock"
         let transport = SocketServerTransport(configuration: .unix(path: path), idleTimeoutMs: 500)
         let receiveExpectation = expectation(description: "received")
-        transport.onReceive = { data in
+        transport.onReceive = { _, data in
             let text = String(data: data, encoding: .utf8)
             if text == "hello" {
                 receiveExpectation.fulfill()
@@ -49,7 +49,7 @@ final class SocketTransportTests: XCTestCase {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0), idleTimeoutMs: 50)
         let disconnectExpectation = expectation(description: "disconnect")
         var didDisconnect = false
-        transport.onDisconnect = {
+        transport.onDisconnect = { _ in
             if !didDisconnect {
                 didDisconnect = true
                 disconnectExpectation.fulfill()

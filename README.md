@@ -24,6 +24,7 @@ Enable unix/tcp transport by setting environment variables before running:
 - `TETRIS_AI_PORT=7777`
 
 Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
+Note: the first client to send `hello` becomes the controller; additional clients are observers.
 
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.

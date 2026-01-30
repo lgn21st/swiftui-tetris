@@ -7,8 +7,8 @@ public enum SocketTransportConfiguration: Equatable {
 }
 
 public final class SocketServerTransport {
-    public var onReceive: ((Data) -> Void)?
-    public var onDisconnect: (() -> Void)?
+    public var onReceive: ((UUID, Data) -> Void)?
+    public var onDisconnect: ((UUID) -> Void)?
     public private(set) var boundPort: Int?
     public private(set) var boundPath: String?
 
@@ -16,12 +16,9 @@ public final class SocketServerTransport {
     private let idleTimeoutMs: Int?
     private let queue = DispatchQueue(label: "adapter.socket.transport")
     private var listenerFd: Int32 = -1
-    private var connectionFd: Int32 = -1
     private var listenerSource: DispatchSourceRead?
-    private var connectionSource: DispatchSourceRead?
     private var idleTimer: DispatchSourceTimer?
-    private var lastRead: DispatchTime = .now()
-    private var framer = LineFramer()
+    private var connections: [UUID: ConnectionState] = [:]
 
     public init(configuration: SocketTransportConfiguration, idleTimeoutMs: Int? = nil) {
         self.configuration = configuration
@@ -43,25 +40,33 @@ public final class SocketServerTransport {
 
     public func stop() {
         queue.sync {
-            closeConnection()
+            closeAllConnections()
             if listenerFd >= 0 {
                 close(listenerFd)
             }
             listenerFd = -1
             listenerSource?.cancel()
             listenerSource = nil
+            idleTimer?.cancel()
+            idleTimer = nil
         }
     }
 
-    public func send(line: Data) {
+    public func send(line: Data, to connectionId: UUID) {
         queue.async {
-            guard self.connectionFd >= 0 else { return }
+            guard let connection = self.connections[connectionId] else { return }
             var data = line
             data.append(0x0A)
             _ = data.withUnsafeBytes { buffer in
                 guard let base = buffer.baseAddress else { return -1 }
-                return write(self.connectionFd, base, buffer.count)
+                return write(connection.fd, base, buffer.count)
             }
+        }
+    }
+
+    public func broadcast(line: Data, to connectionIds: [UUID]) {
+        for connectionId in connectionIds {
+            send(line: line, to: connectionId)
         }
     }
 
@@ -86,57 +91,50 @@ public final class SocketServerTransport {
             }
         }
         guard fd >= 0 else { return }
-
-        if connectionFd >= 0 {
-            closeConnection()
+        setNonBlocking(fd: fd)
+        let id = UUID()
+        let source = DispatchSource.makeReadSource(fileDescriptor: fd, queue: queue)
+        let state = ConnectionState(fd: fd, source: source)
+        connections[id] = state
+        source.setEventHandler { [weak self] in
+            self?.readAvailable(connectionId: id)
         }
-
-        connectionFd = fd
-        setNonBlocking(fd: connectionFd)
-        lastRead = .now()
-        startConnectionSource()
+        source.setCancelHandler { [weak self] in
+            self?.connections[id]?.source = nil
+        }
+        source.resume()
         startIdleTimerIfNeeded()
     }
 
-    private func startConnectionSource() {
-        let source = DispatchSource.makeReadSource(fileDescriptor: connectionFd, queue: queue)
-        source.setEventHandler { [weak self] in
-            self?.readAvailable()
-        }
-        source.setCancelHandler { [weak self] in
-            self?.connectionSource = nil
-        }
-        connectionSource = source
-        source.resume()
-    }
-
-    private func readAvailable() {
+    private func readAvailable(connectionId: UUID) {
+        guard let connection = connections[connectionId] else { return }
         var buffer = [UInt8](repeating: 0, count: 4096)
-        let readCount = read(connectionFd, &buffer, buffer.count)
+        let readCount = read(connection.fd, &buffer, buffer.count)
         if readCount <= 0 {
-            closeConnection()
+            closeConnection(connectionId: connectionId)
             return
         }
 
-        lastRead = .now()
+        connection.lastRead = .now()
         let data = Data(buffer.prefix(readCount))
-        let lines = framer.append(data)
+        let lines = connection.framer.append(data)
         for line in lines {
-            onReceive?(line)
+            onReceive?(connectionId, line)
         }
     }
 
-    private func closeConnection() {
-        if connectionFd >= 0 {
-            close(connectionFd)
+    private func closeConnection(connectionId: UUID) {
+        guard let connection = connections.removeValue(forKey: connectionId) else { return }
+        close(connection.fd)
+        connection.source?.cancel()
+        onDisconnect?(connectionId)
+    }
+
+    private func closeAllConnections() {
+        let ids = Array(connections.keys)
+        for id in ids {
+            closeConnection(connectionId: id)
         }
-        connectionFd = -1
-        connectionSource?.cancel()
-        connectionSource = nil
-        idleTimer?.cancel()
-        idleTimer = nil
-        framer = LineFramer()
-        onDisconnect?()
     }
 
     private func setupUnixListener(path: String) throws {
@@ -212,18 +210,37 @@ public final class SocketServerTransport {
 
     private func startIdleTimerIfNeeded() {
         guard let idleTimeoutMs else { return }
-        idleTimer?.cancel()
+        guard idleTimer == nil else { return }
         let timer = DispatchSource.makeTimerSource(queue: queue)
         timer.schedule(deadline: .now() + .milliseconds(idleTimeoutMs), repeating: .milliseconds(idleTimeoutMs))
         timer.setEventHandler { [weak self] in
             guard let self else { return }
-            let elapsedMs = Int((DispatchTime.now().uptimeNanoseconds - self.lastRead.uptimeNanoseconds) / 1_000_000)
-            if elapsedMs >= idleTimeoutMs {
-                self.closeConnection()
+            let now = DispatchTime.now()
+            let ids = Array(self.connections.keys)
+            for id in ids {
+                guard let connection = self.connections[id] else { continue }
+                let elapsedMs = Int((now.uptimeNanoseconds - connection.lastRead.uptimeNanoseconds) / 1_000_000)
+                if elapsedMs >= idleTimeoutMs {
+                    self.closeConnection(connectionId: id)
+                }
             }
         }
         idleTimer = timer
         timer.resume()
+    }
+}
+
+private final class ConnectionState {
+    let fd: Int32
+    var source: DispatchSourceRead?
+    var framer: LineFramer
+    var lastRead: DispatchTime
+
+    init(fd: Int32, source: DispatchSourceRead) {
+        self.fd = fd
+        self.source = source
+        self.framer = LineFramer()
+        self.lastRead = .now()
     }
 }
 

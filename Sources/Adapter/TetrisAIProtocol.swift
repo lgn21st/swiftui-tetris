@@ -260,6 +260,9 @@ public enum CommandMapper {
         }
 
         actions.append(.hardDrop)
+        if !validateActionPath(actions: actions, snapshot: snapshot, targetX: x, targetRotation: targetRotation) {
+            throw CommandMappingError.invalidPlace
+        }
         return actions
     }
 
@@ -304,6 +307,48 @@ public enum CommandMapper {
             }
         }
         return true
+    }
+
+    private static func validateActionPath(
+        actions: [GameAction],
+        snapshot: GameStateSnapshot,
+        targetX: Int,
+        targetRotation: Rotation
+    ) -> Bool {
+        var state = GameState(config: snapshot.config, seed: 1)
+        state.board.cells = snapshot.boardCells
+        state.active = snapshot.active
+        state.hold = snapshot.hold
+        state.canHold = snapshot.canHold
+        state.nextQueue = snapshot.nextQueue
+        state.paused = snapshot.paused
+        state.gameOver = snapshot.gameOver
+        state.updateGhostCache()
+
+        let actionsToValidate = actions.dropLast()
+        for action in actionsToValidate {
+            let prevActive = state.active
+            let prevHold = state.hold
+            let prevCanHold = state.canHold
+            state.apply(action: action)
+
+            switch action {
+            case .moveLeft, .moveRight, .rotateCw, .rotateCcw:
+                if state.active == prevActive {
+                    return false
+                }
+            case .hold:
+                if state.active.kind == prevActive.kind && state.hold == prevHold && state.canHold == prevCanHold {
+                    return false
+                }
+            default:
+                break
+            }
+        }
+
+        return state.active.x == targetX
+            && state.active.rotation == targetRotation
+            && state.board.canPlace(piece: state.active, x: state.active.x, y: state.active.y, rotation: state.active.rotation)
     }
 }
 
