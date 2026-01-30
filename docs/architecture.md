@@ -55,6 +55,7 @@ Where to edit:
 - Control messages allow explicit claim/release:
   - `control(action=claim)` claims control if none exists.
   - `control(action=release)` releases control (controller-only).
+- When the controller releases or disconnects, the oldest observer is auto-promoted.
 - Adapter enforces backpressure (`backpressure` error) when command queue is full.
 - Observation streaming can be throttled by interval (configurable).
 - Idle connections close after ~2s by default (configurable in Adapter).

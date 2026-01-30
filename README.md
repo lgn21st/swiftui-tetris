@@ -26,7 +26,9 @@ Enable unix/tcp transport by setting environment variables before running:
 Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
 Note: the first client to send `hello` becomes the controller; additional clients are observers.
 Control messages: `control(action=claim|release)` to claim/release control. Non-controllers sending commands receive `not_controller`.
+When the controller releases or disconnects, the oldest observer is auto-promoted.
 Protocol summary: `docs/adapter-protocol.md`.
+JSON schema: `docs/adapter-protocol.schema.json`.
 
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.

@@ -1,6 +1,7 @@
 # Adapter Protocol (Summary)
 
 Transport: line-delimited JSON (one message per line).
+Schema: `docs/adapter-protocol.schema.json`.
 
 ## Handshake
 ### hello (client -> game)

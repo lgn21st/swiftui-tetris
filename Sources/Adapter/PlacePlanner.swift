@@ -1,6 +1,12 @@
 import Core
 
 struct PlacePlanner {
+    private struct CostWeights {
+        let move: Int = 1
+        let rotate: Int = 3
+        let softDrop: Int = 4
+    }
+
     static func plan(
         snapshot: GameStateSnapshot,
         targetX: Int,
@@ -10,18 +16,18 @@ struct PlacePlanner {
         let start = PlanState(x: snapshot.active.x, y: snapshot.active.y, rotation: snapshot.active.rotation)
         let board = snapshot.boardCells
         let kind = snapshot.active.kind
+        let weights = CostWeights()
 
         if !canPlace(kind: kind, state: start, board: board) {
             return nil
         }
 
-        var queue: [(PlanState, [GameAction])] = [(start, [])]
-        var index = 0
-        var visited: Set<PlanState> = [start]
+        var queue: [(PlanState, [GameAction], Int)] = [(start, [], 0)]
+        var bestCost: [PlanState: Int] = [start: 0]
 
-        while index < queue.count {
-            let (state, actions) = queue[index]
-            index += 1
+        while !queue.isEmpty {
+            let minIndex = queue.indices.min { queue[$0].2 < queue[$1].2 } ?? 0
+            let (state, actions, cost) = queue.remove(at: minIndex)
 
             if state.x == targetX && state.rotation == targetRotation {
                 return actions
@@ -30,8 +36,20 @@ struct PlacePlanner {
 
             for action in PlanAction.allCases {
                 if let next = apply(action: action, kind: kind, state: state, board: board) {
-                    if visited.insert(next).inserted {
-                        queue.append((next, actions + [action.gameAction]))
+                    let stepCost: Int
+                    switch action {
+                    case .moveLeft, .moveRight:
+                        stepCost = weights.move
+                    case .rotateCw, .rotateCcw:
+                        stepCost = weights.rotate
+                    case .softDrop:
+                        stepCost = weights.softDrop
+                    }
+                    let nextCost = cost + stepCost
+                    let known = bestCost[next] ?? Int.max
+                    if nextCost < known {
+                        bestCost[next] = nextCost
+                        queue.append((next, actions + [action.gameAction], nextCost))
                     }
                 }
             }

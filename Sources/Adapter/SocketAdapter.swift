@@ -50,6 +50,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private var clients: [UUID: ClientState] = [:]
     private var controllerId: UUID?
     private var lastObservationTs: Int?
+    private var nextJoinOrder: Int = 0
 
     public var boundPort: Int? { transport.boundPort }
     public var boundPath: String? { transport.boundPath }
@@ -147,10 +148,13 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             } else {
                 assignedRole = .observer
             }
+            let joinOrder = nextJoinOrder
+            nextJoinOrder += 1
             clients[connectionId] = ClientState(
                 handshakeComplete: true,
                 streamObservations: hello.requested.streamObservations,
-                role: assignedRole
+                role: assignedRole,
+                joinOrder: joinOrder
             )
             return assignedRole
         }
@@ -241,6 +245,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
                     state.role = .observer
                     clients[connectionId] = state
                 }
+                promoteObserverIfNeeded(excluding: connectionId)
                 return true
             }
             if released {
@@ -294,7 +299,21 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             clients.removeValue(forKey: connectionId)
             if controllerId == connectionId {
                 controllerId = nil
+                promoteObserverIfNeeded(excluding: nil)
             }
+        }
+    }
+
+    private func promoteObserverIfNeeded(excluding connectionId: UUID?) {
+        guard controllerId == nil else { return }
+        let sorted = clients
+            .filter { $0.value.role == .observer && $0.key != connectionId }
+            .sorted { $0.value.joinOrder < $1.value.joinOrder }
+        guard let next = sorted.first else { return }
+        controllerId = next.key
+        if var state = clients[next.key] {
+            state.role = .controller
+            clients[next.key] = state
         }
     }
 }
@@ -303,6 +322,7 @@ private struct ClientState {
     var handshakeComplete: Bool
     var streamObservations: Bool
     var role: ClientRole
+    var joinOrder: Int
 }
 
 private enum ClientRole {

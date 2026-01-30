@@ -7,6 +7,7 @@
 - Added handshake/ack/error flow, idle timeout, and example client script for adapter testing.
 - Added controller/observer support and stricter place command path validation.
 - Added explicit control claim/release, observation throttling, and command backpressure handling.
+- Added path-based place planner (SRS kick aware), auto-promotion of observers, and protocol JSON schema.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

@@ -247,6 +247,54 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
     }
 
+    func testReleaseAutoPromotesObserver() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let hello = TetrisAIHello(
+            seq: 1,
+            tsMs: 1,
+            client: .init(name: "tetris-ai", version: "0.1.0"),
+            protocolVersion: "1.0.0",
+            formats: [.json],
+            requested: .init(streamObservations: true, commandMode: .action)
+        )
+
+        let client1 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client1.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client1.readLine(timeoutMs: 500)
+
+        let client2 = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client2.send(lineData: try WireCodec.encode(.hello(hello)))
+        _ = try client2.readLine(timeoutMs: 500)
+
+        let release = TetrisAIControl(seq: 2, tsMs: 1, action: .release)
+        try client1.send(lineData: try WireCodec.encode(.control(release)))
+        _ = try client1.readLine(timeoutMs: 500)
+
+        let command = TetrisAICommandEnvelope(
+            seq: 3,
+            tsMs: 1,
+            mode: .action,
+            actions: [.moveLeft],
+            place: nil
+        )
+        try client2.send(lineData: try WireCodec.encode(.command(command)))
+        guard let line = try client2.readLine(timeoutMs: 500) else {
+            XCTFail("Expected ack")
+            return
+        }
+        if case .ack = try WireCodec.decode(line) {} else {
+            XCTFail("Expected ack")
+        }
+    }
+
     func testBackpressureRejectsCommand() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(
