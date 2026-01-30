@@ -3,6 +3,17 @@ import Adapter
 @testable import UI
 
 final class AdapterBootstrapTests: XCTestCase {
+    func testConfigurationDefaultsToUnixWhenEnvMissing() {
+        let env: [String: String] = [:]
+
+        let config = AdapterBootstrap.configuration(from: env)
+
+        XCTAssertEqual(config?.transport, .unix(path: "/tmp/tetris-ai.sock"))
+        XCTAssertEqual(config?.idleTimeoutMs, 2000)
+        XCTAssertEqual(config?.maxPendingCommands, 64)
+        XCTAssertNil(config?.observationIntervalMs)
+    }
+
     func testConfigurationDefaultsToUnixPathWithDefaults() {
         let env: [String: String] = [
             "TETRIS_AI_TRANSPORT": "unix"
