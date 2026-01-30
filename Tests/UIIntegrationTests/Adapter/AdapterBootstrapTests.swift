@@ -44,4 +44,14 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertEqual(config?.maxPendingCommands, 12)
         XCTAssertEqual(config?.observationIntervalMs, 50)
     }
+
+    func testConfigurationReturnsNilWhenDisabled() {
+        let env: [String: String] = [
+            "TETRIS_AI_DISABLED": "1"
+        ]
+
+        let config = AdapterBootstrap.configuration(from: env)
+
+        XCTAssertNil(config)
+    }
 }

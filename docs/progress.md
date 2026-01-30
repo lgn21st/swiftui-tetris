@@ -11,6 +11,7 @@
 - Added adapter environment overrides for idle timeout, command backpressure, and observation throttling.
 - Documented adapter env examples and added protocol message examples.
 - Adapter now defaults to unix socket on startup when no env vars are set.
+- Added `TETRIS_AI_DISABLED` to disable adapter startup.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

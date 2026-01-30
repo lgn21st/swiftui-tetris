@@ -9,6 +9,9 @@ public enum AdapterBootstrap {
     }
 
     internal static func configuration(from env: [String: String]) -> SocketAdapterConfiguration? {
+        if env["TETRIS_AI_DISABLED"] == "1" {
+            return nil
+        }
         let transportValue = env["TETRIS_AI_TRANSPORT"]?.lowercased() ?? "unix"
 
         let transport: SocketTransportConfiguration

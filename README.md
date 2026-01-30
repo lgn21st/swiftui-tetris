@@ -22,6 +22,7 @@ Adapter defaults to unix socket on startup. Override with environment variables:
 - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
 - `TETRIS_AI_HOST=127.0.0.1`
 - `TETRIS_AI_PORT=7777`
+- `TETRIS_AI_DISABLED=1` (disable adapter entirely)
 - `TETRIS_AI_IDLE_TIMEOUT_MS=2000` (set `0` to disable idle disconnect)
 - `TETRIS_AI_MAX_PENDING=64` (command queue depth)
 - `TETRIS_AI_OBSERVATION_MS=0` (throttle observations; `0` disables)
