@@ -22,6 +22,9 @@ Enable unix/tcp transport by setting environment variables before running:
 - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
 - `TETRIS_AI_HOST=127.0.0.1`
 - `TETRIS_AI_PORT=7777`
+- `TETRIS_AI_IDLE_TIMEOUT_MS=2000` (set `0` to disable idle disconnect)
+- `TETRIS_AI_MAX_PENDING=64` (command queue depth)
+- `TETRIS_AI_OBSERVATION_MS=0` (throttle observations; `0` disables)
 
 Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
 Note: the first client to send `hello` becomes the controller; additional clients are observers.
