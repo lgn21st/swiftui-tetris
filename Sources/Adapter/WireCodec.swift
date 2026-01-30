@@ -17,6 +17,8 @@ enum WireCodec {
             return try encoder.encode(welcome)
         case .command(let command):
             return try encoder.encode(command)
+        case .control(let control):
+            return try encoder.encode(control)
         case .observation(let observation):
             return try encoder.encode(TetrisAIObservationEnvelope(observation: observation))
         case .ack(let ack):
@@ -41,6 +43,8 @@ enum WireCodec {
             return .welcome(try decoder.decode(TetrisAIWelcome.self, from: data))
         case "command":
             return .command(try decoder.decode(TetrisAICommandEnvelope.self, from: data))
+        case "control":
+            return .control(try decoder.decode(TetrisAIControl.self, from: data))
         case "observation":
             let obs = try decoder.decode(TetrisAIObservationEnvelope.self, from: data)
             return .observation(

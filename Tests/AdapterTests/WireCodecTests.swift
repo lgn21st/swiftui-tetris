@@ -59,4 +59,18 @@ final class WireCodecTests: XCTestCase {
         XCTAssertEqual(decodedCommand.mode, .action)
         XCTAssertEqual(decodedCommand.actions ?? [], [.rotateCw, .moveLeft, .hardDrop])
     }
+
+    func testCodecEncodesAndDecodesControl() throws {
+        let control = TetrisAIControl(seq: 2, tsMs: 10, action: .claim)
+
+        let data = try WireCodec.encode(.control(control))
+        let decoded = try WireCodec.decode(data)
+
+        guard case .control(let decodedControl) = decoded else {
+            XCTFail("Expected control message")
+            return
+        }
+
+        XCTAssertEqual(decodedControl.action, .claim)
+    }
 }

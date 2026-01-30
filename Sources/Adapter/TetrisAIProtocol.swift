@@ -227,6 +227,8 @@ public enum CommandMapper {
         snapshot: GameStateSnapshot
     ) throws -> [GameAction] {
         var actions: [GameAction] = []
+        let originalSnapshot = snapshot
+        var planningSnapshot = snapshot
         var activeStart = snapshot.active
 
         if useHold {
@@ -237,30 +239,46 @@ public enum CommandMapper {
             let spawn = spawnPosition()
             activeStart = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
             activeStart.rotation = .north
+            planningSnapshot = GameStateSnapshot(
+                boardCells: snapshot.boardCells,
+                active: activeStart,
+                paused: snapshot.paused,
+                gameOver: snapshot.gameOver,
+                score: snapshot.score,
+                level: snapshot.level,
+                lines: snapshot.lines,
+                hold: snapshot.hold,
+                canHold: false,
+                nextQueue: snapshot.nextQueue,
+                dropTimerMs: snapshot.dropTimerMs,
+                lockTimerMs: snapshot.lockTimerMs,
+                lineClearTimerMs: snapshot.lineClearTimerMs,
+                lineClearRows: snapshot.lineClearRows,
+                lineClearScore: snapshot.lineClearScore,
+                lastLineClearTSpin: snapshot.lastLineClearTSpin,
+                landingFlashTimerMs: snapshot.landingFlashTimerMs,
+                landingFlashBlocks: snapshot.landingFlashBlocks,
+                softDropActive: snapshot.softDropActive,
+                softDropTimeoutMs: snapshot.softDropTimeoutMs,
+                lockResetCount: snapshot.lockResetCount,
+                activeMovedSinceSpawn: snapshot.activeMovedSinceSpawn,
+                ghostBlocks: snapshot.ghostBlocks,
+                config: snapshot.config
+            )
         }
 
         let targetRotation = rotation.toRotation()
-        var targetPiece = activeStart
-        targetPiece.rotation = targetRotation
-        targetPiece.x = x
-        if !canPlace(piece: targetPiece, board: snapshot.boardCells) {
+        guard let plan = PlacePlanner.plan(
+            snapshot: planningSnapshot,
+            targetX: x,
+            targetRotation: targetRotation
+        ) else {
             throw CommandMappingError.invalidPlace
         }
-        if !canDrop(piece: targetPiece, board: snapshot.boardCells) {
-            throw CommandMappingError.invalidPlace
-        }
 
-        actions.append(contentsOf: rotationActions(from: activeStart.rotation, to: targetRotation))
-
-        let dx = x - activeStart.x
-        if dx < 0 {
-            for _ in 0..<(-dx) { actions.append(.moveLeft) }
-        } else if dx > 0 {
-            for _ in 0..<dx { actions.append(.moveRight) }
-        }
-
+        actions.append(contentsOf: plan)
         actions.append(.hardDrop)
-        if !validateActionPath(actions: actions, snapshot: snapshot, targetX: x, targetRotation: targetRotation) {
+        if !validateActionPath(actions: actions, snapshot: originalSnapshot, targetX: x, targetRotation: targetRotation) {
             throw CommandMappingError.invalidPlace
         }
         return actions

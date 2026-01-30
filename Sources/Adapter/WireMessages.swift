@@ -12,6 +12,11 @@ public enum TetrisAICommandMode: String, Codable, Equatable {
     case place
 }
 
+public enum TetrisAIControlAction: String, Codable, Equatable {
+    case claim
+    case release
+}
+
 public struct TetrisAIClientInfo: Codable, Equatable {
     public var name: String
     public var version: String
@@ -158,6 +163,27 @@ public struct TetrisAICommandEnvelope: Codable, Equatable {
     }
 }
 
+public struct TetrisAIControl: Codable, Equatable {
+    public let type: String
+    public var seq: Int
+    public var tsMs: Int
+    public var action: TetrisAIControlAction
+
+    public init(seq: Int, tsMs: Int, action: TetrisAIControlAction) {
+        self.type = "control"
+        self.seq = seq
+        self.tsMs = tsMs
+        self.action = action
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case type
+        case seq
+        case tsMs = "ts"
+        case action
+    }
+}
+
 public struct TetrisAIPlaceCommand: Codable, Equatable {
     public var x: Int
     public var rotation: TetrisAIRotation
@@ -270,6 +296,7 @@ public enum TetrisAIWireMessage: Equatable {
     case hello(TetrisAIHello)
     case welcome(TetrisAIWelcome)
     case command(TetrisAICommandEnvelope)
+    case control(TetrisAIControl)
     case observation(TetrisAIObservation)
     case ack(TetrisAIAck)
     case error(TetrisAIErrorMessage)

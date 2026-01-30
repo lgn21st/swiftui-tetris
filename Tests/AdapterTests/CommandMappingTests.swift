@@ -19,7 +19,8 @@ final class CommandMappingTests: XCTestCase {
 
         let actions = try CommandMapper.map(command: command, snapshot: snapshot)
 
-        XCTAssertEqual(actions, [.rotateCw, .moveRight, .moveRight, .hardDrop])
+        XCTAssertEqual(actions.last, .hardDrop)
+        XCTAssertTrue(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 5, targetRotation: .east))
     }
 
     func testMapsPlaceCommandWithHold() throws {
@@ -32,7 +33,21 @@ final class CommandMappingTests: XCTestCase {
 
         let actions = try CommandMapper.map(command: command, snapshot: snapshot)
 
-        XCTAssertEqual(actions, [.hold, .hardDrop])
+        XCTAssertEqual(actions.first, .hold)
+        XCTAssertEqual(actions.last, .hardDrop)
+    }
+
+    func testPlacePlanUsesKickNearWall() throws {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.active = Tetromino(kind: .t, x: 0, y: 0)
+        state.active.rotation = .north
+        let snapshot = state.snapshot()
+        let command = TetrisAICommand.place(x: 1, rotation: .west, useHold: false)
+
+        let actions = try CommandMapper.map(command: command, snapshot: snapshot)
+
+        XCTAssertEqual(actions.last, .hardDrop)
+        XCTAssertTrue(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 1, targetRotation: .west))
     }
 
     func testPlaceCommandFailsWhenXOutOfBounds() {
@@ -61,5 +76,23 @@ final class CommandMappingTests: XCTestCase {
         XCTAssertThrowsError(try CommandMapper.map(command: command, snapshot: snapshot)) { error in
             XCTAssertEqual(error as? CommandMappingError, .invalidPlace)
         }
+    }
+
+    private func apply(
+        actions: [GameAction],
+        to snapshot: GameStateSnapshot,
+        targetX: Int,
+        targetRotation: TetrisAIRotation
+    ) -> Bool {
+        var state = GameState(config: snapshot.config, seed: 1)
+        state.board.cells = snapshot.boardCells
+        state.active = snapshot.active
+        state.hold = snapshot.hold
+        state.canHold = snapshot.canHold
+        state.nextQueue = snapshot.nextQueue
+        for action in actions {
+            state.apply(action: action)
+        }
+        return state.active.x == targetX && state.active.rotation == targetRotation.toRotation()
     }
 }

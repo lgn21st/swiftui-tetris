@@ -31,6 +31,8 @@ def main():
     parser.add_argument("--port", type=int, default=7777)
     parser.add_argument("--command", default="")
     parser.add_argument("--once", action="store_true")
+    parser.add_argument("--claim", action="store_true")
+    parser.add_argument("--release", action="store_true")
     args = parser.parse_args()
 
     if args.transport == "unix":
@@ -70,6 +72,18 @@ def main():
         ack = read_line(sock)
         if ack:
             print("<<", ack.decode("utf-8"))
+
+    if args.claim or args.release:
+        control = {
+            "type": "control",
+            "seq": 3,
+            "ts": int(time.time() * 1000),
+            "action": "claim" if args.claim else "release",
+        }
+        send_line(sock, control)
+        reply = read_line(sock)
+        if reply:
+            print("<<", reply.decode("utf-8"))
 
     while True:
         line = read_line(sock)

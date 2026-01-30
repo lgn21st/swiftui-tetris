@@ -52,6 +52,11 @@ Where to edit:
 - Transport is line-delimited JSON (one message per line).
 - Clients must send `hello` before `command`; server replies with `welcome`, then `ack`/`error` for commands.
 - First connected client becomes the controller; additional clients are observers (receive observations only).
+- Control messages allow explicit claim/release:
+  - `control(action=claim)` claims control if none exists.
+  - `control(action=release)` releases control (controller-only).
+- Adapter enforces backpressure (`backpressure` error) when command queue is full.
+- Observation streaming can be throttled by interval (configurable).
 - Idle connections close after ~2s by default (configurable in Adapter).
 - Runtime config via environment:
   - `TETRIS_AI_TRANSPORT=unix|tcp`

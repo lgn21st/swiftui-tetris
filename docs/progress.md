@@ -6,6 +6,7 @@
 - Added protocol codec and mapping tests for command/observation flow.
 - Added handshake/ack/error flow, idle timeout, and example client script for adapter testing.
 - Added controller/observer support and stricter place command path validation.
+- Added explicit control claim/release, observation throttling, and command backpressure handling.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.
