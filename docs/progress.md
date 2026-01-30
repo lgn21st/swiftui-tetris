@@ -12,6 +12,7 @@
 - Documented adapter env examples and added protocol message examples.
 - Adapter now defaults to unix socket on startup when no env vars are set.
 - Added `TETRIS_AI_DISABLED` to disable adapter startup.
+- Losing focus no longer auto-pauses the game; input is still reset.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

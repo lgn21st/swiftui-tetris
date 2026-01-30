@@ -17,10 +17,9 @@ public struct FocusPauseHandler {
                 onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
             )
         }
-        state.paused = true
         input.reset()
         return OverlayState(
-            isPaused: true,
+            isPaused: state.paused,
             isGameOver: state.gameOver,
             isTitle: !started,
             onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
