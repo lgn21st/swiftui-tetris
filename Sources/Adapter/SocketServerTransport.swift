@@ -8,19 +8,24 @@ public enum SocketTransportConfiguration: Equatable {
 
 public final class SocketServerTransport {
     public var onReceive: ((Data) -> Void)?
+    public var onDisconnect: (() -> Void)?
     public private(set) var boundPort: Int?
     public private(set) var boundPath: String?
 
     private let configuration: SocketTransportConfiguration
+    private let idleTimeoutMs: Int?
     private let queue = DispatchQueue(label: "adapter.socket.transport")
     private var listenerFd: Int32 = -1
     private var connectionFd: Int32 = -1
     private var listenerSource: DispatchSourceRead?
     private var connectionSource: DispatchSourceRead?
+    private var idleTimer: DispatchSourceTimer?
+    private var lastRead: DispatchTime = .now()
     private var framer = LineFramer()
 
-    public init(configuration: SocketTransportConfiguration) {
+    public init(configuration: SocketTransportConfiguration, idleTimeoutMs: Int? = nil) {
         self.configuration = configuration
+        self.idleTimeoutMs = idleTimeoutMs
     }
 
     public func start() throws {
@@ -88,7 +93,9 @@ public final class SocketServerTransport {
 
         connectionFd = fd
         setNonBlocking(fd: connectionFd)
+        lastRead = .now()
         startConnectionSource()
+        startIdleTimerIfNeeded()
     }
 
     private func startConnectionSource() {
@@ -111,6 +118,7 @@ public final class SocketServerTransport {
             return
         }
 
+        lastRead = .now()
         let data = Data(buffer.prefix(readCount))
         let lines = framer.append(data)
         for line in lines {
@@ -125,7 +133,10 @@ public final class SocketServerTransport {
         connectionFd = -1
         connectionSource?.cancel()
         connectionSource = nil
+        idleTimer?.cancel()
+        idleTimer = nil
         framer = LineFramer()
+        onDisconnect?()
     }
 
     private func setupUnixListener(path: String) throws {
@@ -197,6 +208,22 @@ public final class SocketServerTransport {
     private func setNonBlocking(fd: Int32) {
         let flags = fcntl(fd, F_GETFL, 0)
         _ = fcntl(fd, F_SETFL, flags | O_NONBLOCK)
+    }
+
+    private func startIdleTimerIfNeeded() {
+        guard let idleTimeoutMs else { return }
+        idleTimer?.cancel()
+        let timer = DispatchSource.makeTimerSource(queue: queue)
+        timer.schedule(deadline: .now() + .milliseconds(idleTimeoutMs), repeating: .milliseconds(idleTimeoutMs))
+        timer.setEventHandler { [weak self] in
+            guard let self else { return }
+            let elapsedMs = Int((DispatchTime.now().uptimeNanoseconds - self.lastRead.uptimeNanoseconds) / 1_000_000)
+            if elapsedMs >= idleTimeoutMs {
+                self.closeConnection()
+            }
+        }
+        idleTimer = timer
+        timer.resume()
     }
 }
 

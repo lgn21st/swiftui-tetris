@@ -4,6 +4,7 @@
 - Added Adapter layer for external AI control with unix/tcp transports and JSON line framing.
 - Wired Adapter into SceneDriver (poll before tick, emit after snapshot).
 - Added protocol codec and mapping tests for command/observation flow.
+- Added handshake/ack/error flow, idle timeout, and example client script for adapter testing.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

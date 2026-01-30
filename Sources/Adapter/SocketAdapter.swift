@@ -8,6 +8,7 @@ public struct SocketAdapterConfiguration: Equatable {
     public var supportedFormats: [TetrisAIFormat]
     public var supportedCommandModes: [TetrisAICommandMode]
     public var features: [String]
+    public var idleTimeoutMs: Int?
 
     public init(
         transport: SocketTransportConfiguration,
@@ -15,7 +16,8 @@ public struct SocketAdapterConfiguration: Equatable {
         gameId: String = "swiftui-spritekit-tetris",
         supportedFormats: [TetrisAIFormat] = [.json],
         supportedCommandModes: [TetrisAICommandMode] = [.action, .place],
-        features: [String] = ["hold", "next", "score", "timers"]
+        features: [String] = ["hold", "next", "score", "timers"],
+        idleTimeoutMs: Int? = 2000
     ) {
         self.transport = transport
         self.protocolVersion = protocolVersion
@@ -23,6 +25,7 @@ public struct SocketAdapterConfiguration: Equatable {
         self.supportedFormats = supportedFormats
         self.supportedCommandModes = supportedCommandModes
         self.features = features
+        self.idleTimeoutMs = idleTimeoutMs
     }
 }
 
@@ -40,12 +43,18 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private var pendingCommands: [TetrisAICommand] = []
     private var handshakeComplete = false
 
+    public var boundPort: Int? { transport.boundPort }
+    public var boundPath: String? { transport.boundPath }
+
     public init(
         configuration: SocketAdapterConfiguration,
         timeSource: @escaping () -> Int = SocketAdapter.defaultTimeSource
     ) {
         self.configuration = configuration
-        self.transport = SocketServerTransport(configuration: configuration.transport)
+        self.transport = SocketServerTransport(
+            configuration: configuration.transport,
+            idleTimeoutMs: configuration.idleTimeoutMs
+        )
         self.timeSource = timeSource
         self.seq = 0
         self.transport.onReceive = { [weak self] data in
@@ -101,6 +110,10 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     private func handleHello(_ hello: TetrisAIHello) {
+        guard compatibleMajorVersion(server: configuration.protocolVersion, client: hello.protocolVersion) else {
+            sendError(seq: hello.seq, code: "protocol_mismatch", message: "Incompatible protocol version.")
+            return
+        }
         handshakeComplete = true
         let welcome = TetrisAIWelcome(
             seq: hello.seq,
@@ -119,6 +132,10 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     private func handleCommand(_ command: TetrisAICommandEnvelope) {
+        guard handshakeComplete else {
+            sendError(seq: command.seq, code: "handshake_required", message: "Send hello before commands.")
+            return
+        }
         let parsed: TetrisAICommand?
         switch command.mode {
         case .action:
@@ -135,13 +152,39 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             }
         }
 
-        guard let parsed else { return }
+        guard let parsed else {
+            sendError(seq: command.seq, code: "invalid_command", message: "Missing command payload.")
+            return
+        }
         queue.sync {
             pendingCommands.append(parsed)
         }
+        sendAck(seq: command.seq, status: "ok")
     }
 
     public static func defaultTimeSource() -> Int {
         Int(Date().timeIntervalSince1970 * 1000)
+    }
+
+    private func sendAck(seq: Int, status: String) {
+        let ack = TetrisAIAck(seq: seq, tsMs: timeSource(), status: status)
+        if let data = try? WireCodec.encode(.ack(ack)) {
+            transport.send(line: data)
+        }
+    }
+
+    private func sendError(seq: Int, code: String, message: String) {
+        let error = TetrisAIErrorMessage(seq: seq, tsMs: timeSource(), code: code, message: message)
+        if let data = try? WireCodec.encode(.error(error)) {
+            transport.send(line: data)
+        }
+    }
+
+    private func compatibleMajorVersion(server: String, client: String) -> Bool {
+        func major(_ version: String) -> Int? {
+            Int(version.split(separator: ".").first ?? "")
+        }
+        guard let serverMajor = major(server), let clientMajor = major(client) else { return false }
+        return serverMajor == clientMajor
     }
 }

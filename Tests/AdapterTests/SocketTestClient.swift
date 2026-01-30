@@ -79,6 +79,45 @@ final class SocketTestClient {
             throw SocketTestError.writeFailed
         }
     }
+
+    func send(lineData: Data) throws {
+        var data = lineData
+        data.append(0x0A)
+        let result = data.withUnsafeBytes { buffer -> Int in
+            guard let base = buffer.baseAddress else { return -1 }
+            return write(fd, base, buffer.count)
+        }
+        if result < 0 {
+            throw SocketTestError.writeFailed
+        }
+    }
+
+    func readLine(timeoutMs: Int) throws -> Data? {
+        let flags = fcntl(fd, F_GETFL, 0)
+        _ = fcntl(fd, F_SETFL, flags | O_NONBLOCK)
+        let deadline = Date().addingTimeInterval(Double(timeoutMs) / 1000.0)
+        var buffer = Data()
+
+        while Date() < deadline {
+            var chunk = [UInt8](repeating: 0, count: 1024)
+            let readCount = read(fd, &chunk, chunk.count)
+            if readCount > 0 {
+                buffer.append(contentsOf: chunk.prefix(readCount))
+                if let range = buffer.firstRange(of: Data([0x0A])) {
+                    return buffer.subdata(in: buffer.startIndex..<range.lowerBound)
+                }
+            } else if readCount == 0 {
+                return nil
+            } else {
+                if errno != EWOULDBLOCK && errno != EAGAIN {
+                    return nil
+                }
+            }
+            usleep(5_000)
+        }
+
+        return nil
+    }
 }
 
 enum SocketTestError: Error {

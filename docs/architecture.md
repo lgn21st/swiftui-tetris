@@ -50,6 +50,8 @@ Where to edit:
 ### External AI Transport
 - Adapter can listen on Unix domain sockets or TCP localhost.
 - Transport is line-delimited JSON (one message per line).
+- Clients must send `hello` before `command`; server replies with `welcome`, then `ack`/`error` for commands.
+- Idle connections close after ~2s by default (configurable in Adapter).
 - Runtime config via environment:
   - `TETRIS_AI_TRANSPORT=unix|tcp`
   - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`

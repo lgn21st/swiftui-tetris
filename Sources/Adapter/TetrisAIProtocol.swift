@@ -192,6 +192,7 @@ public enum CommandMappingError: Error, Equatable {
     case unsupportedMode
     case snapshotRequired
     case holdUnavailable
+    case invalidPlace
 }
 
 public enum CommandMapper {
@@ -226,7 +227,7 @@ public enum CommandMapper {
         snapshot: GameStateSnapshot
     ) throws -> [GameAction] {
         var actions: [GameAction] = []
-        var active = snapshot.active
+        var activeStart = snapshot.active
 
         if useHold {
             guard snapshot.canHold else { throw CommandMappingError.holdUnavailable }
@@ -234,13 +235,24 @@ public enum CommandMapper {
             let heldKind = snapshot.hold ?? snapshot.nextQueue.first
             guard let kind = heldKind else { throw CommandMappingError.holdUnavailable }
             let spawn = spawnPosition()
-            active = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
-            active.rotation = .north
+            activeStart = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
+            activeStart.rotation = .north
         }
 
-        actions.append(contentsOf: rotationActions(from: active.rotation, to: rotation.toRotation()))
+        let targetRotation = rotation.toRotation()
+        var targetPiece = activeStart
+        targetPiece.rotation = targetRotation
+        targetPiece.x = x
+        if !canPlace(piece: targetPiece, board: snapshot.boardCells) {
+            throw CommandMappingError.invalidPlace
+        }
+        if !canDrop(piece: targetPiece, board: snapshot.boardCells) {
+            throw CommandMappingError.invalidPlace
+        }
 
-        let dx = x - active.x
+        actions.append(contentsOf: rotationActions(from: activeStart.rotation, to: targetRotation))
+
+        let dx = x - activeStart.x
         if dx < 0 {
             for _ in 0..<(-dx) { actions.append(.moveLeft) }
         } else if dx > 0 {
@@ -263,6 +275,35 @@ public enum CommandMapper {
             return Array(repeating: .rotateCw, count: cwSteps)
         }
         return Array(repeating: .rotateCcw, count: ccwSteps)
+    }
+
+    private static func canPlace(piece: Tetromino, board: [[Cell]]) -> Bool {
+        for (dx, dy) in piece.blocks(rotation: piece.rotation) {
+            let nx = piece.x + dx
+            let ny = piece.y + dy
+            if nx < 0 || nx >= Board.width || ny < 0 || ny >= Board.height {
+                return false
+            }
+            if board[ny][nx].filled {
+                return false
+            }
+        }
+        return true
+    }
+
+    private static func canDrop(piece: Tetromino, board: [[Cell]]) -> Bool {
+        var falling = piece
+        guard canPlace(piece: falling, board: board) else { return false }
+        while true {
+            var next = falling
+            next.y += 1
+            if canPlace(piece: next, board: board) {
+                falling = next
+            } else {
+                break
+            }
+        }
+        return true
     }
 }
 

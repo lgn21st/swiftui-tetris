@@ -16,6 +16,15 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Build (release): `swift build -c release`
 - Run app: `swift run App`
 
+## External AI (Adapter)
+Enable unix/tcp transport by setting environment variables before running:
+- `TETRIS_AI_TRANSPORT=unix|tcp`
+- `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
+- `TETRIS_AI_HOST=127.0.0.1`
+- `TETRIS_AI_PORT=7777`
+
+Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
+
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.
 - Packaged apps should include assets and icon metadata.
