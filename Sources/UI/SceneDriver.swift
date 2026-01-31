@@ -99,6 +99,7 @@ public final class SceneDriver: ObservableObject {
     func tick(elapsedMs: Int, fixedSteps: Int = 1) {
         let elapsed = max(elapsedMs, 0)
         let canAccept = !loop.state.paused && !loop.state.gameOver
+        loop.state.beginFixedStep()
         adapter?.poll(elapsedMs: elapsed, state: &loop.state)
         input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
         let shouldUpdateRenderState = !loop.state.paused || loop.state.gameOver

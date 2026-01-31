@@ -15,11 +15,20 @@ public struct SocketAdapterConfiguration: Equatable {
 
     public init(
         transport: SocketTransportConfiguration,
-        protocolVersion: String = "1.0.0",
+        protocolVersion: String = "2.0.0",
         gameId: String = "swiftui-spritekit-tetris",
         supportedFormats: [TetrisAIFormat] = [.json],
         supportedCommandModes: [TetrisAICommandMode] = [.action, .place],
-        features: [String] = ["hold", "next", "score", "timers"],
+        features: [String] = [
+            "hold",
+            "next",
+            "next_queue",
+            "can_hold",
+            "last_event",
+            "state_hash",
+            "score",
+            "timers",
+        ],
         idleTimeoutMs: Int? = 2000,
         maxPendingCommands: Int = 64,
         observationIntervalMs: Int? = nil,

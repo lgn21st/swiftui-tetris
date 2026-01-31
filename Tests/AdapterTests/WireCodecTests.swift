@@ -21,7 +21,7 @@ final class WireCodecTests: XCTestCase {
             seq: 1,
             tsMs: 123,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -34,7 +34,7 @@ final class WireCodecTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(decodedHello.protocolVersion, "1.0.0")
+        XCTAssertEqual(decodedHello.protocolVersion, "2.0.0")
         XCTAssertEqual(decodedHello.client.name, "tetris-ai")
         XCTAssertEqual(decodedHello.requested.commandMode, .action)
     }

@@ -1,4 +1,17 @@
 public struct GameState {
+    public enum RestartSeedMode: Equatable {
+        case random
+        case fixed(UInt64)
+        case increment(UInt64)
+    }
+
+    public private(set) var episodeId: Int
+    public private(set) var episodeSeed: UInt64
+    public private(set) var pieceId: Int
+    public private(set) var stepInPiece: Int
+    public private(set) var adapterLockedThisStep: Bool
+    public var restartSeedMode: RestartSeedMode
+
     public var board: Board
     public var active: Tetromino
     public var paused: Bool
@@ -32,6 +45,13 @@ public struct GameState {
     private var soundEvents: [SoundEvent]
 
     public init(config: GameConfig, seed: UInt64 = 1) {
+        self.episodeId = 0
+        self.episodeSeed = seed
+        self.pieceId = 0
+        self.stepInPiece = 0
+        self.adapterLockedThisStep = false
+        self.restartSeedMode = .random
+
         self.board = Board()
         self.rng = SimpleRng(seed: seed)
         self.nextQueue = []
@@ -39,6 +59,7 @@ public struct GameState {
         let spawn = spawnPosition()
         let firstKind = nextQueue.isEmpty ? TetrominoType.i : nextQueue.removeFirst()
         self.active = Tetromino(kind: firstKind, x: spawn.x, y: spawn.y)
+        self.pieceId = 1
         self.paused = false
         self.gameOver = false
         self.score = 0
@@ -65,6 +86,12 @@ public struct GameState {
         self.config = config
         self.soundEvents = []
         updateGhostCache()
+    }
+
+    public mutating func beginFixedStep() {
+        adapterLockedThisStep = false
+        guard !paused && !gameOver else { return }
+        stepInPiece += 1
     }
 
     public mutating func tick(elapsedMs: Int, softDrop: Bool) {
@@ -166,7 +193,21 @@ public struct GameState {
                 softDropTimeoutMs = 0
             }
         case .restart:
-            restart(seed: rngSeed())
+            let chosenSeed: UInt64
+            let nextMode: RestartSeedMode
+            switch restartSeedMode {
+            case .random:
+                chosenSeed = rngSeed()
+                nextMode = .random
+            case .fixed(let seed):
+                chosenSeed = seed
+                nextMode = .fixed(seed)
+            case .increment(let seed):
+                chosenSeed = seed
+                nextMode = .increment(seed + 1)
+            }
+            restartSeedMode = nextMode
+            restart(seed: chosenSeed)
         }
     }
 
@@ -329,6 +370,7 @@ public struct GameState {
     }
 
     private mutating func lockActivePiece() {
+        adapterLockedThisStep = true
         setLandingFlash()
         board.lock(piece: active)
         let result = board.clearLines()
@@ -346,6 +388,8 @@ public struct GameState {
     }
 
     private mutating func spawnPiece(kind: TetrominoType) -> Tetromino {
+        pieceId += 1
+        stepInPiece = 0
         let spawn = spawnPosition()
         let piece = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
         if !board.canPlace(piece: piece, x: piece.x, y: piece.y, rotation: piece.rotation) {
@@ -367,7 +411,12 @@ public struct GameState {
     }
 
     public mutating func restart(seed: UInt64) {
-        self = GameState(config: config, seed: seed)
+        let preservedConfig = config
+        let preservedMode = restartSeedMode
+        let nextEpisodeId = episodeId + 1
+        self = GameState(config: preservedConfig, seed: seed)
+        episodeId = nextEpisodeId
+        restartSeedMode = preservedMode
     }
 
     private mutating func rngSeed() -> UInt64 {
@@ -415,6 +464,10 @@ public struct GameState {
 
     public func snapshot() -> GameStateSnapshot {
         GameStateSnapshot(
+            episodeId: episodeId,
+            seed: episodeSeed,
+            pieceId: pieceId,
+            stepInPiece: stepInPiece,
             boardCells: board.cells,
             active: active,
             paused: paused,
@@ -422,6 +475,8 @@ public struct GameState {
             score: score,
             level: level,
             lines: lines,
+            combo: combo,
+            backToBack: backToBack,
             hold: hold,
             canHold: canHold,
             nextQueue: nextQueue,
@@ -437,6 +492,7 @@ public struct GameState {
             softDropTimeoutMs: softDropTimeoutMs,
             lockResetCount: lockResetCount,
             activeMovedSinceSpawn: activeMovedSinceSpawn,
+            adapterLocked: adapterLockedThisStep,
             ghostBlocks: ghostCache,
             config: config
         )

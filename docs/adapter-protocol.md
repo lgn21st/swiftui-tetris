@@ -23,14 +23,14 @@ Schema: `docs/adapter-protocol.schema.json`.
 Fields: `type`, `seq`, `ts`, `client`, `protocol_version`, `formats`, `requested`.
 Example:
 ```
-{"type":"hello","seq":1,"ts":1738291200000,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"1.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"place"}}
+{"type":"hello","seq":1,"ts":1738291200000,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"place"}}
 ```
 
 ### welcome (game -> client)
 Fields: `type`, `seq`, `ts`, `protocol_version`, `game_id`, `capabilities`.
 Example:
 ```
-{"type":"welcome","seq":1,"ts":1738291200100,"protocol_version":"1.0.0","game_id":"swiftui-spritekit-tetris","capabilities":{"formats":["json"],"command_modes":["action","place"],"features":["hold","next","score","timers"]}}
+{"type":"welcome","seq":1,"ts":1738291200100,"protocol_version":"2.0.0","game_id":"swiftui-spritekit-tetris","capabilities":{"formats":["json"],"command_modes":["action","place"],"features":["hold","next","next_queue","can_hold","last_event","state_hash","score","timers"]}}
 ```
 
 ## Commands
@@ -70,10 +70,10 @@ Examples:
 
 ## Observations
 ### observation (game -> client)
-Fields: `type`, `seq`, `ts`, `playable`, `board`, `active`, `next`, `hold`, `score`, `level`, `lines`, `timers`.
+Fields: `type`, `seq`, `ts`, `playable`, `paused`, `game_over`, `episode_id`, `seed`, `piece_id`, `step_in_piece`, `board`, `active`, `next`, `next_queue`, `hold`, `can_hold`, `last_event`, `state_hash`, `score`, `level`, `lines`, `timers`.
 Example:
 ```
-{"type":"observation","seq":20,"ts":1738291200600,"playable":true,"board":{"width":10,"height":20,"cells":[[0,0,0,0,0,0,0,0,0,0]]},"active":{"kind":"t","rotation":"north","x":4,"y":19},"next":"i","hold":null,"score":0,"level":1,"lines":0,"timers":{"tick_ms":1000,"lock_ms":0,"line_clear_ms":0}}
+{"type":"observation","seq":20,"ts":1738291200600,"playable":true,"paused":false,"game_over":false,"episode_id":0,"seed":1,"piece_id":12,"step_in_piece":0,"board":{"width":10,"height":20,"cells":[[0,0,0,0,0,0,0,0,0,0]]},"active":{"kind":"t","rotation":"north","x":4,"y":19},"next":"i","next_queue":["i","o","t","s"],"hold":null,"can_hold":true,"last_event":{"locked":true,"lines_cleared":2,"line_clear_score":1200,"tspin":"full","combo":1,"back_to_back":true},"state_hash":"e1bca4d1b673b8c2","score":0,"level":1,"lines":0,"timers":{"drop_ms":1000,"lock_ms":0,"line_clear_ms":0}}
 ```
 
 ## Error Codes (current)

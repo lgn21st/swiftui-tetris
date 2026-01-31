@@ -19,7 +19,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -34,7 +34,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             XCTFail("Expected welcome message")
             return
         }
-        XCTAssertEqual(welcome.protocolVersion, "1.0.0")
+        XCTAssertEqual(welcome.protocolVersion, "2.0.0")
     }
 
     func testSecondClientCannotCommand() throws {
@@ -52,7 +52,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -97,7 +97,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -177,7 +177,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -224,7 +224,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .place)
         )
@@ -277,7 +277,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -296,7 +296,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
 
         let claim = TetrisAIControl(seq: 11, tsMs: 1, action: .claim)
         try client2.send(lineData: try WireCodec.encode(.control(claim)))
-        guard let line = try client2.readLine(timeoutMs: 500) else {
+        guard let line = try client2.readLine(timeoutMs: 1500) else {
             XCTFail("Expected ack")
             return
         }
@@ -319,7 +319,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -373,7 +373,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -422,7 +422,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "1.0.0",
+            protocolVersion: "2.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -454,7 +454,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "1.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )

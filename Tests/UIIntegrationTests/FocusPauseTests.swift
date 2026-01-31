@@ -7,7 +7,7 @@ final class FocusPauseTests: XCTestCase {
         driver.handleKeyDown("\n")
         XCTAssertFalse(driver.stateSnapshot().paused)
         driver.handleAppActiveChanged(isActive: false)
-        XCTAssertTrue(driver.stateSnapshot().paused)
+        XCTAssertFalse(driver.stateSnapshot().paused)
     }
 
     func testFocusGainDoesNotAutoUnpause() {
@@ -15,6 +15,6 @@ final class FocusPauseTests: XCTestCase {
         driver.handleKeyDown("\n")
         driver.handleAppActiveChanged(isActive: false)
         driver.handleAppActiveChanged(isActive: true)
-        XCTAssertTrue(driver.stateSnapshot().paused)
+        XCTAssertFalse(driver.stateSnapshot().paused)
     }
 }

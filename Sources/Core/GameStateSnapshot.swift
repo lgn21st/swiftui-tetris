@@ -1,4 +1,8 @@
 public struct GameStateSnapshot {
+    public let episodeId: Int
+    public let seed: UInt64
+    public let pieceId: Int
+    public let stepInPiece: Int
     public let boardCells: [[Cell]]
     public let active: Tetromino
     public let paused: Bool
@@ -6,6 +10,8 @@ public struct GameStateSnapshot {
     public let score: Int
     public let level: Int
     public let lines: Int
+    public let combo: Int
+    public let backToBack: Bool
     public let hold: TetrominoType?
     public let canHold: Bool
     public let nextQueue: [TetrominoType]
@@ -21,10 +27,15 @@ public struct GameStateSnapshot {
     public let softDropTimeoutMs: Int
     public let lockResetCount: Int
     public let activeMovedSinceSpawn: Bool
+    public let adapterLocked: Bool
     public let ghostBlocks: [(Int, Int)]
     public let config: GameConfig
 
     public init(
+        episodeId: Int,
+        seed: UInt64,
+        pieceId: Int,
+        stepInPiece: Int,
         boardCells: [[Cell]],
         active: Tetromino,
         paused: Bool,
@@ -32,6 +43,8 @@ public struct GameStateSnapshot {
         score: Int,
         level: Int,
         lines: Int,
+        combo: Int,
+        backToBack: Bool,
         hold: TetrominoType?,
         canHold: Bool,
         nextQueue: [TetrominoType],
@@ -47,9 +60,14 @@ public struct GameStateSnapshot {
         softDropTimeoutMs: Int,
         lockResetCount: Int,
         activeMovedSinceSpawn: Bool,
+        adapterLocked: Bool,
         ghostBlocks: [(Int, Int)],
         config: GameConfig
     ) {
+        self.episodeId = episodeId
+        self.seed = seed
+        self.pieceId = pieceId
+        self.stepInPiece = stepInPiece
         self.boardCells = boardCells
         self.active = active
         self.paused = paused
@@ -57,6 +75,8 @@ public struct GameStateSnapshot {
         self.score = score
         self.level = level
         self.lines = lines
+        self.combo = combo
+        self.backToBack = backToBack
         self.hold = hold
         self.canHold = canHold
         self.nextQueue = nextQueue
@@ -72,6 +92,7 @@ public struct GameStateSnapshot {
         self.softDropTimeoutMs = softDropTimeoutMs
         self.lockResetCount = lockResetCount
         self.activeMovedSinceSpawn = activeMovedSinceSpawn
+        self.adapterLocked = adapterLocked
         self.ghostBlocks = ghostBlocks
         self.config = config
     }

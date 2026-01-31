@@ -2,6 +2,17 @@ import XCTest
 @testable import Adapter
 
 final class InMemoryTransportTests: XCTestCase {
+    private func defaultLastEvent() -> TetrisAILastEvent {
+        TetrisAILastEvent(
+            locked: false,
+            linesCleared: 0,
+            lineClearScore: 0,
+            tspin: .none,
+            combo: -1,
+            backToBack: false
+        )
+    }
+
     func testCommandsAreDeliveredInOrder() {
         let transport = InMemoryTransport()
         let first = TetrisAICommand.action(actions: [.rotateCw, .moveLeft])
@@ -23,10 +34,18 @@ final class InMemoryTransportTests: XCTestCase {
             playable: true,
             paused: false,
             gameOver: false,
+            episodeId: 0,
+            seed: 1,
+            pieceId: 1,
+            stepInPiece: 0,
             board: .empty(),
             active: nil,
             next: nil,
+            nextQueue: [],
             hold: nil,
+            canHold: true,
+            lastEvent: defaultLastEvent(),
+            stateHash: "",
             score: 0,
             level: 0,
             lines: 0,
@@ -38,10 +57,18 @@ final class InMemoryTransportTests: XCTestCase {
             playable: false,
             paused: true,
             gameOver: false,
+            episodeId: 0,
+            seed: 1,
+            pieceId: 1,
+            stepInPiece: 1,
             board: .empty(),
             active: nil,
             next: nil,
+            nextQueue: [],
             hold: nil,
+            canHold: true,
+            lastEvent: defaultLastEvent(),
+            stateHash: "",
             score: 10,
             level: 1,
             lines: 2,

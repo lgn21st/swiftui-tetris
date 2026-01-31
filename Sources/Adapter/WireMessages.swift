@@ -209,10 +209,18 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
     public var playable: Bool
     public var paused: Bool
     public var gameOver: Bool
+    public var episodeId: Int
+    public var seed: UInt64
+    public var pieceId: Int
+    public var stepInPiece: Int
     public var board: TetrisAIObservationBoard
     public var active: TetrisAIObservationActive?
     public var next: TetrisAIPieceKind?
+    public var nextQueue: [TetrisAIPieceKind]
     public var hold: TetrisAIPieceKind?
+    public var canHold: Bool
+    public var lastEvent: TetrisAILastEvent
+    public var stateHash: String
     public var score: Int
     public var level: Int
     public var lines: Int
@@ -225,10 +233,18 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         self.playable = observation.playable
         self.paused = observation.paused
         self.gameOver = observation.gameOver
+        self.episodeId = observation.episodeId
+        self.seed = observation.seed
+        self.pieceId = observation.pieceId
+        self.stepInPiece = observation.stepInPiece
         self.board = observation.board
         self.active = observation.active
         self.next = observation.next
+        self.nextQueue = observation.nextQueue
         self.hold = observation.hold
+        self.canHold = observation.canHold
+        self.lastEvent = observation.lastEvent
+        self.stateHash = observation.stateHash
         self.score = observation.score
         self.level = observation.level
         self.lines = observation.lines
@@ -242,10 +258,18 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         case playable
         case paused
         case gameOver = "game_over"
+        case episodeId = "episode_id"
+        case seed
+        case pieceId = "piece_id"
+        case stepInPiece = "step_in_piece"
         case board
         case active
         case next
+        case nextQueue = "next_queue"
         case hold
+        case canHold = "can_hold"
+        case lastEvent = "last_event"
+        case stateHash = "state_hash"
         case score
         case level
         case lines

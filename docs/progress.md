@@ -17,6 +17,10 @@
 - Commands now ack after mapping/apply; invalid place/hold errors are surfaced to clients.
 - Added adapter wire logging via `TETRIS_AI_LOG_PATH` (defaults to `auto`).
 
+## 2026-02-01
+- Bumped adapter protocol to v2.0.0 (breaking change; v1.0.0 dropped).
+- Expanded `observation` payload with ML-ready fields: `episode_id`, `seed`, `piece_id`, `step_in_piece`, `next_queue`, `can_hold`, `last_event`, `state_hash`.
+
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.
 - Restored landing flash outline with timer‑based alpha.
