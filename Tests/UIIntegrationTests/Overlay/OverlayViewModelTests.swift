@@ -24,7 +24,7 @@ final class OverlayViewModelTests: XCTestCase {
         )
         XCTAssertEqual(
             OverlayView.accessibilityLabel(for: state),
-            "Title. Press Space or Enter to start. Move: Left/Right Rotate: Up"
+            "SwiftUI Tetris. Press Space or Enter to start. Move: Left/Right Rotate: Up"
         )
     }
 }

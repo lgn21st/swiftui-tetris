@@ -17,7 +17,7 @@ public struct OverlayState: Equatable {
     public var title: String {
         if isGameOver { return "Game Over" }
         if isPaused { return "Paused" }
-        if isTitle { return "Title" }
+        if isTitle { return "SwiftUI Tetris" }
         return ""
     }
 
