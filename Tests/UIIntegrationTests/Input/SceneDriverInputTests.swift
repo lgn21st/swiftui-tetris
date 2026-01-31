@@ -8,13 +8,39 @@ final class SceneDriverInputTests: XCTestCase {
         let driver = SceneDriver(loop: loop)
         let startX = loop.state.active.x
         driver.handleKeyDown("right")
+        XCTAssertFalse(driver.overlayState.isTitle)
         XCTAssertEqual(loop.state.active.x, startX + 1)
+    }
+
+    func testRestartKeyClearsTitleOverlayWithoutPausing() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        XCTAssertTrue(driver.overlayState.isTitle)
+        XCTAssertFalse(loop.state.paused)
+
+        driver.handleKeyDown("r")
+
+        XCTAssertFalse(driver.overlayState.isTitle)
+        XCTAssertFalse(loop.state.paused)
+    }
+
+    func testPauseKeyOnTitleStartsButDoesNotPause() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let driver = SceneDriver(loop: loop)
+        XCTAssertTrue(driver.overlayState.isTitle)
+        XCTAssertFalse(loop.state.paused)
+
+        driver.handleKeyDown("p")
+
+        XCTAssertFalse(driver.overlayState.isTitle)
+        XCTAssertFalse(loop.state.paused)
     }
 
     func testSpaceStartsGameBeforeHardDrop() {
         let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let driver = SceneDriver(loop: loop)
         driver.handleKeyDown(" ")
+        XCTAssertFalse(driver.overlayState.isTitle)
         let filled = loop.state.board.cells.flatMap { $0 }.contains { $0.filled }
         XCTAssertFalse(filled)
         XCTAssertEqual(loop.state.score, 0)
@@ -40,6 +66,7 @@ final class SceneDriverInputTests: XCTestCase {
     func testEscapePauses() {
         let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let driver = SceneDriver(loop: loop)
+        driver.commandStartGame()
         XCTAssertFalse(loop.state.paused)
         driver.handleKeyDown("escape")
         XCTAssertTrue(loop.state.paused)

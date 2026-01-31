@@ -156,21 +156,24 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyDown(_ key: String) {
-        if !started && (key == "\n" || key == "\r" || key == " " || key == "space") {
-            startIfNeeded()
-            return
-        }
-        if key == "escape" {
-            recordLastInput(.pause)
-            input.releaseMovementHolds()
-            input.apply(action: .pause, to: &loop.state)
-            return
-        }
         if key == "d" {
             diagnosticsVisible.toggle()
             return
         }
+
+        // Title screen: explicit start keys only start (no immediate action).
+        if !started && (key == "\n" || key == "\r" || key == " " || key == "space") {
+            startIfNeeded()
+            refreshDerivedState()
+            return
+        }
+
         guard let action = InputRouter.action(forKey: key) else { return }
+
+        if ensureStartedForInput(action: action) {
+            return
+        }
+
         recordLastInput(action)
         switch action {
         case .moveLeft:
@@ -185,6 +188,8 @@ public final class SceneDriver: ObservableObject {
         default:
             input.apply(action: action, to: &loop.state)
         }
+
+        refreshDerivedState()
     }
 
     public func handleKeyUp(_ key: String) {
@@ -225,12 +230,26 @@ public final class SceneDriver: ObservableObject {
     }
 
     private func handleGamepadAction(_ action: GameAction) {
-        if !started, action == .pause || action == .restart {
-            startIfNeeded()
+        if ensureStartedForInput(action: action) {
             return
         }
         recordLastInput(action)
         input.apply(action: action, to: &loop.state)
+        refreshDerivedState()
+    }
+
+    /// Ensures the title overlay is cleared before applying inputs.
+    /// Returns true when the input should be consumed (e.g. `.restart` on title should just start).
+    private func ensureStartedForInput(action: GameAction) -> Bool {
+        guard !started else { return false }
+        startIfNeeded()
+        refreshDerivedState()
+
+        // Avoid double-restart and avoid starting into a paused state.
+        if action == .restart || action == .pause {
+            return true
+        }
+        return false
     }
 
     private func setGamepadLeftHeld(_ held: Bool) {
