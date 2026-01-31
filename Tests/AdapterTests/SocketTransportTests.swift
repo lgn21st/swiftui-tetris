@@ -45,6 +45,37 @@ final class SocketTransportTests: XCTestCase {
         transport.stop()
     }
 
+    func testUnixTransportStopRemovesSocketFile() throws {
+        let path = "/tmp/swiftui-tetris-ai-\(UUID().uuidString).sock"
+        defer { unlink(path) }
+
+        let transport = SocketServerTransport(configuration: .unix(path: path))
+        try transport.start()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
+
+        transport.stop()
+        XCTAssertFalse(FileManager.default.fileExists(atPath: path))
+    }
+
+    func testUnixTransportStartFailsWhenSocketAlreadyInUse() throws {
+        let path = "/tmp/swiftui-tetris-ai-\(UUID().uuidString).sock"
+        defer { unlink(path) }
+
+        let transport1 = SocketServerTransport(configuration: .unix(path: path))
+        try transport1.start()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
+
+        let transport2 = SocketServerTransport(configuration: .unix(path: path))
+        XCTAssertThrowsError(try transport2.start()) { error in
+            guard case SocketTransportError.addressInUse = error else {
+                XCTFail("Expected addressInUse, got: \(error)")
+                return
+            }
+        }
+
+        transport1.stop()
+    }
+
     func testIdleTimeoutDisconnectsClient() throws {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0), idleTimeoutMs: 50)
         let disconnectExpectation = expectation(description: "disconnect")

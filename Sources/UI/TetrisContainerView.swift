@@ -133,6 +133,9 @@ public struct TetrisContainerView: View {
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.willResignActiveNotification)) { _ in
                 driver.handleAppActiveChanged(isActive: false)
             }
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
+                driver.stop()
+            }
         }
     }
 }
