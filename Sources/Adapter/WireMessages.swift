@@ -207,6 +207,8 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
     public var seq: Int
     public var tsMs: Int
     public var playable: Bool
+    public var paused: Bool
+    public var gameOver: Bool
     public var board: TetrisAIObservationBoard
     public var active: TetrisAIObservationActive?
     public var next: TetrisAIPieceKind?
@@ -221,6 +223,8 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         self.seq = observation.seq
         self.tsMs = observation.tsMs
         self.playable = observation.playable
+        self.paused = observation.paused
+        self.gameOver = observation.gameOver
         self.board = observation.board
         self.active = observation.active
         self.next = observation.next
@@ -236,6 +240,8 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         case seq
         case tsMs = "ts"
         case playable
+        case paused
+        case gameOver = "game_over"
         case board
         case active
         case next

@@ -81,6 +81,8 @@ public struct TetrisAIObservation: Equatable, Codable {
     public var seq: Int
     public var tsMs: Int
     public var playable: Bool
+    public var paused: Bool
+    public var gameOver: Bool
     public var board: TetrisAIObservationBoard
     public var active: TetrisAIObservationActive?
     public var next: TetrisAIPieceKind?
@@ -94,6 +96,8 @@ public struct TetrisAIObservation: Equatable, Codable {
         seq: Int,
         tsMs: Int,
         playable: Bool,
+        paused: Bool,
+        gameOver: Bool,
         board: TetrisAIObservationBoard,
         active: TetrisAIObservationActive?,
         next: TetrisAIPieceKind?,
@@ -106,6 +110,8 @@ public struct TetrisAIObservation: Equatable, Codable {
         self.seq = seq
         self.tsMs = tsMs
         self.playable = playable
+        self.paused = paused
+        self.gameOver = gameOver
         self.board = board
         self.active = active
         self.next = next
@@ -120,6 +126,8 @@ public struct TetrisAIObservation: Equatable, Codable {
         case seq
         case tsMs = "ts"
         case playable
+        case paused
+        case gameOver = "game_over"
         case board
         case active
         case next
@@ -386,6 +394,8 @@ public enum ObservationMapper {
             seq: seq,
             tsMs: tsMs,
             playable: !snapshot.paused && !snapshot.gameOver,
+            paused: snapshot.paused,
+            gameOver: snapshot.gameOver,
             board: board,
             active: active,
             next: next,

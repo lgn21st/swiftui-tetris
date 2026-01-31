@@ -8,6 +8,8 @@ final class ObservationMappingTests: XCTestCase {
         state.score = 1200
         state.level = 2
         state.lines = 17
+        state.paused = true
+        state.gameOver = false
         state.hold = .z
         state.canHold = true
         state.nextQueue = [.i, .o]
@@ -18,7 +20,9 @@ final class ObservationMappingTests: XCTestCase {
         let snapshot = state.snapshot()
         let observation = ObservationMapper.map(snapshot: snapshot, seq: 42, tsMs: 1700000000000)
 
-        XCTAssertTrue(observation.playable)
+        XCTAssertFalse(observation.playable)
+        XCTAssertTrue(observation.paused)
+        XCTAssertFalse(observation.gameOver)
         XCTAssertEqual(observation.board.width, Board.width)
         XCTAssertEqual(observation.board.height, Board.height)
         XCTAssertEqual(observation.board.cells[0][0], 1)

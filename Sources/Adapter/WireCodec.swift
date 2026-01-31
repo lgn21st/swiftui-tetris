@@ -52,6 +52,8 @@ enum WireCodec {
                     seq: obs.seq,
                     tsMs: obs.tsMs,
                     playable: obs.playable,
+                    paused: obs.paused,
+                    gameOver: obs.gameOver,
                     board: obs.board,
                     active: obs.active,
                     next: obs.next,
