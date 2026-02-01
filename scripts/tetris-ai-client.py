@@ -24,9 +24,7 @@ def read_line(sock):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Simple tetris-ai client")
-    parser.add_argument("--transport", choices=["unix", "tcp"], default="tcp")
-    parser.add_argument("--unix-path", default="/tmp/tetris-ai.sock")
+    parser = argparse.ArgumentParser(description="Simple tetris-ai TCP client")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=7777)
     parser.add_argument("--command", default="")
@@ -35,12 +33,12 @@ def main():
     parser.add_argument("--release", action="store_true")
     args = parser.parse_args()
 
-    if args.transport == "unix":
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect(args.unix_path)
-    else:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
         sock.connect((args.host, args.port))
+    except Exception as e:
+        print(f"Failed to connect to {args.host}:{args.port}: {e}", file=sys.stderr)
+        return 2
 
     hello = {
         "type": "hello",
