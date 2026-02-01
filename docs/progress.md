@@ -1,7 +1,7 @@
 # Progress Log
 
 ## 2026-01-30
-- Added Adapter layer for external AI control with unix/tcp transports and JSON line framing.
+- Added Adapter layer for external AI control with TCP transport and JSON line framing.
 - Wired Adapter into SceneDriver (poll before tick, emit after snapshot).
 - Added protocol codec and mapping tests for command/observation flow.
 - Added handshake/ack/error flow, idle timeout, and example client script for adapter testing.
@@ -10,7 +10,7 @@
 - Added path-based place planner (SRS kick aware), auto-promotion of observers, and protocol JSON schema.
 - Added adapter environment overrides for idle timeout, command backpressure, and observation throttling.
 - Documented adapter env examples and added protocol message examples.
-- Adapter now defaults to unix socket on startup when no env vars are set.
+- Adapter now defaults to TCP localhost (127.0.0.1:7777) on startup when no env vars are set.
 - Added `TETRIS_AI_DISABLED` to disable adapter startup.
 - Losing focus no longer auto-pauses the game; input is still reset.
 - Added protocol integration checklist to `docs/adapter-protocol.md`.
