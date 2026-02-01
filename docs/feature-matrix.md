@@ -46,11 +46,11 @@ Legend:
 ## Input and UX
 | Feature | Required | Notes |
 | --- | --- | --- |
-| Keyboard mapping | Yes | Left/Right/Down/Up/Space/C. |
+| Keyboard mapping | Yes | Left/Right/Down/Up/Space/C/M. |
 | Start | Yes | Enter/Return/Space. |
 | Pause | Yes | P. |
 | Fullscreen | Optional | Cmd+Ctrl+F (implemented). |
-| Menu commands | Optional | Minimal menu for restart/pause. |
+| Menu commands | Optional | Minimal menu for restart/pause/mute. |
 | Focus loss | Yes | Auto-pause on app inactive. |
 | Gamepad | Optional | GameController mapping. |
 | Input repeat | Yes | Fixed DAS/ARR/soft drop ARR defaults. |
@@ -89,6 +89,7 @@ Legend:
 | Gains | Optional | Per-event gain mapping (defaults). |
 | Master volume | Optional | Fixed default 0.7. |
 | Ambient loop | Optional | Ambient loop with line-clear ducking (implemented). |
+| Mute toggle | Optional | Toggle audio on/off (implemented). |
 
 ## Diagnostics and Testing
 | Feature | Required | Notes |

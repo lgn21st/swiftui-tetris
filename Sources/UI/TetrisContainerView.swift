@@ -125,7 +125,8 @@ public struct TetrisContainerView: View {
                 CommandActions(
                     startGame: { driver.commandStartGame() },
                     restartGame: { driver.commandRestartGame() },
-                    togglePause: { driver.commandTogglePause() }
+                    togglePause: { driver.commandTogglePause() },
+                    toggleMute: { driver.commandToggleMute() }
                 )
             )
             .onAppear { driver.start() }

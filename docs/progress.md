@@ -20,6 +20,7 @@
 ## 2026-02-01
 - Bumped adapter protocol to v2.0.0 (breaking change; v1.0.0 dropped).
 - Expanded `observation` payload with ML-ready fields: `episode_id`, `seed`, `piece_id`, `step_in_piece`, `next_queue`, `can_hold`, `last_event`, `state_hash`.
+- Added mute toggle to silence SFX and ambient audio.
 
 ## 2026-01-22
 - Removed soft drop trail (code + tests) and updated docs.

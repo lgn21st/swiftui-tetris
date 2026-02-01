@@ -24,6 +24,8 @@ public final class SceneDriver: ObservableObject {
     private let masterVolume: Double
     private var ambientDucked: Bool
     private var diagnosticsAccumMs: Int
+    @Published public private(set) var isMuted: Bool
+    private var audioActive: Bool
     internal private(set) var debugRenderStateVersion: Int
 
     public init(
@@ -60,6 +62,8 @@ public final class SceneDriver: ObservableObject {
         self.masterVolume = 0.7
         self.ambientDucked = false
         self.diagnosticsAccumMs = 0
+        self.isMuted = false
+        self.audioActive = false
         self.gamepad = GamepadManager(
             onLeftHeld: { [weak self] held in
                 self?.setGamepadLeftHeld(held)
@@ -91,7 +95,10 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func start() {
-        audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
+        audioActive = true
+        if !isMuted {
+            audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
+        }
         gamepad?.start()
         (adapter as? AdapterLifecycle)?.start()
     }
@@ -110,19 +117,21 @@ public final class SceneDriver: ObservableObject {
         }
         adapter?.emit(snapshot: loop.state.snapshot())
         let events = loop.state.takeSoundEvents()
-        if let audio = audio {
-            for event in events {
-                audio.play(
-                    event,
-                    masterVolume: masterVolume,
-                    gainOverride: nil
-                )
+        if !isMuted {
+            if let audio = audio {
+                for event in events {
+                    audio.play(
+                        event,
+                        masterVolume: masterVolume,
+                        gainOverride: nil
+                    )
+                }
             }
-        }
-        let shouldDuck = loop.state.lineClearTimerMs > 0
-        if shouldDuck != ambientDucked {
-            audio?.setAmbientDucking(enabled: shouldDuck)
-            ambientDucked = shouldDuck
+            let shouldDuck = loop.state.lineClearTimerMs > 0
+            if shouldDuck != ambientDucked {
+                audio?.setAmbientDucking(enabled: shouldDuck)
+                ambientDucked = shouldDuck
+            }
         }
         refreshDerivedState()
     }
@@ -130,6 +139,7 @@ public final class SceneDriver: ObservableObject {
     public func stop() {
         gamepad?.stop()
         audio?.setAmbientLoop(enabled: false, masterVolume: masterVolume)
+        audioActive = false
         (adapter as? AdapterLifecycle)?.stop()
     }
 
@@ -156,19 +166,24 @@ public final class SceneDriver: ObservableObject {
     }
 
     public func handleKeyDown(_ key: String) {
-        if key == "d" {
+        let normalized = key.lowercased()
+        if normalized == "d" {
             diagnosticsVisible.toggle()
+            return
+        }
+        if normalized == "m" {
+            toggleMute()
             return
         }
 
         // Title screen: explicit start keys only start (no immediate action).
-        if !started && (key == "\n" || key == "\r" || key == " " || key == "space") {
+        if !started && (normalized == "\n" || normalized == "\r" || normalized == " " || normalized == "space") {
             startIfNeeded()
             refreshDerivedState()
             return
         }
 
-        guard let action = InputRouter.action(forKey: key) else { return }
+        guard let action = InputRouter.action(forKey: normalized) else { return }
 
         if ensureStartedForInput(action: action) {
             return
@@ -227,6 +242,10 @@ public final class SceneDriver: ObservableObject {
         input.releaseMovementHolds()
         input.apply(action: .pause, to: &loop.state)
         refreshDerivedState()
+    }
+
+    public func commandToggleMute() {
+        toggleMute()
     }
 
     private func handleGamepadAction(_ action: GameAction) {
@@ -294,5 +313,25 @@ public final class SceneDriver: ObservableObject {
             started = true
             loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
         }
+    }
+
+    private func toggleMute() {
+        setMuted(!isMuted)
+    }
+
+    private func setMuted(_ muted: Bool) {
+        guard isMuted != muted else { return }
+        isMuted = muted
+        if muted {
+            audio?.setAmbientLoop(enabled: false, masterVolume: masterVolume)
+            audio?.setAmbientDucking(enabled: false)
+            ambientDucked = false
+            return
+        }
+        guard audioActive else { return }
+        audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
+        let shouldDuck = loop.state.lineClearTimerMs > 0
+        audio?.setAmbientDucking(enabled: shouldDuck)
+        ambientDucked = shouldDuck
     }
 }

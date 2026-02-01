@@ -45,3 +45,4 @@ Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revision
 - Backdrop vignette behind board + HUD
 - Line-clear score popups
 - Ambient loop with line-clear ducking
+- Mute toggle

@@ -16,6 +16,11 @@ public struct TetrisCommands: Commands {
                 actions?.togglePause()
             }
             .disabled(actions == nil)
+
+            Button("Mute / Unmute") {
+                actions?.toggleMute()
+            }
+            .disabled(actions == nil)
         }
     }
 }
