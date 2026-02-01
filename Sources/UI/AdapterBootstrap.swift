@@ -12,7 +12,7 @@ public enum AdapterBootstrap {
         if env["TETRIS_AI_DISABLED"] == "1" {
             return nil
         }
-        let transportValue = env["TETRIS_AI_TRANSPORT"]?.lowercased() ?? "unix"
+        let transportValue = env["TETRIS_AI_TRANSPORT"]?.lowercased() ?? "tcp"
 
         let transport: SocketTransportConfiguration
         switch transportValue {
