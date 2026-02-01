@@ -15,23 +15,8 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertEqual(config?.logPath, "auto")
     }
 
-    func testConfigurationDefaultsToUnixPathWithDefaults() {
-        let env: [String: String] = [
-            "TETRIS_AI_TRANSPORT": "unix"
-        ]
-
-        let config = AdapterBootstrap.configuration(from: env)
-
-        XCTAssertEqual(config?.transport, .unix(path: "/tmp/tetris-ai.sock"))
-        XCTAssertEqual(config?.idleTimeoutMs, 2000)
-        XCTAssertEqual(config?.maxPendingCommands, 64)
-        XCTAssertNil(config?.observationIntervalMs)
-        XCTAssertEqual(config?.logPath, "auto")
-    }
-
     func testConfigurationParsesOverridesForTcp() {
         let env: [String: String] = [
-            "TETRIS_AI_TRANSPORT": "tcp",
             "TETRIS_AI_HOST": "0.0.0.0",
             "TETRIS_AI_PORT": "8888",
             "TETRIS_AI_IDLE_TIMEOUT_MS": "0",

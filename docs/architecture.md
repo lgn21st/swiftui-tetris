@@ -48,7 +48,7 @@ Where to edit:
  - Adapter polls for commands before each fixed step and emits observations after snapshot.
 
 ### External AI Transport
-- Adapter can listen on Unix domain sockets or TCP localhost.
+- Adapter listens on TCP localhost (127.0.0.1:7777) by default.
 - Transport is line-delimited JSON (one message per line).
 - Clients must send `hello` before `command`; server replies with `welcome`, then `ack`/`error` for commands.
 - First connected client becomes the controller; additional clients are observers (receive observations only).
@@ -60,8 +60,6 @@ Where to edit:
 - Observation streaming can be throttled by interval (configurable).
 - Idle connections close after ~2s by default (configurable in Adapter).
 - Runtime config via environment:
-  - `TETRIS_AI_TRANSPORT=unix|tcp`
-  - `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
   - `TETRIS_AI_HOST=127.0.0.1`
   - `TETRIS_AI_PORT=7777`
   - `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (default `auto`)

@@ -25,47 +25,15 @@ final class SocketTransportTests: XCTestCase {
         transport.stop()
     }
 
-    func testUnixTransportReceivesLinesFromClient() throws {
-        let path = "/tmp/swiftui-tetris-ai.sock"
-        let transport = SocketServerTransport(configuration: .unix(path: path), idleTimeoutMs: 500)
-        let receiveExpectation = expectation(description: "received")
-        transport.onReceive = { _, data in
-            let text = String(data: data, encoding: .utf8)
-            if text == "hello" {
-                receiveExpectation.fulfill()
-            }
+    func testTcpTransportStartFailsWhenPortAlreadyInUse() throws {
+        let transport1 = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
+        try transport1.start()
+        guard let port = transport1.boundPort else {
+            XCTFail("Expected bound port")
+            return
         }
 
-        try transport.start()
-
-        let client = try SocketTestClient.unix(path: path)
-        try client.send(line: "hello")
-
-        wait(for: [receiveExpectation], timeout: 2.0)
-        transport.stop()
-    }
-
-    func testUnixTransportStopRemovesSocketFile() throws {
-        let path = "/tmp/swiftui-tetris-ai-\(UUID().uuidString).sock"
-        defer { unlink(path) }
-
-        let transport = SocketServerTransport(configuration: .unix(path: path))
-        try transport.start()
-        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
-
-        transport.stop()
-        XCTAssertFalse(FileManager.default.fileExists(atPath: path))
-    }
-
-    func testUnixTransportStartFailsWhenSocketAlreadyInUse() throws {
-        let path = "/tmp/swiftui-tetris-ai-\(UUID().uuidString).sock"
-        defer { unlink(path) }
-
-        let transport1 = SocketServerTransport(configuration: .unix(path: path))
-        try transport1.start()
-        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
-
-        let transport2 = SocketServerTransport(configuration: .unix(path: path))
+        let transport2 = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: port))
         XCTAssertThrowsError(try transport2.start()) { error in
             guard case SocketTransportError.addressInUse = error else {
                 XCTFail("Expected addressInUse, got: \(error)")

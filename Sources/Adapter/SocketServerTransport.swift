@@ -2,7 +2,6 @@ import Foundation
 import Darwin
 
 public enum SocketTransportConfiguration: Equatable {
-    case unix(path: String)
     case tcp(host: String, port: Int)
 }
 
@@ -10,7 +9,6 @@ public final class SocketServerTransport {
     public var onReceive: ((UUID, Data) -> Void)?
     public var onDisconnect: ((UUID) -> Void)?
     public private(set) var boundPort: Int?
-    public private(set) var boundPath: String?
 
     private let configuration: SocketTransportConfiguration
     private let idleTimeoutMs: Int?
@@ -29,8 +27,6 @@ public final class SocketServerTransport {
         try queue.sync {
             guard listenerFd == -1 else { return }
             switch configuration {
-            case .unix(let path):
-                try setupUnixListener(path: path)
             case .tcp(let host, let port):
                 try setupTcpListener(host: host, port: port)
             }
@@ -49,11 +45,7 @@ public final class SocketServerTransport {
             listenerSource = nil
             idleTimer?.cancel()
             idleTimer = nil
-
-            if let path = boundPath {
-                unlink(path)
-            }
-            boundPath = nil
+            boundPort = nil
         }
     }
 
@@ -121,17 +113,18 @@ public final class SocketServerTransport {
         }
 
         connection.lastRead = .now()
-        let data = Data(buffer.prefix(readCount))
-        let lines = connection.framer.append(data)
+        let lines = connection.framer.append(Data(buffer.prefix(readCount)))
         for line in lines {
             onReceive?(connectionId, line)
         }
     }
 
     private func closeConnection(connectionId: UUID) {
-        guard let connection = connections.removeValue(forKey: connectionId) else { return }
-        close(connection.fd)
+        guard let connection = connections[connectionId] else { return }
         connection.source?.cancel()
+        connection.source = nil
+        close(connection.fd)
+        connections.removeValue(forKey: connectionId)
         onDisconnect?(connectionId)
     }
 
@@ -140,80 +133,6 @@ public final class SocketServerTransport {
         for id in ids {
             closeConnection(connectionId: id)
         }
-    }
-
-    private func setupUnixListener(path: String) throws {
-        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-        guard fd >= 0 else { throw SocketTransportError.socketCreationFailed }
-        defer {
-            // Only keep the fd open after a successful listen.
-            if listenerFd != fd {
-                close(fd)
-            }
-        }
-
-        if FileManager.default.fileExists(atPath: path) {
-            if canConnectUnix(path: path) {
-                throw SocketTransportError.addressInUse
-            }
-            unlink(path)
-        }
-
-        var addr = sockaddr_un()
-        addr.sun_family = sa_family_t(AF_UNIX)
-        let pathBytes = Array(path.utf8)
-        guard pathBytes.count < MemoryLayout.size(ofValue: addr.sun_path) else {
-            throw SocketTransportError.pathTooLong
-        }
-
-        withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
-            ptr.withMemoryRebound(to: UInt8.self, capacity: pathBytes.count) { buffer in
-                for (index, byte) in pathBytes.enumerated() {
-                    buffer[index] = byte
-                }
-            }
-        }
-
-        let bindResult = withUnsafePointer(to: &addr) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { ptr in
-                Darwin.bind(fd, ptr, socklen_t(MemoryLayout<sockaddr_un>.size))
-            }
-        }
-        guard bindResult == 0 else { throw SocketTransportError.bindFailed }
-        guard listen(fd, 8) == 0 else { throw SocketTransportError.listenFailed }
-        setNonBlocking(fd: fd)
-
-        listenerFd = fd
-        boundPath = path
-    }
-
-    private func canConnectUnix(path: String) -> Bool {
-        let fd = socket(AF_UNIX, SOCK_STREAM, 0)
-        guard fd >= 0 else { return false }
-        defer { close(fd) }
-
-        var addr = sockaddr_un()
-        addr.sun_family = sa_family_t(AF_UNIX)
-        let pathBytes = Array(path.utf8)
-        guard pathBytes.count < MemoryLayout.size(ofValue: addr.sun_path) else {
-            return false
-        }
-
-        withUnsafeMutablePointer(to: &addr.sun_path) { ptr in
-            ptr.withMemoryRebound(to: UInt8.self, capacity: pathBytes.count) { buffer in
-                for (index, byte) in pathBytes.enumerated() {
-                    buffer[index] = byte
-                }
-            }
-        }
-
-        let result = withUnsafePointer(to: &addr) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { ptr in
-                Darwin.connect(fd, ptr, socklen_t(MemoryLayout<sockaddr_un>.size))
-            }
-        }
-
-        return result == 0
     }
 
     private func setupTcpListener(host: String, port: Int) throws {
@@ -234,7 +153,13 @@ public final class SocketServerTransport {
                 Darwin.bind(fd, ptr, socklen_t(MemoryLayout<sockaddr_in>.size))
             }
         }
-        guard bindResult == 0 else { throw SocketTransportError.bindFailed }
+        if bindResult != 0 {
+            if errno == EADDRINUSE {
+                throw SocketTransportError.addressInUse
+            }
+            throw SocketTransportError.bindFailed
+        }
+
         guard listen(fd, 8) == 0 else { throw SocketTransportError.listenFailed }
         setNonBlocking(fd: fd)
 
@@ -293,7 +218,6 @@ private final class ConnectionState {
 
 public enum SocketTransportError: Error {
     case socketCreationFailed
-    case pathTooLong
     case addressInUse
     case bindFailed
     case listenFailed

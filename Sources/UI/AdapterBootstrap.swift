@@ -12,20 +12,10 @@ public enum AdapterBootstrap {
         if env["TETRIS_AI_DISABLED"] == "1" {
             return nil
         }
-        let transportValue = env["TETRIS_AI_TRANSPORT"]?.lowercased() ?? "tcp"
 
-        let transport: SocketTransportConfiguration
-        switch transportValue {
-        case "unix":
-            let path = env["TETRIS_AI_UNIX_PATH"] ?? "/tmp/tetris-ai.sock"
-            transport = .unix(path: path)
-        case "tcp":
-            let host = env["TETRIS_AI_HOST"] ?? "127.0.0.1"
-            let port = Int(env["TETRIS_AI_PORT"] ?? "") ?? 7777
-            transport = .tcp(host: host, port: port)
-        default:
-            return nil
-        }
+        let host = env["TETRIS_AI_HOST"] ?? "127.0.0.1"
+        let port = Int(env["TETRIS_AI_PORT"] ?? "") ?? 7777
+        let transport: SocketTransportConfiguration = .tcp(host: host, port: port)
 
         var config = SocketAdapterConfiguration(transport: transport)
         if let value = env["TETRIS_AI_IDLE_TIMEOUT_MS"], let parsed = Int(value) {

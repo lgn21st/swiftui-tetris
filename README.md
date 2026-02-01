@@ -17,9 +17,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Run app: `swift run App`
 
 ## External AI (Adapter)
-Adapter defaults to tcp localhost on startup. Override with environment variables:
-- `TETRIS_AI_TRANSPORT=unix|tcp` (default: `tcp`)
-- `TETRIS_AI_UNIX_PATH=/tmp/tetris-ai.sock`
+Adapter listens on tcp 127.0.0.1:7777 by default. Override with environment variables:
 - `TETRIS_AI_HOST=127.0.0.1`
 - `TETRIS_AI_PORT=7777`
 - `TETRIS_AI_DISABLED=1` (disable adapter entirely)
@@ -36,7 +34,6 @@ JSON schema: `docs/adapter-protocol.schema.json`.
 
 Example (tcp with tuning):
 ```
-TETRIS_AI_TRANSPORT=tcp \
 TETRIS_AI_HOST=127.0.0.1 \
 TETRIS_AI_PORT=7777 \
 TETRIS_AI_IDLE_TIMEOUT_MS=0 \

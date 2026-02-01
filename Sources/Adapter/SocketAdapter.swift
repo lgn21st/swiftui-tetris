@@ -73,8 +73,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private var nextJoinOrder: Int = 0
 
     public var boundPort: Int? { transport.boundPort }
-    public var boundPath: String? { transport.boundPath }
-
+    
     public init(
         configuration: SocketAdapterConfiguration,
         timeSource: @escaping () -> Int = SocketAdapter.defaultTimeSource
