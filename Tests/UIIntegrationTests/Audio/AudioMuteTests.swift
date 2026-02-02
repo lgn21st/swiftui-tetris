@@ -12,6 +12,7 @@ final class AudioMuteTests: XCTestCase {
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
+        driver.handleKeyUp("left")
         XCTAssertEqual(audio.playEvents.count, 1)
 
         driver.handleKeyDown("m")
@@ -19,6 +20,7 @@ final class AudioMuteTests: XCTestCase {
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
+        driver.handleKeyUp("left")
         XCTAssertEqual(audio.playEvents.count, 1)
 
         driver.handleKeyDown("m")
@@ -26,6 +28,7 @@ final class AudioMuteTests: XCTestCase {
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
+        driver.handleKeyUp("left")
         XCTAssertEqual(audio.playEvents.count, 2)
     }
 }

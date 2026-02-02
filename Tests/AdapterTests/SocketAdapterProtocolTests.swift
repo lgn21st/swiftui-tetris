@@ -471,4 +471,56 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
         XCTAssertEqual(error.code, "protocol_mismatch")
     }
+
+    func testInvalidJsonReceivesInvalidCommandError() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client.send(line: "{")
+
+        guard let line = try client.readLine(timeoutMs: 500) else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error message")
+            return
+        }
+        XCTAssertEqual(error.code, "invalid_command")
+        XCTAssertEqual(error.seq, 0)
+    }
+
+    func testMissingRequiredFieldsReceivesInvalidCommandErrorEchoingSeq() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client.send(line: #"{"type":"command","seq":7,"ts":1}"#)
+
+        guard let line = try client.readLine(timeoutMs: 500) else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error message")
+            return
+        }
+        XCTAssertEqual(error.code, "invalid_command")
+        XCTAssertEqual(error.seq, 7)
+    }
 }

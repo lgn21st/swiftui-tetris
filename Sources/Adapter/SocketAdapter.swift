@@ -154,7 +154,18 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
 
     private func handleIncoming(connectionId: UUID, data: Data) {
         logEvent(direction: "recv", connectionId: connectionId, line: data)
-        guard let message = try? WireCodec.decode(data) else { return }
+        let message: TetrisAIWireMessage
+        do {
+            message = try WireCodec.decode(data)
+        } catch {
+            sendError(
+                connectionId: connectionId,
+                seq: bestEffortSeq(from: data),
+                code: "invalid_command",
+                message: "Invalid JSON or missing required fields."
+            )
+            return
+        }
         switch message {
         case .hello(let hello):
             handleHello(connectionId: connectionId, hello: hello)
@@ -165,6 +176,20 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         default:
             break
         }
+    }
+
+    private func bestEffortSeq(from data: Data) -> Int {
+        guard
+            let object = try? JSONSerialization.jsonObject(with: data, options: []),
+            let dict = object as? [String: Any]
+        else { return 0 }
+        if let seq = dict["seq"] as? Int {
+            return seq
+        }
+        if let seq = dict["seq"] as? NSNumber {
+            return seq.intValue
+        }
+        return 0
     }
 
     private func handleHello(connectionId: UUID, hello: TetrisAIHello) {
