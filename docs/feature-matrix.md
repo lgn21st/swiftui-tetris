@@ -14,7 +14,7 @@ Legend:
 | Ghost piece | Yes | Separate render layer with alpha. |
 | Hold | Yes | Once per spawn; swap or store. |
 | Next queue | Yes | 3-piece horizontal preview. |
-| RNG | Yes | 7-bag shuffle. |
+| RNG | Yes | Repeated 2-piece chunks from shuffled 7-bags. |
 | Line clear | Yes | Classic row clear. |
 | Line clear pause | Yes | 180 ms freeze; hide active/ghost. |
 | Landing flash | Yes | 120 ms flash on lock. |
