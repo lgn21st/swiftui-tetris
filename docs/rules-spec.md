@@ -137,13 +137,54 @@ Order per tick:
 - Check 4 corner cells around T center; if >=3 filled, T-spin.
 - If both front corners filled -> Full, else Mini.
 
+## State Machine
+
+This project models gameplay state as a combination of one UI gate flag and two Core flags:
+- UI gate: `started` (false means title screen; true means gameplay session exists).
+- Core flags: `paused`, `game_over`.
+
+Derived top-level states:
+
+| State | started | paused | game_over | Notes |
+| --- | --- | --- | --- | --- |
+| Title | false | false | false | Start-gated; gameplay inputs are not applied yet. |
+| Playing | true | false | false | Normal fixed-step update and action handling. |
+| Paused | true | true | false | Tick early-returns; only Pause/Restart accepted. |
+| GameOver | true | false | true | Tick early-returns; only Restart accepted. |
+
+### State transitions
+
+| From | Event | To | Rules |
+| --- | --- | --- | --- |
+| Title | Start key (`Enter`/`Return`/`Space`) | Playing | Initializes a new run via restart with current RNG stream. |
+| Title | Any mapped input except start | Playing (or consumed) | Driver starts first, then applies input; `pause`/`restart` are consumed to avoid double-transition. |
+| Playing | `Pause` action | Paused | Toggles pause on. Also clears soft-drop active state and timeout. |
+| Paused | `Pause` action | Playing | Toggles pause off. |
+| Playing | Spawn blocked on lock/spawn path | GameOver | Sets `game_over = true`; emits game-over sound event. |
+| GameOver | `Restart` action | Playing | Resets board/state; preserves configured restart seed mode semantics. |
+| Paused | `Restart` action | Playing | Resets board/state immediately. |
+| Playing | Focus loss (app inactive) | Paused | Auto-pause only when started and not game over. |
+
+### Input acceptance by state
+
+| State | Accepted actions |
+| --- | --- |
+| Title | Start keys; other mapped gameplay inputs first trigger start. |
+| Playing | All gameplay actions. |
+| Paused | `Pause`, `Restart`. |
+| GameOver | `Restart`. |
+
 ## Visual/UX-Driven State
-- Started flag gates gameplay until start.
-- Focus loss auto-pauses (if started and not game over).
-- Pausing clears soft drop active state and timeout.
+- The state machine above controls Title/Pause/GameOver overlays.
 - Line clear pause hides active/ghost (render rule).
 - Ghost guidance hides while grounded, during lock delay, during line clear pause, and until the active piece has successfully moved since spawn.
 - Landing flash uses last locked cell positions and fades by remaining timer ratio.
+
+## Remote Control via Adapter (TCP)
+- Remote clients can observe state and send control commands through the adapter transport.
+- Transport/protocol details are documented in `docs/adapter-protocol.md`.
+- Architecture-level networking defaults (host/port, controller/observer behavior) are documented in `docs/architecture.md`.
+- Adapter observation fields mirror core gameplay state, including paused/game-over and board snapshot fields.
 
 ## Sound Events (optional)
 - Move, Rotate, SoftDrop, HardDrop, Hold, LineClear(n), GameOver.
