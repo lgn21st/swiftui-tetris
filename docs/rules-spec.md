@@ -184,7 +184,7 @@ Derived top-level states:
 
 ## Remote Control via Adapter (TCP)
 - Remote clients can observe state and send control commands through the adapter transport.
-- Transport/protocol details are documented in `docs/adapter-protocol.md`.
+- Transport/protocol details are documented in `docs/adapter.md`.
 - Architecture-level networking defaults (host/port, controller/observer behavior) are documented in `docs/architecture.md`.
 - Adapter observation fields mirror core gameplay state, including paused/game-over and board snapshot fields.
 

@@ -17,25 +17,18 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Run app: `swift run App`
 
 ## External AI (Adapter)
-Adapter listens on tcp 127.0.0.1:7777 by default. Override with environment variables:
-- `TETRIS_AI_HOST=127.0.0.1`
-- `TETRIS_AI_PORT=7777`
+Adapter listens on tcp `127.0.0.1:7777` (fixed per protocol standard). Environment variables:
 - `TETRIS_AI_DISABLED=1` (disable adapter entirely)
 - `TETRIS_AI_IDLE_TIMEOUT_MS=2000` (set `0` to disable idle disconnect)
 - `TETRIS_AI_MAX_PENDING=64` (command queue depth)
 - `TETRIS_AI_OBSERVATION_MS=0` (throttle observations; `0` disables)
+- `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (default `auto`)
 
 Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
-Note: the first client to send `hello` becomes the controller; additional clients are observers.
-Control messages: `control(action=claim|release)` to claim/release control. Non-controllers sending commands receive `not_controller`.
-When the controller releases or disconnects, the oldest observer is auto-promoted.
-Protocol summary: `docs/adapter-protocol.md`.
-JSON schema: `docs/adapter-protocol.schema.json`.
+Protocol + acceptance gate: `docs/adapter.md` (single source of truth).
 
-Example (tcp with tuning):
+Example (tuning):
 ```
-TETRIS_AI_HOST=127.0.0.1 \
-TETRIS_AI_PORT=7777 \
 TETRIS_AI_IDLE_TIMEOUT_MS=0 \
 TETRIS_AI_MAX_PENDING=128 \
 TETRIS_AI_OBSERVATION_MS=50 \
