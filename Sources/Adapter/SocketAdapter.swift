@@ -193,32 +193,57 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     private func handleHello(connectionId: UUID, hello: TetrisAIHello) {
+        guard hello.seq == 1 else {
+            sendError(connectionId: connectionId, seq: hello.seq, code: "invalid_command", message: "hello.seq must be 1.")
+            return
+        }
         guard compatibleMajorVersion(server: configuration.protocolVersion, client: hello.protocolVersion) else {
             sendError(connectionId: connectionId, seq: hello.seq, code: "protocol_mismatch", message: "Incompatible protocol version.")
             return
         }
-        _ = queue.sync { () -> ClientRole in
+
+        let assigned = queue.sync { () -> (clientId: Int, role: ClientRole, controllerClientId: Int?) in
+            let requestedRole = hello.requested.role ?? .auto
+            let controllerEligible = requestedRole != .observer
+
+            let joinOrder = nextJoinOrder
+            nextJoinOrder += 1
+            let clientId = joinOrder + 1
+
             let assignedRole: ClientRole
-            if controllerId == nil {
+            if controllerId == nil, controllerEligible {
                 controllerId = connectionId
                 assignedRole = .controller
             } else {
                 assignedRole = .observer
             }
-            let joinOrder = nextJoinOrder
-            nextJoinOrder += 1
+
             clients[connectionId] = ClientState(
                 handshakeComplete: true,
                 streamObservations: hello.requested.streamObservations,
                 role: assignedRole,
-                joinOrder: joinOrder
+                joinOrder: joinOrder,
+                clientId: clientId,
+                controllerEligible: controllerEligible,
+                lastReceivedSeq: 1
             )
-            return assignedRole
+
+            let controllerClientId: Int?
+            if controllerId == connectionId {
+                controllerClientId = clientId
+            } else {
+                controllerClientId = controllerId.flatMap { clients[$0]?.clientId }
+            }
+
+            return (clientId: clientId, role: assignedRole, controllerClientId: controllerClientId)
         }
         let welcome = TetrisAIWelcome(
             seq: hello.seq,
             tsMs: timeSource(),
             protocolVersion: configuration.protocolVersion,
+            clientId: assigned.clientId,
+            role: assigned.role == .controller ? .controller : .observer,
+            controllerId: assigned.controllerClientId,
             gameId: configuration.gameId,
             capabilities: TetrisAICapabilities(
                 formats: configuration.supportedFormats,
@@ -234,6 +259,10 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private func handleCommand(connectionId: UUID, command: TetrisAICommandEnvelope) {
         guard isHandshakeComplete(connectionId: connectionId) else {
             sendError(connectionId: connectionId, seq: command.seq, code: "handshake_required", message: "Send hello before commands.")
+            return
+        }
+        guard validateAndUpdateSeq(connectionId: connectionId, seq: command.seq) else {
+            sendError(connectionId: connectionId, seq: command.seq, code: "invalid_command", message: "seq must be strictly increasing.")
             return
         }
         guard isController(connectionId: connectionId) else {
@@ -275,8 +304,16 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             sendError(connectionId: connectionId, seq: control.seq, code: "handshake_required", message: "Send hello before control.")
             return
         }
+        guard validateAndUpdateSeq(connectionId: connectionId, seq: control.seq) else {
+            sendError(connectionId: connectionId, seq: control.seq, code: "invalid_command", message: "seq must be strictly increasing.")
+            return
+        }
         switch control.action {
         case .claim:
+            guard isControllerEligible(connectionId: connectionId) else {
+                sendError(connectionId: connectionId, seq: control.seq, code: "invalid_command", message: "Client requested observer role.")
+                return
+            }
             let claimResult = queue.sync { () -> Bool in
                 if controllerId == nil {
                     controllerId = connectionId
@@ -395,6 +432,22 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         }
     }
 
+    private func validateAndUpdateSeq(connectionId: UUID, seq: Int) -> Bool {
+        queue.sync {
+            guard var state = clients[connectionId], state.handshakeComplete else { return false }
+            guard seq > state.lastReceivedSeq else { return false }
+            state.lastReceivedSeq = seq
+            clients[connectionId] = state
+            return true
+        }
+    }
+
+    private func isControllerEligible(connectionId: UUID) -> Bool {
+        queue.sync {
+            clients[connectionId]?.controllerEligible ?? false
+        }
+    }
+
     private func isController(connectionId: UUID) -> Bool {
         queue.sync {
             controllerId == connectionId
@@ -414,7 +467,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private func promoteObserverIfNeeded(excluding connectionId: UUID?) {
         guard controllerId == nil else { return }
         let sorted = clients
-            .filter { $0.value.role == .observer && $0.key != connectionId }
+            .filter { $0.value.role == .observer && $0.value.controllerEligible && $0.key != connectionId }
             .sorted { $0.value.joinOrder < $1.value.joinOrder }
         guard let next = sorted.first else { return }
         controllerId = next.key
@@ -430,6 +483,9 @@ private struct ClientState {
     var streamObservations: Bool
     var role: ClientRole
     var joinOrder: Int
+    var clientId: Int
+    var controllerEligible: Bool
+    var lastReceivedSeq: Int
 }
 
 private enum ClientRole {

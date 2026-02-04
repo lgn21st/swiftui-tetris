@@ -2,9 +2,9 @@ import XCTest
 @testable import Core
 
 final class NextQueueTests: XCTestCase {
-    func testSpawnNextKeepsThreePreviewsAvailable() {
+    func testSpawnNextKeepsFivePreviewsAvailable() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.spawnNext()
-        XCTAssertGreaterThanOrEqual(state.nextQueue.count, 3)
+        XCTAssertGreaterThanOrEqual(state.nextQueue.count, 5)
     }
 }

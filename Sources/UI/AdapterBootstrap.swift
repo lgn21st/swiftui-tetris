@@ -13,9 +13,8 @@ public enum AdapterBootstrap {
             return nil
         }
 
-        let host = env["TETRIS_AI_HOST"] ?? "127.0.0.1"
-        let port = Int(env["TETRIS_AI_PORT"] ?? "") ?? 7777
-        let transport: SocketTransportConfiguration = .tcp(host: host, port: port)
+        // Protocol standard: only supported transport is TCP localhost on the default port.
+        let transport: SocketTransportConfiguration = .tcp(host: "127.0.0.1", port: 7777)
 
         var config = SocketAdapterConfiguration(transport: transport)
         if let value = env["TETRIS_AI_IDLE_TIMEOUT_MS"], let parsed = Int(value) {

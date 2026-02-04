@@ -380,16 +380,23 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(lineData: try WireCodec.encode(.hello(hello)))
         _ = try client.readLine(timeoutMs: 500)
 
-        let command = TetrisAICommandEnvelope(
-            seq: 1,
+        let first = TetrisAICommandEnvelope(
+            seq: 2,
             tsMs: 1,
             mode: .action,
             actions: [.moveLeft],
             place: nil
         )
-        try client.send(lineData: try WireCodec.encode(.command(command)))
+        try client.send(lineData: try WireCodec.encode(.command(first)))
 
-        try client.send(lineData: try WireCodec.encode(.command(command)))
+        let second = TetrisAICommandEnvelope(
+            seq: 3,
+            tsMs: 1,
+            mode: .action,
+            actions: [.moveLeft],
+            place: nil
+        )
+        try client.send(lineData: try WireCodec.encode(.command(second)))
         guard let line = try client.readLine(timeoutMs: 500) else {
             XCTFail("Expected error")
             return
@@ -470,6 +477,77 @@ final class SocketAdapterProtocolTests: XCTestCase {
             return
         }
         XCTAssertEqual(error.code, "protocol_mismatch")
+    }
+
+    func testHelloSeqNotOneReceivesInvalidCommand() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client.send(
+            line: #"{"type":"hello","seq":2,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action"}}"#
+        )
+
+        guard let line = try client.readLine(timeoutMs: 500) else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error message")
+            return
+        }
+        XCTAssertEqual(error.code, "invalid_command")
+        XCTAssertEqual(error.seq, 2)
+    }
+
+    func testHelloRoleObserverNeverBecomesController() throws {
+        let adapter = SocketAdapter(
+            configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
+        )
+        defer { adapter.stop() }
+        guard let port = adapter.boundPort else {
+            XCTFail("Expected bound port")
+            return
+        }
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try client.send(
+            line: #"{"type":"hello","seq":1,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action","role":"observer"}}"#
+        )
+        _ = try client.readLine(timeoutMs: 500) // welcome
+
+        try client.send(
+            line: #"{"type":"command","seq":2,"ts":1,"mode":"action","actions":["moveLeft"]}"#
+        )
+        var state = GameState(config: GameConfig(), seed: 1)
+        var line: Data?
+        for _ in 0..<5 {
+            adapter.poll(elapsedMs: 16, state: &state)
+            if let value = try client.readLine(timeoutMs: 50) {
+                line = value
+                break
+            }
+            Thread.sleep(forTimeInterval: 0.01)
+        }
+
+        guard let line else {
+            XCTFail("Expected error")
+            return
+        }
+        let message = try WireCodec.decode(line)
+        guard case .error(let error) = message else {
+            XCTFail("Expected error message")
+            return
+        }
+        XCTAssertEqual(error.code, "not_controller")
+        XCTAssertEqual(error.seq, 2)
     }
 
     func testInvalidJsonReceivesInvalidCommandError() throws {

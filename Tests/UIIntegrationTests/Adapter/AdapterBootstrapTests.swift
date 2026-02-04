@@ -27,7 +27,7 @@ final class AdapterBootstrapTests: XCTestCase {
 
         let config = AdapterBootstrap.configuration(from: env)
 
-        XCTAssertEqual(config?.transport, .tcp(host: "0.0.0.0", port: 8888))
+        XCTAssertEqual(config?.transport, .tcp(host: "127.0.0.1", port: 7777))
         XCTAssertNil(config?.idleTimeoutMs)
         XCTAssertEqual(config?.maxPendingCommands, 12)
         XCTAssertEqual(config?.observationIntervalMs, 50)

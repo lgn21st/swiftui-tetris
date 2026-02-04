@@ -12,7 +12,7 @@ final class ObservationMappingTests: XCTestCase {
         state.gameOver = false
         state.hold = .z
         state.canHold = true
-        state.nextQueue = [.i, .o]
+        state.nextQueue = [.i, .o, .t, .s, .z]
         state.active = Tetromino(kind: .t, x: 4, y: 0)
         state.active.rotation = .east
         state.board.cells[0][0] = Cell(filled: true, kind: .t)
@@ -25,13 +25,13 @@ final class ObservationMappingTests: XCTestCase {
         XCTAssertFalse(observation.gameOver)
         XCTAssertEqual(observation.board.width, Board.width)
         XCTAssertEqual(observation.board.height, Board.height)
-        XCTAssertEqual(observation.board.cells[0][0], 1)
-        XCTAssertEqual(observation.board.kinds[0][0], .t)
+        XCTAssertEqual(observation.board.cells[0][0], 3)
         XCTAssertEqual(observation.active?.kind, .t)
         XCTAssertEqual(observation.active?.rotation, .east)
         XCTAssertEqual(observation.active?.x, 4)
         XCTAssertEqual(observation.active?.y, 0)
         XCTAssertEqual(observation.next, .i)
+        XCTAssertEqual(observation.nextQueue.count, 5)
         XCTAssertEqual(observation.hold, .z)
         XCTAssertEqual(observation.score, 1200)
         XCTAssertEqual(observation.level, 2)

@@ -17,6 +17,12 @@ public enum TetrisAIControlAction: String, Codable, Equatable {
     case release
 }
 
+public enum TetrisAIRole: String, Codable, Equatable {
+    case auto
+    case controller
+    case observer
+}
+
 public struct TetrisAIClientInfo: Codable, Equatable {
     public var name: String
     public var version: String
@@ -30,15 +36,18 @@ public struct TetrisAIClientInfo: Codable, Equatable {
 public struct TetrisAIRequested: Codable, Equatable {
     public var streamObservations: Bool
     public var commandMode: TetrisAICommandMode
+    public var role: TetrisAIRole?
 
-    public init(streamObservations: Bool, commandMode: TetrisAICommandMode) {
+    public init(streamObservations: Bool, commandMode: TetrisAICommandMode, role: TetrisAIRole? = nil) {
         self.streamObservations = streamObservations
         self.commandMode = commandMode
+        self.role = role
     }
 
     private enum CodingKeys: String, CodingKey {
         case streamObservations = "stream_observations"
         case commandMode = "command_mode"
+        case role
     }
 }
 
@@ -84,6 +93,9 @@ public struct TetrisAIWelcome: Codable, Equatable {
     public var seq: Int
     public var tsMs: Int
     public var protocolVersion: String
+    public var clientId: Int?
+    public var role: TetrisAIRole?
+    public var controllerId: Int?
     public var gameId: String
     public var capabilities: TetrisAICapabilities
 
@@ -91,6 +103,9 @@ public struct TetrisAIWelcome: Codable, Equatable {
         seq: Int,
         tsMs: Int,
         protocolVersion: String,
+        clientId: Int? = nil,
+        role: TetrisAIRole? = nil,
+        controllerId: Int? = nil,
         gameId: String,
         capabilities: TetrisAICapabilities
     ) {
@@ -98,6 +113,9 @@ public struct TetrisAIWelcome: Codable, Equatable {
         self.seq = seq
         self.tsMs = tsMs
         self.protocolVersion = protocolVersion
+        self.clientId = clientId
+        self.role = role
+        self.controllerId = controllerId
         self.gameId = gameId
         self.capabilities = capabilities
     }
@@ -107,6 +125,9 @@ public struct TetrisAIWelcome: Codable, Equatable {
         case seq
         case tsMs = "ts"
         case protocolVersion = "protocol_version"
+        case clientId = "client_id"
+        case role
+        case controllerId = "controller_id"
         case gameId = "game_id"
         case capabilities
     }
@@ -214,12 +235,14 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
     public var pieceId: Int
     public var stepInPiece: Int
     public var board: TetrisAIObservationBoard
+    public var boardId: Int
     public var active: TetrisAIObservationActive?
-    public var next: TetrisAIPieceKind?
+    public var ghostY: Int?
+    public var next: TetrisAIPieceKind
     public var nextQueue: [TetrisAIPieceKind]
     public var hold: TetrisAIPieceKind?
     public var canHold: Bool
-    public var lastEvent: TetrisAILastEvent
+    public var lastEvent: TetrisAILastEvent?
     public var stateHash: String
     public var score: Int
     public var level: Int
@@ -238,7 +261,9 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         self.pieceId = observation.pieceId
         self.stepInPiece = observation.stepInPiece
         self.board = observation.board
+        self.boardId = observation.boardId
         self.active = observation.active
+        self.ghostY = observation.ghostY
         self.next = observation.next
         self.nextQueue = observation.nextQueue
         self.hold = observation.hold
@@ -263,7 +288,9 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         case pieceId = "piece_id"
         case stepInPiece = "step_in_piece"
         case board
+        case boardId = "board_id"
         case active
+        case ghostY = "ghost_y"
         case next
         case nextQueue = "next_queue"
         case hold

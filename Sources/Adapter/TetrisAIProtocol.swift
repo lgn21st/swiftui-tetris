@@ -2,13 +2,13 @@ import Core
 import Foundation
 
 public enum TetrisAIPieceKind: String, CaseIterable, Equatable, Codable {
-    case i = "I"
-    case o = "O"
-    case t = "T"
-    case s = "S"
-    case z = "Z"
-    case j = "J"
-    case l = "L"
+    case i
+    case o
+    case t
+    case s
+    case z
+    case j
+    case l
 
     public init?(tetromino: TetrominoType) {
         switch tetromino {
@@ -19,6 +19,18 @@ public enum TetrisAIPieceKind: String, CaseIterable, Equatable, Codable {
         case .z: self = .z
         case .j: self = .j
         case .l: self = .l
+        }
+    }
+
+    public var cellCode: Int {
+        switch self {
+        case .i: return 1
+        case .o: return 2
+        case .t: return 3
+        case .s: return 4
+        case .z: return 5
+        case .j: return 6
+        case .l: return 7
         }
     }
 
@@ -78,7 +90,6 @@ public enum TetrisAICommand: Equatable, Codable {
 }
 
 public enum TetrisAITSpinKind: String, Equatable, Codable {
-    case none
     case mini
     case full
 }
@@ -87,7 +98,7 @@ public struct TetrisAILastEvent: Equatable, Codable {
     public var locked: Bool
     public var linesCleared: Int
     public var lineClearScore: Int
-    public var tspin: TetrisAITSpinKind
+    public var tspin: TetrisAITSpinKind?
     public var combo: Int
     public var backToBack: Bool
 
@@ -95,7 +106,7 @@ public struct TetrisAILastEvent: Equatable, Codable {
         locked: Bool,
         linesCleared: Int,
         lineClearScore: Int,
-        tspin: TetrisAITSpinKind,
+        tspin: TetrisAITSpinKind?,
         combo: Int,
         backToBack: Bool
     ) {
@@ -128,12 +139,14 @@ public struct TetrisAIObservation: Equatable, Codable {
     public var pieceId: Int
     public var stepInPiece: Int
     public var board: TetrisAIObservationBoard
+    public var boardId: Int
     public var active: TetrisAIObservationActive?
-    public var next: TetrisAIPieceKind?
+    public var ghostY: Int?
+    public var next: TetrisAIPieceKind
     public var nextQueue: [TetrisAIPieceKind]
     public var hold: TetrisAIPieceKind?
     public var canHold: Bool
-    public var lastEvent: TetrisAILastEvent
+    public var lastEvent: TetrisAILastEvent?
     public var stateHash: String
     public var score: Int
     public var level: Int
@@ -151,12 +164,14 @@ public struct TetrisAIObservation: Equatable, Codable {
         pieceId: Int,
         stepInPiece: Int,
         board: TetrisAIObservationBoard,
+        boardId: Int,
         active: TetrisAIObservationActive?,
-        next: TetrisAIPieceKind?,
+        ghostY: Int?,
+        next: TetrisAIPieceKind,
         nextQueue: [TetrisAIPieceKind],
         hold: TetrisAIPieceKind?,
         canHold: Bool,
-        lastEvent: TetrisAILastEvent,
+        lastEvent: TetrisAILastEvent?,
         stateHash: String,
         score: Int,
         level: Int,
@@ -173,7 +188,9 @@ public struct TetrisAIObservation: Equatable, Codable {
         self.pieceId = pieceId
         self.stepInPiece = stepInPiece
         self.board = board
+        self.boardId = boardId
         self.active = active
+        self.ghostY = ghostY
         self.next = next
         self.nextQueue = nextQueue
         self.hold = hold
@@ -197,7 +214,9 @@ public struct TetrisAIObservation: Equatable, Codable {
         case pieceId = "piece_id"
         case stepInPiece = "step_in_piece"
         case board
+        case boardId = "board_id"
         case active
+        case ghostY = "ghost_y"
         case next
         case nextQueue = "next_queue"
         case hold
@@ -215,23 +234,19 @@ public struct TetrisAIObservationBoard: Equatable, Codable {
     public var width: Int
     public var height: Int
     public var cells: [[Int]]
-    public var kinds: [[TetrisAIPieceKind?]]
 
-    public init(width: Int, height: Int, cells: [[Int]], kinds: [[TetrisAIPieceKind?]]) {
+    public init(width: Int, height: Int, cells: [[Int]]) {
         self.width = width
         self.height = height
         self.cells = cells
-        self.kinds = kinds
     }
 
     public static func empty() -> TetrisAIObservationBoard {
         let row = Array(repeating: 0, count: Board.width)
-        let kindRow = Array(repeating: TetrisAIPieceKind?.none, count: Board.width)
         return TetrisAIObservationBoard(
             width: Board.width,
             height: Board.height,
-            cells: Array(repeating: row, count: Board.height),
-            kinds: Array(repeating: kindRow, count: Board.height)
+            cells: Array(repeating: row, count: Board.height)
         )
     }
 }
@@ -459,10 +474,12 @@ public enum CommandMapper {
 
 public enum ObservationMapper {
     public static func map(snapshot: GameStateSnapshot, seq: Int, tsMs: Int) -> TetrisAIObservation {
-        let board = mapBoard(snapshot.boardCells)
+        let boardCells = mapBoardCells(snapshot.boardCells)
+        let board = TetrisAIObservationBoard(width: Board.width, height: Board.height, cells: boardCells)
+        let boardId = boardId(boardCells)
         let active = mapActive(snapshot.active)
-        let nextQueue = snapshot.nextQueue.compactMap { TetrisAIPieceKind(tetromino: $0) }
-        let next = nextQueue.first
+        let nextQueue = snapshot.nextQueue.prefix(5).compactMap { TetrisAIPieceKind(tetromino: $0) }
+        let next = nextQueue.first ?? .i
         let hold = snapshot.hold.flatMap { TetrisAIPieceKind(tetromino: $0) }
         let timers = TetrisAIObservationTimers(
             dropMs: snapshot.dropTimerMs,
@@ -470,21 +487,26 @@ public enum ObservationMapper {
             lineClearMs: snapshot.lineClearTimerMs
         )
 
-        let tspin: TetrisAITSpinKind
+        let tspin: TetrisAITSpinKind?
         switch snapshot.lastLineClearTSpin {
-        case .none: tspin = .none
+        case .none: tspin = nil
         case .mini: tspin = .mini
         case .full: tspin = .full
         }
 
-        let lastEvent = TetrisAILastEvent(
-            locked: snapshot.adapterLocked,
-            linesCleared: snapshot.lineClearRows.count,
-            lineClearScore: snapshot.lineClearScore,
-            tspin: tspin,
-            combo: snapshot.combo,
-            backToBack: snapshot.backToBack
-        )
+        let lastEvent: TetrisAILastEvent?
+        if snapshot.adapterLocked || !snapshot.lineClearRows.isEmpty {
+            lastEvent = TetrisAILastEvent(
+                locked: snapshot.adapterLocked,
+                linesCleared: snapshot.lineClearRows.count,
+                lineClearScore: snapshot.lineClearScore,
+                tspin: tspin,
+                combo: snapshot.combo,
+                backToBack: snapshot.backToBack
+            )
+        } else {
+            lastEvent = nil
+        }
 
         return TetrisAIObservation(
             seq: seq,
@@ -497,7 +519,9 @@ public enum ObservationMapper {
             pieceId: snapshot.pieceId,
             stepInPiece: snapshot.stepInPiece,
             board: board,
+            boardId: boardId,
             active: active,
+            ghostY: ghostY(snapshot: snapshot),
             next: next,
             nextQueue: nextQueue,
             hold: hold,
@@ -509,6 +533,27 @@ public enum ObservationMapper {
             lines: snapshot.lines,
             timers: timers
         )
+    }
+
+    private static func ghostY(snapshot: GameStateSnapshot) -> Int? {
+        guard !snapshot.ghostBlocks.isEmpty else { return nil }
+        guard let first = snapshot.active.blocks(rotation: snapshot.active.rotation).first else { return nil }
+        let activeOrigin = (x: snapshot.active.x, y: snapshot.active.y)
+        let expectedFirst = (x: activeOrigin.x + first.0, y: activeOrigin.y + first.1)
+        guard let ghostFirst = snapshot.ghostBlocks.first else { return nil }
+        let delta = ghostFirst.1 - expectedFirst.y
+        return snapshot.active.y + delta
+    }
+
+    private static func boardId(_ cells: [[Int]]) -> Int {
+        var hash: UInt32 = 2166136261
+        for row in cells {
+            for value in row {
+                hash ^= UInt32(truncatingIfNeeded: value)
+                hash &*= 16777619
+            }
+        }
+        return Int(hash)
     }
 
     private static func stateHash(_ snapshot: GameStateSnapshot) -> String {
@@ -560,38 +605,22 @@ public enum ObservationMapper {
         return String(format: "%016llx", hash)
     }
 
-    private static func mapBoard(_ cells: [[Cell]]) -> TetrisAIObservationBoard {
-        var filled: [[Int]] = []
-        var kinds: [[TetrisAIPieceKind?]] = []
-
-        filled.reserveCapacity(cells.count)
-        kinds.reserveCapacity(cells.count)
-
+    private static func mapBoardCells(_ cells: [[Cell]]) -> [[Int]] {
+        var mapped: [[Int]] = []
+        mapped.reserveCapacity(cells.count)
         for row in cells {
-            var filledRow: [Int] = []
-            var kindRow: [TetrisAIPieceKind?] = []
-            filledRow.reserveCapacity(row.count)
-            kindRow.reserveCapacity(row.count)
-
+            var mappedRow: [Int] = []
+            mappedRow.reserveCapacity(row.count)
             for cell in row {
-                filledRow.append(cell.filled ? 1 : 0)
-                if let kind = cell.kind, let mapped = TetrisAIPieceKind(tetromino: kind) {
-                    kindRow.append(mapped)
-                } else {
-                    kindRow.append(nil)
+                guard cell.filled, let kind = cell.kind, let mappedKind = TetrisAIPieceKind(tetromino: kind) else {
+                    mappedRow.append(0)
+                    continue
                 }
+                mappedRow.append(mappedKind.cellCode)
             }
-
-            filled.append(filledRow)
-            kinds.append(kindRow)
+            mapped.append(mappedRow)
         }
-
-        return TetrisAIObservationBoard(
-            width: Board.width,
-            height: Board.height,
-            cells: filled,
-            kinds: kinds
-        )
+        return mapped
     }
 
     private static func mapActive(_ active: Tetromino) -> TetrisAIObservationActive? {
