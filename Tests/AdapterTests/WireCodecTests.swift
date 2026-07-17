@@ -2,18 +2,26 @@ import XCTest
 @testable import Adapter
 
 final class WireCodecTests: XCTestCase {
-    func testLineFramerEmitsCompleteLinesAcrossChunks() {
+    func testLineFramerEmitsCompleteLinesAcrossChunks() throws {
         var framer = LineFramer()
         let first = Data("{\"type\":\"hello\"}\n{\"type\":\"command\"".utf8)
         let second = Data("}\n".utf8)
 
-        let lines1 = framer.append(first)
+        let lines1 = try framer.append(first)
         XCTAssertEqual(lines1.count, 1)
         XCTAssertEqual(String(data: lines1[0], encoding: .utf8), "{\"type\":\"hello\"}")
 
-        let lines2 = framer.append(second)
+        let lines2 = try framer.append(second)
         XCTAssertEqual(lines2.count, 1)
         XCTAssertEqual(String(data: lines2[0], encoding: .utf8), "{\"type\":\"command\"}")
+    }
+
+    func testLineFramerRejectsInputBeyondConfiguredLimit() throws {
+        var framer = LineFramer(maxLineBytes: 8)
+
+        XCTAssertThrowsError(try framer.append(Data("123456789".utf8))) { error in
+            XCTAssertEqual(error as? LineFramerError, .lineTooLong)
+        }
     }
 
     func testCodecEncodesAndDecodesHello() throws {

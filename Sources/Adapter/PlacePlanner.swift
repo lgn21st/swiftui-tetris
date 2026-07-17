@@ -22,17 +22,21 @@ struct PlacePlanner {
             return nil
         }
 
-        var queue: [(PlanState, [GameAction], Int)] = [(start, [], 0)]
+        var queue = MinHeap()
+        queue.push(QueueEntry(state: start, cost: 0, depth: 0, order: 0))
         var bestCost: [PlanState: Int] = [start: 0]
+        var predecessors: [PlanState: Predecessor] = [:]
+        var nextOrder = 1
 
-        while !queue.isEmpty {
-            let minIndex = queue.indices.min { queue[$0].2 < queue[$1].2 } ?? 0
-            let (state, actions, cost) = queue.remove(at: minIndex)
+        while let entry = queue.pop() {
+            let state = entry.state
+            let cost = entry.cost
+            guard bestCost[state] == cost else { continue }
 
             if state.x == targetX && state.rotation == targetRotation {
-                return actions
+                return reconstructPlan(to: state, from: start, predecessors: predecessors)
             }
-            if actions.count >= maxDepth { continue }
+            if entry.depth >= maxDepth { continue }
 
             for action in PlanAction.allCases {
                 if let next = apply(action: action, kind: kind, state: state, board: board) {
@@ -49,13 +53,34 @@ struct PlacePlanner {
                     let known = bestCost[next] ?? Int.max
                     if nextCost < known {
                         bestCost[next] = nextCost
-                        queue.append((next, actions + [action.gameAction], nextCost))
+                        predecessors[next] = Predecessor(state: state, action: action.gameAction)
+                        queue.push(QueueEntry(
+                            state: next,
+                            cost: nextCost,
+                            depth: entry.depth + 1,
+                            order: nextOrder
+                        ))
+                        nextOrder += 1
                     }
                 }
             }
         }
 
         return nil
+    }
+
+    private static func reconstructPlan(
+        to target: PlanState,
+        from start: PlanState,
+        predecessors: [PlanState: Predecessor]
+    ) -> [GameAction] {
+        var actions: [GameAction] = []
+        var current = target
+        while current != start, let predecessor = predecessors[current] {
+            actions.append(predecessor.action)
+            current = predecessor.state
+        }
+        return actions.reversed()
     }
 
     private static func apply(
@@ -119,6 +144,56 @@ private struct PlanState: Hashable {
     let x: Int
     let y: Int
     let rotation: Rotation
+}
+
+private struct Predecessor {
+    let state: PlanState
+    let action: GameAction
+}
+
+private struct QueueEntry {
+    let state: PlanState
+    let cost: Int
+    let depth: Int
+    let order: Int
+
+    func precedes(_ other: QueueEntry) -> Bool {
+        cost < other.cost || (cost == other.cost && order < other.order)
+    }
+}
+
+private struct MinHeap {
+    private var storage: [QueueEntry] = []
+
+    mutating func push(_ entry: QueueEntry) {
+        storage.append(entry)
+        var child = storage.count - 1
+        while child > 0 {
+            let parent = (child - 1) / 2
+            guard storage[child].precedes(storage[parent]) else { break }
+            storage.swapAt(child, parent)
+            child = parent
+        }
+    }
+
+    mutating func pop() -> QueueEntry? {
+        guard !storage.isEmpty else { return nil }
+        if storage.count == 1 { return storage.removeLast() }
+
+        let result = storage[0]
+        storage[0] = storage.removeLast()
+        var parent = 0
+        while true {
+            let left = parent * 2 + 1
+            guard left < storage.count else { break }
+            let right = left + 1
+            let next = right < storage.count && storage[right].precedes(storage[left]) ? right : left
+            guard storage[next].precedes(storage[parent]) else { break }
+            storage.swapAt(parent, next)
+            parent = next
+        }
+        return result
+    }
 }
 
 private enum PlanAction: CaseIterable {

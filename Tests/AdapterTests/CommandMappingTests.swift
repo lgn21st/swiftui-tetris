@@ -78,6 +78,16 @@ final class CommandMappingTests: XCTestCase {
         }
     }
 
+    func testPlacePlannerHonorsDepthAndReturnsMinimumLengthReachablePlan() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.active = Tetromino(kind: .t, x: 3, y: 0)
+        let snapshot = state.snapshot()
+
+        XCTAssertNil(PlacePlanner.plan(snapshot: snapshot, targetX: 5, targetRotation: .east, maxDepth: 2))
+        let plan = PlacePlanner.plan(snapshot: snapshot, targetX: 5, targetRotation: .east, maxDepth: 3)
+        XCTAssertEqual(plan?.count, 3)
+    }
+
     private func apply(
         actions: [GameAction],
         to snapshot: GameStateSnapshot,

@@ -52,12 +52,9 @@ public final class SocketServerTransport {
     public func send(line: Data, to connectionId: UUID) {
         queue.async {
             guard let connection = self.connections[connectionId] else { return }
-            var data = line
-            data.append(0x0A)
-            _ = data.withUnsafeBytes { buffer in
-                guard let base = buffer.baseAddress else { return -1 }
-                return write(connection.fd, base, buffer.count)
-            }
+            connection.pendingWrite.append(line)
+            connection.pendingWrite.append(0x0A)
+            self.resumeWriteSourceIfNeeded(connection)
         }
     }
 
@@ -80,24 +77,39 @@ public final class SocketServerTransport {
     }
 
     private func acceptConnection() {
-        var addr = sockaddr_storage()
-        var len = socklen_t(MemoryLayout<sockaddr_storage>.size)
-        let fd = withUnsafeMutablePointer(to: &addr) {
-            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { ptr in
-                Darwin.accept(listenerFd, ptr, &len)
+        while true {
+            var addr = sockaddr_storage()
+            var len = socklen_t(MemoryLayout<sockaddr_storage>.size)
+            let fd = withUnsafeMutablePointer(to: &addr) {
+                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { ptr in
+                    Darwin.accept(listenerFd, ptr, &len)
+                }
             }
+            guard fd >= 0 else { return }
+            configureConnection(fd: fd)
         }
-        guard fd >= 0 else { return }
+    }
+
+    private func configureConnection(fd: Int32) {
         setNonBlocking(fd: fd)
+        var noSigPipe: Int32 = 1
+        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, socklen_t(MemoryLayout<Int32>.size))
         let id = UUID()
         let source = DispatchSource.makeReadSource(fileDescriptor: fd, queue: queue)
-        let state = ConnectionState(fd: fd, source: source)
+        let writeSource = DispatchSource.makeWriteSource(fileDescriptor: fd, queue: queue)
+        let state = ConnectionState(fd: fd, source: source, writeSource: writeSource)
         connections[id] = state
         source.setEventHandler { [weak self] in
             self?.readAvailable(connectionId: id)
         }
         source.setCancelHandler { [weak self] in
             self?.connections[id]?.source = nil
+        }
+        writeSource.setEventHandler { [weak self] in
+            self?.flushPendingWrite(connectionId: id)
+        }
+        writeSource.setCancelHandler { [weak self] in
+            self?.connections[id]?.writeSource = nil
         }
         source.resume()
         startIdleTimerIfNeeded()
@@ -106,16 +118,63 @@ public final class SocketServerTransport {
     private func readAvailable(connectionId: UUID) {
         guard let connection = connections[connectionId] else { return }
         var buffer = [UInt8](repeating: 0, count: 4096)
-        let readCount = read(connection.fd, &buffer, buffer.count)
-        if readCount <= 0 {
+        while true {
+            let readCount = read(connection.fd, &buffer, buffer.count)
+            if readCount > 0 {
+                connection.lastRead = .now()
+                do {
+                    let lines = try connection.framer.append(Data(buffer.prefix(readCount)))
+                    for line in lines {
+                        onReceive?(connectionId, line)
+                    }
+                } catch {
+                    closeConnection(connectionId: connectionId)
+                    return
+                }
+                continue
+            }
+            if readCount < 0, errno == EWOULDBLOCK || errno == EAGAIN {
+                return
+            }
+            closeConnection(connectionId: connectionId)
+            return
+        }
+    }
+
+    private func resumeWriteSourceIfNeeded(_ connection: ConnectionState) {
+        guard !connection.writeSourceResumed else { return }
+        connection.writeSourceResumed = true
+        connection.writeSource?.resume()
+    }
+
+    private func flushPendingWrite(connectionId: UUID) {
+        guard let connection = connections[connectionId] else { return }
+
+        while connection.writeOffset < connection.pendingWrite.count {
+            let written = connection.pendingWrite.withUnsafeBytes { buffer -> Int in
+                guard let base = buffer.baseAddress else { return 0 }
+                return write(
+                    connection.fd,
+                    base.advanced(by: connection.writeOffset),
+                    buffer.count - connection.writeOffset
+                )
+            }
+            if written > 0 {
+                connection.writeOffset += written
+                continue
+            }
+            if written < 0, errno == EWOULDBLOCK || errno == EAGAIN {
+                return
+            }
             closeConnection(connectionId: connectionId)
             return
         }
 
-        connection.lastRead = .now()
-        let lines = connection.framer.append(Data(buffer.prefix(readCount)))
-        for line in lines {
-            onReceive?(connectionId, line)
+        connection.pendingWrite.removeAll(keepingCapacity: true)
+        connection.writeOffset = 0
+        if connection.writeSourceResumed {
+            connection.writeSource?.suspend()
+            connection.writeSourceResumed = false
         }
     }
 
@@ -123,6 +182,12 @@ public final class SocketServerTransport {
         guard let connection = connections[connectionId] else { return }
         connection.source?.cancel()
         connection.source = nil
+        if !connection.writeSourceResumed {
+            connection.writeSource?.resume()
+        }
+        connection.writeSource?.cancel()
+        connection.writeSource = nil
+        connection.writeSourceResumed = false
         close(connection.fd)
         connections.removeValue(forKey: connectionId)
         onDisconnect?(connectionId)
@@ -205,12 +270,20 @@ public final class SocketServerTransport {
 private final class ConnectionState {
     let fd: Int32
     var source: DispatchSourceRead?
+    var writeSource: DispatchSourceWrite?
+    var writeSourceResumed: Bool
+    var pendingWrite: Data
+    var writeOffset: Int
     var framer: LineFramer
     var lastRead: DispatchTime
 
-    init(fd: Int32, source: DispatchSourceRead) {
+    init(fd: Int32, source: DispatchSourceRead, writeSource: DispatchSourceWrite) {
         self.fd = fd
         self.source = source
+        self.writeSource = writeSource
+        self.writeSourceResumed = false
+        self.pendingWrite = Data()
+        self.writeOffset = 0
         self.framer = LineFramer()
         self.lastRead = .now()
     }

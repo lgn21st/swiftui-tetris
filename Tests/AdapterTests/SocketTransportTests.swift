@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import Adapter
 
 final class SocketTransportTests: XCTestCase {
@@ -64,5 +65,27 @@ final class SocketTransportTests: XCTestCase {
         _ = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         wait(for: [disconnectExpectation], timeout: 2.0)
         transport.stop()
+    }
+
+    func testTcpTransportWritesEntireLargeLine() throws {
+        let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
+        defer { transport.stop() }
+        let receiveExpectation = expectation(description: "connection identified")
+        var connectionId: UUID?
+        transport.onReceive = { id, _ in
+            connectionId = id
+            receiveExpectation.fulfill()
+        }
+
+        try transport.start()
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(transport.boundPort))
+        try client.send(line: "ready")
+        wait(for: [receiveExpectation], timeout: 2.0)
+
+        let payload = Data(repeating: UInt8(ascii: "x"), count: 512 * 1024)
+        transport.send(line: payload, to: try XCTUnwrap(connectionId))
+
+        let received = try XCTUnwrap(client.readLine(timeoutMs: 5_000))
+        XCTAssertEqual(received, payload)
     }
 }
