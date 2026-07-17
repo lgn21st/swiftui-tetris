@@ -6,7 +6,7 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 This section explains the codebase in plain language for new contributors.
 
 ### Big Picture
-The game is split into three layers:
+The runtime is split into four layers:
 1) Core (rules and state)
 2) Renderer (SpriteKit drawing)
 3) UI (SwiftUI views, input, audio)
@@ -32,6 +32,7 @@ External AI (tetris-ai)
 Core/               Game rules and data (no UI)
 Renderer/           SpriteKit rendering and textures
 Sources/UI/         SwiftUI views, input, audio, SceneDriver
+Adapter/            Local TCP protocol, command planning, observations
 Tests/              Unit + integration tests
 assets/             Audio files, icons
 ```
@@ -43,9 +44,9 @@ Where to edit:
 
 ### Game Loop (Simple View)
 - TetrisScene.update(_:) runs every frame.
-- A fixed timestep clock advances Core logic (16ms).
+- A fixed timestep clock advances Core logic in independent 16ms steps, including catch-up frames.
 - Rendering happens after logic.
- - Adapter polls for commands before each fixed step and emits observations after snapshot.
+- Adapter polls for commands before each fixed step and emits observations after that step's snapshot.
 
 ### External AI Transport
 - Adapter listens on TCP localhost (127.0.0.1:7777) (fixed per protocol standard).
@@ -80,8 +81,8 @@ Where to edit:
 - **SpriteKit owns the game loop**: use `SKScene.update(_:)` with a fixed timestep accumulator.
 - **SwiftUI owns composition**: overlays, HUD, and window behaviors should be SwiftUI-first.
 - **Core is deterministic**: all rule changes are test-first and isolated from rendering/input.
-- **No per-frame allocations**: reuse nodes, buffers, and arrays to keep frame pacing stable.
-- **Assets are bundled**: load audio/textures via `Bundle.module` (SwiftPM) for packaged parity.
+- **Bounded hot-path allocation**: reuse nodes, buffers, cached shape tables, textures, and Core board storage; transient four-block overlay arrays remain intentionally small.
+- **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
 ## Status
 - Architecture alignment is complete; see `docs/progress.md` for the change log.
@@ -119,9 +120,12 @@ Where to edit:
 ## Alignment Summary (Complete)
 - Loop ownership moved to `TetrisScene.update(_:)` with fixed-step timing.
 - Render pipeline reuses buffers/nodes and caches textures.
+- Render mapping passes Core board cells through copy-on-write storage instead of allocating a 10x20 kind projection every frame.
+- Tetromino shapes are an immutable process-wide table; collision and planning queries do not rebuild it.
 - Input routed through `InputRouter` for keyboard + gamepad consistency.
 - Audio uses `AVAudioEngine` with preloaded buffers.
 - UI polish includes commands, overlays, focus pause handling, and accessibility coverage.
+- Adapter framing is bounded to 1 MiB per line, and nonblocking socket output queues partial writes until complete.
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.

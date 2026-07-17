@@ -8,16 +8,17 @@ The core feature scope is complete. Current focus is on polish, bug fixes, and t
 
 ### Background
 
-The project has achieved feature completeness with solid TDD coverage. A comprehensive evaluation was performed on 2026-01-22, identifying several minor technical debt items. These do not affect functional correctness but represent opportunities for code quality improvement.
+The project has achieved feature completeness with broad TDD coverage. A comprehensive code, architecture, documentation, and performance review was repeated on 2026-07-17; details are in `docs/evaluation.md`, with remaining work tracked in `docs/todo.md`.
 
-### Review Summary (2026-01-22)
+### Review Summary (2026-07-17)
 
-Architecture and tests are strong; no outstanding issues remain from that review.
+Resolved T-Spin lock-order scoring, fixed-step catch-up semantics, partial TCP writes, unbounded line framing, hot-path tetromino table reconstruction, per-frame board projection, and path-planner queue complexity. Documentation was reconciled with current focus-loss, queue, transport, asset, and layer behavior.
 
 ### Maintenance
 
 Ongoing: small polish, bug fixes, and keep tests green.
 Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revisions.
+Ongoing: restore a complete Xcode/Command Line Tools installation so `swift test` can import the macOS XCTest module on every development machine.
 
 ---
 

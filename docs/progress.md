@@ -1,5 +1,19 @@
 # Progress Log
 
+## 2026-07-17
+- Completed a full documentation, architecture, correctness, and performance review; added `docs/evaluation.md` and restored a focused `docs/todo.md`.
+- Fixed T-Spin classification to inspect lock-time geometry before line clearing shifts the board.
+- Fixed next-piece and Hold spawning to refresh the ghost after the new active piece is assigned.
+- Made `lineClearScore` include combo bonuses so renderer popups and Adapter `last_event` match the score delta.
+- Preserved fixed-timestep semantics during catch-up frames by running input, Adapter polling, Core tick, and observation emission once per accumulated step.
+- Ordered remote command polling before `beginFixedStep`, so pause/unpause and piece-changing commands receive correct step metadata.
+- Reused immutable tetromino shape tables, Core ghost/landing buffers, and snapshot board storage in rendering.
+- Replaced Adapter place-planner linear priority scans and path copies with a stable binary heap plus predecessor reconstruction.
+- Added bounded 1 MiB line framing, ordered partial-write buffering, and `SO_NOSIGPIPE` to the TCP transport.
+- Replaced per-dequeue `removeFirst()` in the in-memory Adapter transport with indexed FIFO reads and amortized compaction.
+- Reconciled focus-loss, queue depth, TCP-only transport, packaging, and runtime-layer documentation.
+- Debug and Release builds pass with the macOS 15.5 SDK; targeted Core/Adapter checks and a 512 KiB localhost TCP write check also pass. Full XCTest execution is locally blocked because the active Command Line Tools installation lacks an importable macOS `XCTest` module.
+
 ## 2026-01-30
 - Added Adapter layer for external AI control with TCP transport and JSON line framing.
 - Wired Adapter into SceneDriver (poll before tick, emit after snapshot).

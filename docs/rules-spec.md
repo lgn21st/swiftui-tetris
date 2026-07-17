@@ -5,7 +5,7 @@ This document captures the game rules and timing constants used by this project.
 ## Core Constants
 - Board: width=10, height=20
 - Spawn position: (x=3, y=0)
-- Next queue preview size: 3 (UI); internal queue is topped up to >=4 before each spawn.
+- Next queue preview size: 3 (UI); internal queue is topped up to >=6 before each spawn.
 - Tick step: 16 ms (default GameConfig.tick_ms)
 - Base drop ms: 1000 (default GameConfig.base_drop_ms)
 - Soft drop multiplier: 10
@@ -69,8 +69,8 @@ L:
 - Queue refill uses repeated "2-piece chunks" from shuffled 7-piece bags.
 - Each refill shuffles [I,O,T,S,Z,J,L], then appends the first 2 pieces only.
 - LCG RNG (Numerical Recipes constants) for deterministic tests.
-- Before spawning the next active piece, queue is refilled to length >=4, then one piece is drawn.
-- Result: after each spawn, queue length is >=3 (matching the 3-piece preview).
+- Before spawning the next active piece, queue is refilled to length >=6, then one piece is drawn.
+- Result: after each spawn, queue length is >=5 (matching the Adapter contract); the UI displays the first 3.
 
 ## Actions
 GameAction:
@@ -138,6 +138,8 @@ Order per tick:
 - Only if active piece is T and last action was a rotation.
 - Check 4 corner cells around T center; if >=3 filled, T-spin.
 - If both front corners filled -> Full, else Mini.
+- Detection happens at lock time before the piece is written and before completed rows shift the board.
+- `line_clear_score` is the complete award for that lock, including B2B and combo bonuses.
 
 ## State Machine
 
@@ -165,7 +167,7 @@ Derived top-level states:
 | Playing | Spawn blocked on lock/spawn path | GameOver | Sets `game_over = true`; emits game-over sound event. |
 | GameOver | `Restart` action | Playing | Resets board/state; preserves configured restart seed mode semantics. |
 | Paused | `Restart` action | Playing | Resets board/state immediately. |
-| Playing | Focus loss (app inactive) | Paused | Auto-pause only when started and not game over. |
+| Playing | Focus loss (app inactive) | Playing | Held inputs are reset; gameplay is not auto-paused. |
 
 ### Input acceptance by state
 
