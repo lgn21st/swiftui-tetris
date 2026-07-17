@@ -2,6 +2,19 @@ import XCTest
 @testable import Core
 
 final class PiecesTests: XCTestCase {
+    func testEveryTetrominoRotationHasFourStableUniqueBlocks() {
+        for kind in TetrominoType.allCases {
+            let piece = Tetromino(kind: kind, x: 0, y: 0)
+            for rotation in Rotation.allCases {
+                let first = piece.blocks(rotation: rotation)
+                let second = piece.blocks(rotation: rotation)
+                XCTAssertEqual(first.count, 4)
+                XCTAssertEqual(Set(first.map { "\($0.0),\($0.1)" }).count, 4)
+                XCTAssertEqual(first.map { [$0.0, $0.1] }, second.map { [$0.0, $0.1] })
+            }
+        }
+    }
+
     func testSpawnPosition() {
         XCTAssertEqual(spawnPosition().x, 3)
         XCTAssertEqual(spawnPosition().y, 0)

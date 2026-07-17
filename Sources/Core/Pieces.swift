@@ -47,7 +47,13 @@ public func spawnPosition() -> (x: Int, y: Int) {
 }
 
 private func shapeFor(kind: TetrominoType, rotation: Rotation) -> [(Int, Int)] {
-    let shapes: [[[(Int, Int)]]] = [
+    tetrominoShapes[kind.rawValue][rotation.rawValue]
+}
+
+// Construct the immutable shape table once. `blocks(rotation:)` is used by
+// collision checks, ghost mapping, rendering, and path planning, so rebuilding
+// this nested array on every query creates avoidable hot-path allocations.
+private let tetrominoShapes: [[[(Int, Int)]]] = [
         // I
         [
             [(0, 1), (1, 1), (2, 1), (3, 1)],
@@ -97,9 +103,4 @@ private func shapeFor(kind: TetrominoType, rotation: Rotation) -> [(Int, Int)] {
             [(0, 1), (1, 1), (2, 1), (0, 2)],
             [(0, 0), (1, 0), (1, 1), (1, 2)]
         ]
-    ]
-
-    let kindIndex = kind.rawValue
-    let rotationIndex = rotation.rawValue
-    return shapes[kindIndex][rotationIndex]
-}
+]

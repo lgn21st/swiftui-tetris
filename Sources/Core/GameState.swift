@@ -85,6 +85,8 @@ public struct GameState {
         self.ghostCache = []
         self.config = config
         self.soundEvents = []
+        self.ghostCache.reserveCapacity(4)
+        self.landingFlashBlocks.reserveCapacity(4)
         updateGhostCache()
     }
 
@@ -260,8 +262,9 @@ public struct GameState {
         while board.canPlace(piece: active, x: active.x, y: ghostY + 1, rotation: active.rotation) {
             ghostY += 1
         }
-        ghostCache = active.blocks(rotation: active.rotation).map { (dx, dy) in
-            (active.x + dx, ghostY + dy)
+        ghostCache.removeAll(keepingCapacity: true)
+        for (dx, dy) in active.blocks(rotation: active.rotation) {
+            ghostCache.append((active.x + dx, ghostY + dy))
         }
     }
 
@@ -276,6 +279,7 @@ public struct GameState {
         if let held = hold {
             hold = currentKind
             active = spawnPiece(kind: held)
+            updateGhostCache()
         } else {
             hold = currentKind
             spawnNext()
@@ -341,7 +345,6 @@ public struct GameState {
         if cleared > 0 {
             lineClearTimerMs = GameConstants.lineClearPauseMs
             lineClearRows = clearedRows
-            lineClearScore = points
             lastLineClearTSpin = tSpin
             soundEvents.append(.lineClear(cleared))
             lines += cleared
@@ -356,6 +359,7 @@ public struct GameState {
                 backToBack = false
             }
             level = lines / 10
+            lineClearScore = points
         } else {
             combo = -1
             backToBack = false
@@ -372,9 +376,11 @@ public struct GameState {
     private mutating func lockActivePiece() {
         adapterLockedThisStep = true
         setLandingFlash()
+        // T-Spin corners describe the board at lock time. Clearing rows first
+        // shifts that geometry and can turn a valid T-Spin into `.none`.
+        let tSpin = config.ruleset == .modern ? tSpinKind() : .none
         board.lock(piece: active)
         let result = board.clearLines()
-        let tSpin = config.ruleset == .modern ? tSpinKind() : .none
         applyLineClear(cleared: result.count, clearedRows: result.rows, tSpin: tSpin)
         lastActionRotate = false
         spawnNext()
@@ -382,8 +388,9 @@ public struct GameState {
 
     private mutating func setLandingFlash() {
         landingFlashTimerMs = GameConstants.landingFlashDurationMs
-        landingFlashBlocks = active.blocks(rotation: active.rotation).map { (dx, dy) in
-            (active.x + dx, active.y + dy)
+        landingFlashBlocks.removeAll(keepingCapacity: true)
+        for (dx, dy) in active.blocks(rotation: active.rotation) {
+            landingFlashBlocks.append((active.x + dx, active.y + dy))
         }
     }
 
@@ -396,7 +403,6 @@ public struct GameState {
             gameOver = true
             soundEvents.append(.gameOver)
         }
-        updateGhostCache()
         lockResetCount = 0
         lastActionRotate = false
         activeMovedSinceSpawn = false
@@ -407,6 +413,7 @@ public struct GameState {
         QueueRng.ensureQueue(rng: &rng, queue: &nextQueue, minimum: 6)
         let next = nextQueue.removeFirst()
         active = spawnPiece(kind: next)
+        updateGhostCache()
         canHold = true
     }
 
