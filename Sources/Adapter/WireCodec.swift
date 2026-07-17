@@ -42,6 +42,7 @@ enum WireCodec {
         case "welcome":
             return .welcome(try decoder.decode(TetrisAIWelcome.self, from: data))
         case "command":
+            try validateCommandShape(data)
             return .command(try decoder.decode(TetrisAICommandEnvelope.self, from: data))
         case "control":
             return .control(try decoder.decode(TetrisAIControl.self, from: data))
@@ -80,6 +81,29 @@ enum WireCodec {
             return .error(try decoder.decode(TetrisAIErrorMessage.self, from: data))
         default:
             throw WireCodecError.unknownType
+        }
+    }
+
+    private static func validateCommandShape(_ data: Data) throws {
+        guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let mode = object["mode"] as? String else {
+            throw WireCodecError.invalidData
+        }
+        let allowed: Set<String>
+        let required: Set<String>
+        switch mode {
+        case "action":
+            allowed = ["type", "seq", "ts", "mode", "actions", "restart"]
+            required = ["type", "seq", "ts", "mode", "actions"]
+        case "place":
+            allowed = ["type", "seq", "ts", "mode", "place"]
+            required = allowed
+        default:
+            throw WireCodecError.invalidData
+        }
+        let keys = Set(object.keys)
+        guard keys.isSubset(of: allowed), required.isSubset(of: keys) else {
+            throw WireCodecError.invalidData
         }
     }
 }

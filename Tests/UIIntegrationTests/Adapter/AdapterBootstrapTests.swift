@@ -11,6 +11,8 @@ final class AdapterBootstrapTests: XCTestCase {
         XCTAssertEqual(config?.transport, .tcp(host: "127.0.0.1", port: 7777))
         XCTAssertEqual(config?.idleTimeoutMs, 2000)
         XCTAssertEqual(config?.maxPendingCommands, 64)
+        XCTAssertEqual(config?.maxOutboundBytes, 262_144)
+        XCTAssertEqual(config?.backpressureRetryAfterMs, 50)
         XCTAssertNil(config?.observationIntervalMs)
         XCTAssertEqual(config?.logPath, "auto")
     }
@@ -27,7 +29,7 @@ final class AdapterBootstrapTests: XCTestCase {
 
         let config = AdapterBootstrap.configuration(from: env)
 
-        XCTAssertEqual(config?.transport, .tcp(host: "127.0.0.1", port: 7777))
+        XCTAssertEqual(config?.transport, .tcp(host: "0.0.0.0", port: 8888))
         XCTAssertNil(config?.idleTimeoutMs)
         XCTAssertEqual(config?.maxPendingCommands, 12)
         XCTAssertEqual(config?.observationIntervalMs, 50)
@@ -42,5 +44,17 @@ final class AdapterBootstrapTests: XCTestCase {
         let config = AdapterBootstrap.configuration(from: env)
 
         XCTAssertNil(config)
+    }
+
+
+    func testConfigurationRecognizesTrueAsDisabledAndParsesResourceOverrides() {
+        XCTAssertNil(AdapterBootstrap.configuration(from: ["TETRIS_AI_DISABLED": "true"]))
+
+        let config = AdapterBootstrap.configuration(from: [
+            "TETRIS_AI_MAX_OUTBOUND_BYTES": "131072",
+            "TETRIS_AI_BACKPRESSURE_RETRY_MS": "25",
+        ])
+        XCTAssertEqual(config?.maxOutboundBytes, 131_072)
+        XCTAssertEqual(config?.backpressureRetryAfterMs, 25)
     }
 }

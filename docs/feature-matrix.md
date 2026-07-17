@@ -108,7 +108,7 @@ Legend:
 | Audio engine | Optional | AVAudioEngine buffers for low-latency SFX (implemented). |
 | External AI adapter | Optional | Adapter + TCP transport for tetris-ai integration (implemented). |
 | Fixed-step catch-up | Yes | Every accumulated 16 ms step crosses input/Core/Adapter boundaries independently. |
-| Bounded wire framing | Yes | TCP input lines are capped at 1 MiB; output handles partial nonblocking writes. |
+| Bounded wire framing/output | Yes | TCP payloads are capped at 65,536 bytes; per-client output is capped at 256 KiB and handles partial nonblocking writes. |
 
 ## Core Checklist
 - Board + tetromino rules + SRS rotation.

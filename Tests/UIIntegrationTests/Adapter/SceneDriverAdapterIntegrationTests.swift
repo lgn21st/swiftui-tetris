@@ -24,10 +24,12 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
         let adapter = SpyAdapter()
         let driver = SceneDriver(loop: loop, adapter: adapter)
 
+        XCTAssertEqual(adapter.emitCount, 1, "initial snapshot primes streaming handshakes")
+
         driver.tick(elapsedMs: 16)
 
         XCTAssertEqual(adapter.pollCount, 1)
-        XCTAssertEqual(adapter.emitCount, 1)
+        XCTAssertEqual(adapter.emitCount, 2)
         XCTAssertNotNil(adapter.lastSnapshot)
     }
 
@@ -39,7 +41,7 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
         driver.tick(elapsedMs: 48, fixedSteps: 3)
 
         XCTAssertEqual(adapter.pollCount, 3)
-        XCTAssertEqual(adapter.emitCount, 3)
+        XCTAssertEqual(adapter.emitCount, 4)
         XCTAssertEqual(adapter.lastSnapshot?.stepInPiece, 3)
     }
 

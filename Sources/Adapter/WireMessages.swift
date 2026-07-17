@@ -3,8 +3,6 @@ import Core
 
 public enum TetrisAIFormat: String, Codable, Equatable {
     case json
-    case msgpack
-    case protobuf
 }
 
 public enum TetrisAICommandMode: String, Codable, Equatable {
@@ -93,8 +91,8 @@ public struct TetrisAIWelcome: Codable, Equatable {
     public var seq: Int
     public var tsMs: Int
     public var protocolVersion: String
-    public var clientId: Int?
-    public var role: TetrisAIRole?
+    public var clientId: Int
+    public var role: TetrisAIRole
     public var controllerId: Int?
     public var gameId: String
     public var capabilities: TetrisAICapabilities
@@ -103,8 +101,8 @@ public struct TetrisAIWelcome: Codable, Equatable {
         seq: Int,
         tsMs: Int,
         protocolVersion: String,
-        clientId: Int? = nil,
-        role: TetrisAIRole? = nil,
+        clientId: Int,
+        role: TetrisAIRole,
         controllerId: Int? = nil,
         gameId: String,
         capabilities: TetrisAICapabilities
@@ -131,23 +129,78 @@ public struct TetrisAIWelcome: Codable, Equatable {
         case gameId = "game_id"
         case capabilities
     }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(type, forKey: .type)
+        try container.encode(seq, forKey: .seq)
+        try container.encode(tsMs, forKey: .tsMs)
+        try container.encode(protocolVersion, forKey: .protocolVersion)
+        try container.encode(clientId, forKey: .clientId)
+        try container.encode(role, forKey: .role)
+        if let controllerId {
+            try container.encode(controllerId, forKey: .controllerId)
+        } else {
+            try container.encodeNil(forKey: .controllerId)
+        }
+        try container.encode(gameId, forKey: .gameId)
+        try container.encode(capabilities, forKey: .capabilities)
+    }
 }
 
 public struct TetrisAICapabilities: Codable, Equatable {
     public var formats: [TetrisAIFormat]
     public var commandModes: [TetrisAICommandMode]
     public var features: [String]
+    public var featuresAlways: [String]
+    public var featuresOptional: [String]
+    public var controlPolicy: TetrisAIControlPolicy
 
-    public init(formats: [TetrisAIFormat], commandModes: [TetrisAICommandMode], features: [String]) {
+    public init(
+        formats: [TetrisAIFormat],
+        commandModes: [TetrisAICommandMode],
+        featuresAlways: [String],
+        featuresOptional: [String],
+        controlPolicy: TetrisAIControlPolicy
+    ) {
         self.formats = formats
         self.commandModes = commandModes
-        self.features = features
+        self.featuresAlways = featuresAlways
+        self.featuresOptional = featuresOptional
+        self.features = featuresAlways + featuresOptional
+        self.controlPolicy = controlPolicy
     }
+
+    public static let canonical = TetrisAICapabilities(
+        formats: [.json],
+        commandModes: [.action, .place],
+        featuresAlways: ["next", "next_queue", "can_hold", "board_id", "state_hash", "score", "timers"],
+        featuresOptional: ["hold", "ghost_y", "last_event"],
+        controlPolicy: .init(autoPromoteOnDisconnect: true, promotionOrder: "lowest_client_id")
+    )
 
     private enum CodingKeys: String, CodingKey {
         case formats
         case commandModes = "command_modes"
         case features
+        case featuresAlways = "features_always"
+        case featuresOptional = "features_optional"
+        case controlPolicy = "control_policy"
+    }
+}
+
+public struct TetrisAIControlPolicy: Codable, Equatable {
+    public var autoPromoteOnDisconnect: Bool
+    public var promotionOrder: String
+
+    public init(autoPromoteOnDisconnect: Bool, promotionOrder: String) {
+        self.autoPromoteOnDisconnect = autoPromoteOnDisconnect
+        self.promotionOrder = promotionOrder
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case autoPromoteOnDisconnect = "auto_promote_on_disconnect"
+        case promotionOrder = "promotion_order"
     }
 }
 
@@ -158,13 +211,15 @@ public struct TetrisAICommandEnvelope: Codable, Equatable {
     public var mode: TetrisAICommandMode
     public var actions: [TetrisAIAction]?
     public var place: TetrisAIPlaceCommand?
+    public var restart: TetrisAIRestartParameters?
 
     public init(
         seq: Int,
         tsMs: Int,
         mode: TetrisAICommandMode,
         actions: [TetrisAIAction]?,
-        place: TetrisAIPlaceCommand?
+        place: TetrisAIPlaceCommand?,
+        restart: TetrisAIRestartParameters? = nil
     ) {
         self.type = "command"
         self.seq = seq
@@ -172,6 +227,7 @@ public struct TetrisAICommandEnvelope: Codable, Equatable {
         self.mode = mode
         self.actions = actions
         self.place = place
+        self.restart = restart
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -181,6 +237,15 @@ public struct TetrisAICommandEnvelope: Codable, Equatable {
         case mode
         case actions
         case place
+        case restart
+    }
+}
+
+public struct TetrisAIRestartParameters: Codable, Equatable {
+    public var seed: UInt32
+
+    public init(seed: UInt32) {
+        self.seed = seed
     }
 }
 
@@ -331,13 +396,15 @@ public struct TetrisAIErrorMessage: Codable, Equatable {
     public var tsMs: Int
     public var code: String
     public var message: String
+    public var retryAfterMs: Int?
 
-    public init(seq: Int, tsMs: Int, code: String, message: String) {
+    public init(seq: Int, tsMs: Int, code: String, message: String, retryAfterMs: Int? = nil) {
         self.type = "error"
         self.seq = seq
         self.tsMs = tsMs
         self.code = code
         self.message = message
+        self.retryAfterMs = retryAfterMs
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -346,6 +413,7 @@ public struct TetrisAIErrorMessage: Codable, Equatable {
         case tsMs = "ts"
         case code
         case message
+        case retryAfterMs = "retry_after_ms"
     }
 }
 

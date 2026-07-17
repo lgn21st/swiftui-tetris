@@ -1,6 +1,10 @@
 # Progress Log
 
 ## 2026-07-17
+- Upgraded the external Adapter implementation from protocol 2.0.0 to canonical 2.1.1 and recorded the complete requirement/evidence matrix in `docs/adapter-conformance.md`.
+- Added strict compatible SemVer, required welcome identities and feature partitions, explicit control policy, seeded restart, immediate handshake snapshots, and portable host/port/disable settings.
+- Reduced TCP frame payloads to the canonical 65,536-byte maximum; bounded every client's outbound queue, coalesced superseded observations, isolated slow clients, and added positive backpressure retry hints.
+- Added `docs/adapter-implementation-profile.md` for this project's queue, dispatch, scheduling, logging, promotion, and startup choices without copying `tui-tetris` implementation strategy.
 - Completed a full documentation, architecture, correctness, and performance review; added `docs/evaluation.md` and restored a focused `docs/todo.md`.
 - Fixed T-Spin classification to inspect lock-time geometry before line clearing shifts the board.
 - Fixed next-piece and Hold spawning to refresh the ghost after the new active piece is assigned.
@@ -9,7 +13,7 @@
 - Ordered remote command polling before `beginFixedStep`, so pause/unpause and piece-changing commands receive correct step metadata.
 - Reused immutable tetromino shape tables, Core ghost/landing buffers, and snapshot board storage in rendering.
 - Replaced Adapter place-planner linear priority scans and path copies with a stable binary heap plus predecessor reconstruction.
-- Added bounded 1 MiB line framing, ordered partial-write buffering, and `SO_NOSIGPIPE` to the TCP transport.
+- Added bounded framing, ordered partial-write buffering, and `SO_NOSIGPIPE` to the TCP transport; the later 2.1.1 alignment tightened the payload bound to 65,536 bytes.
 - Replaced per-dequeue `removeFirst()` in the in-memory Adapter transport with indexed FIFO reads and amortized compaction.
 - Reconciled focus-loss, queue depth, TCP-only transport, packaging, and runtime-layer documentation.
 - Debug and Release builds pass with the macOS 15.5 SDK; targeted Core/Adapter checks and a 512 KiB localhost TCP write check also pass. Full XCTest execution is locally blocked because the active Command Line Tools installation lacks an importable macOS `XCTest` module.
@@ -27,7 +31,7 @@
 - Adapter now defaults to TCP localhost (127.0.0.1:7777) on startup when no env vars are set.
 - Added `TETRIS_AI_DISABLED` to disable adapter startup.
 - Losing focus no longer auto-pauses the game; input is still reset.
-- Added protocol integration checklist to `docs/adapter.md`.
+- Added the original protocol integration checklist (the retired local protocol document was later replaced by the canonical external package and current conformance/profile docs).
 - Commands now ack after mapping/apply; invalid place/hold errors are surfaced to clients.
 - Added adapter wire logging via `TETRIS_AI_LOG_PATH` (defaults to `auto`).
 
@@ -37,7 +41,7 @@
 - Added mute toggle to silence SFX and ambient audio.
 
 ## 2026-02-04
-- Made `docs/adapter.md` the single source of truth and aligned implementation strictly to it:
+- Made the then-current local adapter document the source of truth (superseded by the canonical `tui-tetris/protocol/adapter` package during the 2.1.1 migration):
   - enforced `hello.seq == 1` and strictly increasing `seq` per connection
   - implemented `requested.role` semantics and controller eligibility
   - aligned `observation` encoding (`board_id`, `cells` 0..7, `next_queue` length 5, optional `last_event`/`ghost_y`)

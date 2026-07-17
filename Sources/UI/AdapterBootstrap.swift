@@ -9,12 +9,13 @@ public enum AdapterBootstrap {
     }
 
     internal static func configuration(from env: [String: String]) -> SocketAdapterConfiguration? {
-        if env["TETRIS_AI_DISABLED"] == "1" {
+        if ["1", "true"].contains(env["TETRIS_AI_DISABLED"]?.lowercased()) {
             return nil
         }
 
-        // Protocol standard: only supported transport is TCP localhost on the default port.
-        let transport: SocketTransportConfiguration = .tcp(host: "127.0.0.1", port: 7777)
+        let host = env["TETRIS_AI_HOST"] ?? "127.0.0.1"
+        let port = env["TETRIS_AI_PORT"].flatMap(Int.init).flatMap { (0...65_535).contains($0) ? $0 : nil } ?? 7777
+        let transport: SocketTransportConfiguration = .tcp(host: host, port: port)
 
         var config = SocketAdapterConfiguration(transport: transport)
         if let value = env["TETRIS_AI_IDLE_TIMEOUT_MS"], let parsed = Int(value) {
@@ -22,6 +23,12 @@ public enum AdapterBootstrap {
         }
         if let value = env["TETRIS_AI_MAX_PENDING"], let parsed = Int(value), parsed > 0 {
             config.maxPendingCommands = parsed
+        }
+        if let value = env["TETRIS_AI_MAX_OUTBOUND_BYTES"], let parsed = Int(value), parsed > 0 {
+            config.maxOutboundBytes = parsed
+        }
+        if let value = env["TETRIS_AI_BACKPRESSURE_RETRY_MS"], let parsed = Int(value), parsed > 0 {
+            config.backpressureRetryAfterMs = parsed
         }
         if let value = env["TETRIS_AI_OBSERVATION_MS"], let parsed = Int(value), parsed >= 0 {
             config.observationIntervalMs = parsed

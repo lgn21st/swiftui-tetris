@@ -5,6 +5,11 @@ public enum SocketTransportConfiguration: Equatable {
     case tcp(host: String, port: Int)
 }
 
+public enum SocketOutboundDelivery: Equatable {
+    case required
+    case latestObservation
+}
+
 public final class SocketServerTransport {
     public var onReceive: ((UUID, Data) -> Void)?
     public var onDisconnect: ((UUID) -> Void)?
@@ -12,15 +17,21 @@ public final class SocketServerTransport {
 
     private let configuration: SocketTransportConfiguration
     private let idleTimeoutMs: Int?
+    private let maxQueuedBytes: Int
     private let queue = DispatchQueue(label: "adapter.socket.transport")
     private var listenerFd: Int32 = -1
     private var listenerSource: DispatchSourceRead?
     private var idleTimer: DispatchSourceTimer?
     private var connections: [UUID: ConnectionState] = [:]
 
-    public init(configuration: SocketTransportConfiguration, idleTimeoutMs: Int? = nil) {
+    public init(
+        configuration: SocketTransportConfiguration,
+        idleTimeoutMs: Int? = nil,
+        maxQueuedBytes: Int = 262_144
+    ) {
         self.configuration = configuration
         self.idleTimeoutMs = idleTimeoutMs
+        self.maxQueuedBytes = max(maxQueuedBytes, 1)
     }
 
     public func start() throws {
@@ -49,11 +60,26 @@ public final class SocketServerTransport {
         }
     }
 
-    public func send(line: Data, to connectionId: UUID) {
+    public func send(
+        line: Data,
+        to connectionId: UUID,
+        delivery: SocketOutboundDelivery = .required
+    ) {
         queue.async {
             guard let connection = self.connections[connectionId] else { return }
-            connection.pendingWrite.append(line)
-            connection.pendingWrite.append(0x0A)
+            var framed = line
+            framed.append(0x0A)
+            if delivery == .latestObservation {
+                connection.removeUnstartedObservations()
+            }
+            guard connection.queuedBytes + framed.count <= self.maxQueuedBytes else {
+                if delivery == .required {
+                    self.closeConnection(connectionId: connectionId)
+                }
+                return
+            }
+            connection.frames.append(OutboundFrame(data: framed, delivery: delivery))
+            connection.queuedBytes += framed.count
             self.resumeWriteSourceIfNeeded(connection)
         }
     }
@@ -150,17 +176,21 @@ public final class SocketServerTransport {
     private func flushPendingWrite(connectionId: UUID) {
         guard let connection = connections[connectionId] else { return }
 
-        while connection.writeOffset < connection.pendingWrite.count {
-            let written = connection.pendingWrite.withUnsafeBytes { buffer -> Int in
+        while let frame = connection.frames.first {
+            let written = frame.data.withUnsafeBytes { buffer -> Int in
                 guard let base = buffer.baseAddress else { return 0 }
                 return write(
                     connection.fd,
-                    base.advanced(by: connection.writeOffset),
-                    buffer.count - connection.writeOffset
+                    base.advanced(by: frame.offset),
+                    buffer.count - frame.offset
                 )
             }
             if written > 0 {
-                connection.writeOffset += written
+                frame.offset += written
+                connection.queuedBytes -= written
+                if frame.offset == frame.data.count {
+                    connection.frames.removeFirst()
+                }
                 continue
             }
             if written < 0, errno == EWOULDBLOCK || errno == EAGAIN {
@@ -170,8 +200,6 @@ public final class SocketServerTransport {
             return
         }
 
-        connection.pendingWrite.removeAll(keepingCapacity: true)
-        connection.writeOffset = 0
         if connection.writeSourceResumed {
             connection.writeSource?.suspend()
             connection.writeSourceResumed = false
@@ -211,7 +239,11 @@ public final class SocketServerTransport {
         var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_port = in_port_t(UInt16(port).bigEndian)
-        inet_pton(AF_INET, host, &addr.sin_addr)
+        guard inet_pton(AF_INET, host, &addr.sin_addr) == 1 else {
+            close(fd)
+            listenerFd = -1
+            throw SocketTransportError.invalidHost
+        }
 
         let bindResult = withUnsafePointer(to: &addr) {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { ptr in
@@ -272,8 +304,8 @@ private final class ConnectionState {
     var source: DispatchSourceRead?
     var writeSource: DispatchSourceWrite?
     var writeSourceResumed: Bool
-    var pendingWrite: Data
-    var writeOffset: Int
+    var frames: [OutboundFrame]
+    var queuedBytes: Int
     var framer: LineFramer
     var lastRead: DispatchTime
 
@@ -282,15 +314,35 @@ private final class ConnectionState {
         self.source = source
         self.writeSource = writeSource
         self.writeSourceResumed = false
-        self.pendingWrite = Data()
-        self.writeOffset = 0
+        self.frames = []
+        self.queuedBytes = 0
         self.framer = LineFramer()
         self.lastRead = .now()
+    }
+
+    func removeUnstartedObservations() {
+        frames.removeAll { frame in
+            guard frame.delivery == .latestObservation, frame.offset == 0 else { return false }
+            queuedBytes -= frame.data.count
+            return true
+        }
+    }
+}
+
+private final class OutboundFrame {
+    let data: Data
+    let delivery: SocketOutboundDelivery
+    var offset: Int = 0
+
+    init(data: Data, delivery: SocketOutboundDelivery) {
+        self.data = data
+        self.delivery = delivery
     }
 }
 
 public enum SocketTransportError: Error {
     case socketCreationFailed
+    case invalidHost
     case addressInUse
     case bindFailed
     case listenFailed

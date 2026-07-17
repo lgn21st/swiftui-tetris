@@ -92,6 +92,7 @@ public final class SceneDriver: ObservableObject {
         self.scene.onRender = { [weak self] in
             self?.latestRenderState
         }
+        adapter?.emit(snapshot: loop.state.snapshot())
     }
 
     public func start() {

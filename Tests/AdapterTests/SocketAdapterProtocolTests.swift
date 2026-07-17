@@ -19,7 +19,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -34,7 +34,8 @@ final class SocketAdapterProtocolTests: XCTestCase {
             XCTFail("Expected welcome message")
             return
         }
-        XCTAssertEqual(welcome.protocolVersion, "2.0.0")
+        XCTAssertEqual(welcome.protocolVersion, "2.1.1")
+        XCTAssertEqual(welcome.capabilities, .canonical)
     }
 
     func testSecondClientCannotCommand() throws {
@@ -52,7 +53,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -97,7 +98,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -177,7 +178,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -224,7 +225,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .place)
         )
@@ -277,7 +278,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -305,7 +306,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
     }
 
-    func testReleaseAutoPromotesObserver() throws {
+    func testReleaseLeavesControlUnassignedUntilExplicitClaim() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
@@ -319,7 +320,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -347,11 +348,13 @@ final class SocketAdapterProtocolTests: XCTestCase {
         var state = GameState(config: GameConfig(), seed: 1)
         adapter.poll(elapsedMs: 16, state: &state)
         guard let line = try client2.readLine(timeoutMs: 500) else {
-            XCTFail("Expected ack")
+            XCTFail("Expected not_controller")
             return
         }
-        if case .ack = try WireCodec.decode(line) {} else {
-            XCTFail("Expected ack")
+        if case .error(let error) = try WireCodec.decode(line) {
+            XCTAssertEqual(error.code, "not_controller")
+        } else {
+            XCTFail("Expected error")
         }
     }
 
@@ -373,7 +376,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -407,6 +410,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             return
         }
         XCTAssertEqual(error.code, "backpressure")
+        XCTAssertEqual(error.retryAfterMs, 50)
     }
 
     func testObservationThrottleSkipsFastUpdates() throws {
@@ -429,7 +433,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
             seq: 1,
             tsMs: 1,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -491,7 +495,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
 
         let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try client.send(
-            line: #"{"type":"hello","seq":2,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action"}}"#
+            line: #"{"type":"hello","seq":2,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.1.1","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action"}}"#
         )
 
         guard let line = try client.readLine(timeoutMs: 500) else {
@@ -519,7 +523,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
 
         let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try client.send(
-            line: #"{"type":"hello","seq":1,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.0.0","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action","role":"observer"}}"#
+            line: #"{"type":"hello","seq":1,"ts":1,"client":{"name":"tetris-ai","version":"0.1.0"},"protocol_version":"2.1.1","formats":["json"],"requested":{"stream_observations":true,"command_mode":"action","role":"observer"}}"#
         )
         _ = try client.readLine(timeoutMs: 500) // welcome
 
@@ -600,5 +604,137 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
         XCTAssertEqual(error.code, "invalid_command")
         XCTAssertEqual(error.seq, 7)
+    }
+
+    func testStreamingHelloImmediatelyReceivesLatestFullSnapshot() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        adapter.emit(snapshot: GameState(config: GameConfig(), seed: 99).snapshot())
+
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .observer, stream: true))))
+        guard case .welcome = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected welcome first")
+        }
+        guard case .observation(let observation) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected immediate observation")
+        }
+        XCTAssertEqual(observation.seed, 99)
+        XCTAssertEqual(observation.nextQueue.count, 5)
+    }
+
+    func testStrictSemVerAcceptsCompatibleTwoXAndRejectsMalformedVersion() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        let port = try XCTUnwrap(adapter.boundPort)
+
+        let compatible = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        var hello = makeHello(role: .observer, stream: false)
+        hello.protocolVersion = "2.9.0-rc.1+build.5"
+        try compatible.send(lineData: try WireCodec.encode(.hello(hello)))
+        guard case .welcome = try WireCodec.decode(try XCTUnwrap(compatible.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected compatible 2.x welcome")
+        }
+
+        let malformed = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        hello.protocolVersion = "2.01.0"
+        try malformed.send(lineData: try WireCodec.encode(.hello(hello)))
+        guard case .error(let error) = try WireCodec.decode(try XCTUnwrap(malformed.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected protocol mismatch")
+        }
+        XCTAssertEqual(error.code, "protocol_mismatch")
+    }
+
+    func testObserverMayExplicitlyClaimUnassignedControl() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .observer, stream: false))))
+        _ = try client.readLine(timeoutMs: 500)
+        try client.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
+        guard case .ack = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected explicit claim to succeed")
+        }
+    }
+
+    func testActionLimitAndRestartPayloadSemanticsAreValidated() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
+        _ = try client.readLine(timeoutMs: 500)
+
+        let actions = Array(repeating: "moveLeft", count: 33).map { "\"\($0)\"" }.joined(separator: ",")
+        try client.send(line: "{\"type\":\"command\",\"seq\":2,\"ts\":1,\"mode\":\"action\",\"actions\":[\(actions)]}")
+        guard case .error(let tooMany) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected action limit error")
+        }
+        XCTAssertEqual(tooMany.code, "invalid_command")
+
+        try client.send(line: #"{"type":"command","seq":3,"ts":1,"mode":"action","actions":["moveLeft"],"restart":{"seed":123}}"#)
+        guard case .error(let invalidRestart) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected restart semantic error")
+        }
+        XCTAssertEqual(invalidRestart.code, "invalid_command")
+    }
+
+    func testRestartSeedAppliesDeterministicallyBeforeAck() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
+        _ = try client.readLine(timeoutMs: 500)
+        let command = TetrisAICommandEnvelope(
+            seq: 2, tsMs: 1, mode: .action, actions: [.restart], place: nil, restart: .init(seed: 4_294_967_295)
+        )
+        try client.send(lineData: try WireCodec.encode(.command(command)))
+        var state = GameState(config: GameConfig(), seed: 1)
+        adapter.poll(elapsedMs: 0, state: &state)
+        guard case .ack = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected ack")
+        }
+        XCTAssertEqual(state.seed, UInt64(UInt32.max))
+    }
+
+    func testDisconnectPromotionAndReconnectKeepSingleController() throws {
+        let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
+        defer { adapter.stop() }
+        let port = try XCTUnwrap(adapter.boundPort)
+        let first = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        let eligible = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try first.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
+        _ = try first.readLine(timeoutMs: 500)
+        try eligible.send(lineData: try WireCodec.encode(.hello(makeHello(role: .auto, stream: false))))
+        _ = try eligible.readLine(timeoutMs: 500)
+        first.closeConnection()
+        Thread.sleep(forTimeInterval: 0.05)
+
+        try eligible.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
+        guard case .ack = try WireCodec.decode(try XCTUnwrap(eligible.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected promoted controller")
+        }
+
+        let reconnected = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try reconnected.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
+        guard case .welcome(let welcome) = try WireCodec.decode(try XCTUnwrap(reconnected.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected reconnect welcome")
+        }
+        XCTAssertEqual(welcome.role, .observer)
+        try reconnected.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
+        guard case .error(let error) = try WireCodec.decode(try XCTUnwrap(reconnected.readLine(timeoutMs: 500))) else {
+            return XCTFail("Expected controller_active")
+        }
+        XCTAssertEqual(error.code, "controller_active")
+    }
+
+    private func makeHello(role: TetrisAIRole, stream: Bool) -> TetrisAIHello {
+        TetrisAIHello(
+            seq: 1,
+            tsMs: 1,
+            client: .init(name: "tests", version: "1.0.0"),
+            protocolVersion: "2.1.1",
+            formats: [.json],
+            requested: .init(streamObservations: stream, commandMode: .action, role: role)
+        )
     }
 }

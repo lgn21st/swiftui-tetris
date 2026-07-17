@@ -2,14 +2,20 @@ import Foundation
 import Darwin
 
 final class SocketTestClient {
-    private let fd: Int32
+    private var fd: Int32
 
     private init(fd: Int32) {
         self.fd = fd
     }
 
     deinit {
+        closeConnection()
+    }
+
+    func closeConnection() {
+        guard fd >= 0 else { return }
         close(fd)
+        fd = -1
     }
 
     static func tcp(host: String, port: Int) throws -> SocketTestClient {

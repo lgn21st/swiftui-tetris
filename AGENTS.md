@@ -12,6 +12,8 @@
 - `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment plan.
 - `docs/evaluation.md`: comprehensive project evaluation (architecture, visuals, UX, code quality).
 - `docs/todo.md`: tech-debt and improvement backlog.
+- `docs/adapter-conformance.md`: current protocol version and requirement/test evidence.
+- `docs/adapter-implementation-profile.md`: project-local Adapter runtime policy.
 
 ## Architecture Expectations
 - `Core` owns board, pieces, RNG, scoring, timing, and actions.
@@ -27,7 +29,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Line-clear pause now hides active/ghost render layers.
+- Last update: Adapter aligned to canonical Tetris AI Adapter Protocol 2.1.1.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

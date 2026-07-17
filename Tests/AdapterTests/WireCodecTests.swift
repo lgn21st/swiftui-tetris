@@ -24,12 +24,23 @@ final class WireCodecTests: XCTestCase {
         }
     }
 
+    func testLineFramerAcceptsCanonicalMaximumAndRejectsOneByteMore() throws {
+        var accepted = LineFramer()
+        let lines = try accepted.append(Data(repeating: UInt8(ascii: "x"), count: 65_536) + Data([0x0A]))
+        XCTAssertEqual(lines.single?.count, 65_536)
+
+        var rejected = LineFramer()
+        XCTAssertThrowsError(try rejected.append(Data(repeating: UInt8(ascii: "x"), count: 65_537))) { error in
+            XCTAssertEqual(error as? LineFramerError, .lineTooLong)
+        }
+    }
+
     func testCodecEncodesAndDecodesHello() throws {
         let hello = TetrisAIHello(
             seq: 1,
             tsMs: 123,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.0.0",
+            protocolVersion: "2.1.1",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -42,7 +53,7 @@ final class WireCodecTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(decodedHello.protocolVersion, "2.0.0")
+        XCTAssertEqual(decodedHello.protocolVersion, "2.1.1")
         XCTAssertEqual(decodedHello.client.name, "tetris-ai")
         XCTAssertEqual(decodedHello.requested.commandMode, .action)
     }
@@ -53,7 +64,8 @@ final class WireCodecTests: XCTestCase {
             tsMs: 456,
             mode: .action,
             actions: [.rotateCw, .moveLeft, .hardDrop],
-            place: nil
+            place: nil,
+            restart: .init(seed: 123)
         )
 
         let data = try WireCodec.encode(.command(command))
@@ -66,6 +78,7 @@ final class WireCodecTests: XCTestCase {
 
         XCTAssertEqual(decodedCommand.mode, .action)
         XCTAssertEqual(decodedCommand.actions ?? [], [.rotateCw, .moveLeft, .hardDrop])
+        XCTAssertEqual(decodedCommand.restart?.seed, 123)
     }
 
     func testCodecEncodesAndDecodesControl() throws {
@@ -81,4 +94,40 @@ final class WireCodecTests: XCTestCase {
 
         XCTAssertEqual(decodedControl.action, .claim)
     }
+
+    func testCodecRejectsModeSpecificUnknownCommandFields() {
+        let data = Data(#"{"type":"command","seq":2,"ts":1,"mode":"action","actions":[],"place":{"x":0,"rotation":"north","useHold":false}}"#.utf8)
+        XCTAssertThrowsError(try WireCodec.decode(data))
+    }
+
+
+    func testWelcomeEncodesRequiredIdentityAndCapabilityPolicyFields() throws {
+        let welcome = TetrisAIWelcome(
+            seq: 1,
+            tsMs: 2,
+            protocolVersion: "2.1.1",
+            clientId: 7,
+            role: .observer,
+            controllerId: nil,
+            gameId: "test",
+            capabilities: .canonical
+        )
+
+        let data = try WireCodec.encode(.welcome(welcome))
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(object["client_id"] as? Int, 7)
+        XCTAssertEqual(object["role"] as? String, "observer")
+        XCTAssertTrue(object.keys.contains("controller_id"))
+        XCTAssertTrue(object["controller_id"] is NSNull)
+
+        let capabilities = try XCTUnwrap(object["capabilities"] as? [String: Any])
+        XCTAssertNotNil(capabilities["features_always"])
+        XCTAssertNotNil(capabilities["features_optional"])
+        XCTAssertNotNil(capabilities["control_policy"])
+        XCTAssertEqual(capabilities["formats"] as? [String], ["json"])
+    }
+}
+
+private extension Array {
+    var single: Element? { count == 1 ? self[0] : nil }
 }

@@ -4,7 +4,7 @@ struct LineFramer {
     private var buffer = Data()
     private let maxLineBytes: Int
 
-    init(maxLineBytes: Int = 1_048_576) {
+    init(maxLineBytes: Int = 65_536) {
         self.maxLineBytes = max(maxLineBytes, 1)
     }
 

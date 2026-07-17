@@ -45,6 +45,15 @@ final class SocketTransportTests: XCTestCase {
         transport1.stop()
     }
 
+    func testTcpTransportRejectsInvalidHostInsteadOfBindingAllInterfaces() {
+        let transport = SocketServerTransport(configuration: .tcp(host: "not-an-ip-address", port: 0))
+        XCTAssertThrowsError(try transport.start()) { error in
+            guard case SocketTransportError.invalidHost = error else {
+                return XCTFail("Expected invalidHost, got: \(error)")
+            }
+        }
+    }
+
     func testIdleTimeoutDisconnectsClient() throws {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0), idleTimeoutMs: 50)
         let disconnectExpectation = expectation(description: "disconnect")
@@ -68,7 +77,10 @@ final class SocketTransportTests: XCTestCase {
     }
 
     func testTcpTransportWritesEntireLargeLine() throws {
-        let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
+        let transport = SocketServerTransport(
+            configuration: .tcp(host: "127.0.0.1", port: 0),
+            maxQueuedBytes: 1_048_576
+        )
         defer { transport.stop() }
         let receiveExpectation = expectation(description: "connection identified")
         var connectionId: UUID?
@@ -87,5 +99,35 @@ final class SocketTransportTests: XCTestCase {
 
         let received = try XCTUnwrap(client.readLine(timeoutMs: 5_000))
         XCTAssertEqual(received, payload)
+    }
+
+    func testRequiredOutputOverflowDisconnectsOnlySlowClient() throws {
+        let transport = SocketServerTransport(
+            configuration: .tcp(host: "127.0.0.1", port: 0),
+            maxQueuedBytes: 512
+        )
+        defer { transport.stop() }
+        let connected = expectation(description: "connections identified")
+        connected.expectedFulfillmentCount = 2
+        var ids: [String: UUID] = [:]
+        transport.onReceive = { id, data in
+            if let name = String(data: data, encoding: .utf8), ids[name] == nil {
+                ids[name] = id
+                connected.fulfill()
+            }
+        }
+        try transport.start()
+        let port = try XCTUnwrap(transport.boundPort)
+        let slow = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        let fast = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
+        try slow.send(line: "slow")
+        try fast.send(line: "fast")
+        wait(for: [connected], timeout: 2.0)
+
+        transport.send(line: Data(repeating: 1, count: 513), to: try XCTUnwrap(ids["slow"]), delivery: .required)
+        transport.send(line: Data("ok".utf8), to: try XCTUnwrap(ids["fast"]), delivery: .required)
+
+        XCTAssertEqual(try fast.readLine(timeoutMs: 1_000), Data("ok".utf8))
+        XCTAssertNil(try slow.readLine(timeoutMs: 1_000))
     }
 }

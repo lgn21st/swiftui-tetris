@@ -17,15 +17,21 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Run app: `swift run App`
 
 ## External AI (Adapter)
-Adapter listens on tcp `127.0.0.1:7777` (fixed per protocol standard). Environment variables:
-- `TETRIS_AI_DISABLED=1` (disable adapter entirely)
+Adapter implements Tetris AI Adapter Protocol `2.1.1` over TCP JSON Lines. Environment variables:
+- `TETRIS_AI_HOST=127.0.0.1`
+- `TETRIS_AI_PORT=7777`
+- `TETRIS_AI_DISABLED=1` or `true` (disable adapter entirely)
 - `TETRIS_AI_IDLE_TIMEOUT_MS=2000` (set `0` to disable idle disconnect)
 - `TETRIS_AI_MAX_PENDING=64` (command queue depth)
+- `TETRIS_AI_MAX_OUTBOUND_BYTES=262144` (per-client queued output bound)
+- `TETRIS_AI_BACKPRESSURE_RETRY_MS=50` (retry hint)
 - `TETRIS_AI_OBSERVATION_MS=0` (throttle observations; `0` disables)
 - `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (default `auto`)
 
 Example client: `scripts/tetris-ai-client.py` (JSON line protocol).
-Protocol + acceptance gate: `docs/adapter.md` (single source of truth).
+Normative protocol: the sibling `tui-tetris/protocol/adapter` package. Local
+runtime choices and alignment evidence live in
+`docs/adapter-implementation-profile.md` and `docs/adapter-conformance.md`.
 
 Example (tuning):
 ```
@@ -54,6 +60,8 @@ swift run App
 - `docs/codesign-notarize.md`: codesign + notarization steps.
 - `docs/release-checklist.md`: pre-release QA checklist.
 - `docs/runtime-differences.md`: CLI vs packaged behavior notes.
+- `docs/adapter-implementation-profile.md`: local Adapter queues, scheduling, logging, and startup.
+- `docs/adapter-conformance.md`: protocol 2.1.1 requirement/evidence matrix.
 
 ## Status
 Core and optional features are implemented with broad unit and integration coverage, including fullscreen + diagnostics overlay, line-clear shimmer, score popups, a T-Spin badge, an ambient loop with ducking, onboarding hints, title hint blink, HUD dividers, footer-aligned Hold/Next previews, ghost outline stroke, active-piece highlight textures, lock-bar warning pulse, board gridlines, a group backdrop vignette, and an active-piece pulse. Render mapping consumes a Core snapshot boundary and reuses the snapshot's board storage. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.

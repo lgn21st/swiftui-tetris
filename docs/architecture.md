@@ -49,21 +49,24 @@ Where to edit:
 - Adapter polls for commands before each fixed step and emits observations after that step's snapshot.
 
 ### External AI Transport
-- Adapter listens on TCP localhost (127.0.0.1:7777) (fixed per protocol standard).
+- Adapter implements canonical Tetris AI Adapter Protocol 2.1.1; the normative package lives in the sibling `tui-tetris/protocol/adapter` directory.
+- TCP defaults to `127.0.0.1:7777`; portable profile overrides are `TETRIS_AI_HOST` and `TETRIS_AI_PORT`.
 - Transport is line-delimited JSON (one message per line).
 - Clients must send `hello` before `command`; server replies with `welcome`, then `ack`/`error` for commands.
-- Role selection and sequencing rules are defined normatively in `docs/adapter.md`.
+- Normative role/sequencing rules come from the canonical package; project-local runtime choices are in `docs/adapter-implementation-profile.md`.
 - Control messages allow explicit claim/release:
   - `control(action=claim)` claims control if none exists.
   - `control(action=release)` releases control (controller-only).
-- When the controller releases or disconnects, the oldest observer is auto-promoted.
-- Adapter enforces backpressure (`backpressure` error) when command queue is full.
+- Explicit release leaves control unassigned. Controller disconnect promotes the lowest-client-id eligible auto/controller client; explicit observers are never auto-promoted.
+- Adapter enforces bounded inbound and per-client outbound queues; command saturation returns `backpressure` plus a positive retry hint.
 - Observation streaming can be throttled by interval (configurable).
 - Idle connections close after ~2s by default (configurable in Adapter).
 - Runtime config via environment:
   - `TETRIS_AI_LOG_PATH=/tmp/tetris-ai-adapter.jsonl` (default `auto`)
   - `TETRIS_AI_IDLE_TIMEOUT_MS=2000` (set `0` to disable)
   - `TETRIS_AI_MAX_PENDING=64`
+  - `TETRIS_AI_MAX_OUTBOUND_BYTES=262144`
+  - `TETRIS_AI_BACKPRESSURE_RETRY_MS=50`
   - `TETRIS_AI_OBSERVATION_MS=0` (set `0` to disable)
 
 ### Tests (TDD)
@@ -125,7 +128,7 @@ Where to edit:
 - Input routed through `InputRouter` for keyboard + gamepad consistency.
 - Audio uses `AVAudioEngine` with preloaded buffers.
 - UI polish includes commands, overlays, focus pause handling, and accessibility coverage.
-- Adapter framing is bounded to 1 MiB per line, and nonblocking socket output queues partial writes until complete.
+- Adapter framing is bounded to 65,536 payload bytes; nonblocking per-client output is bounded to 256 KiB and queues partial writes until complete.
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.
