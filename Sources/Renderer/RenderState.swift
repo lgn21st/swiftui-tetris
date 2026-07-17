@@ -1,7 +1,22 @@
 import Core
 
 public struct RenderState {
-    public var board: [[TetrominoType?]]
+    public var boardCells: [[Cell]]
+    // Compatibility view for callers that still consume projected kinds.
+    // The renderer itself uses `boardCells` so this projection is not on the
+    // per-frame path.
+    public var board: [[TetrominoType?]] {
+        get {
+            boardCells.map { row in
+                row.map { $0.filled ? $0.kind : nil }
+            }
+        }
+        set {
+            boardCells = newValue.map { row in
+                row.map { kind in Cell(filled: kind != nil, kind: kind) }
+            }
+        }
+    }
     public var activeBlocks: [(Int, Int)]
     public var ghostBlocks: [(Int, Int)]
     public var activeKind: TetrominoType?
@@ -36,7 +51,45 @@ public struct RenderState {
         isPaused: Bool,
         isGameOver: Bool
     ) {
-        self.board = board
+        self.boardCells = board.map { row in
+            row.map { kind in Cell(filled: kind != nil, kind: kind) }
+        }
+        self.activeBlocks = activeBlocks
+        self.ghostBlocks = ghostBlocks
+        self.activeKind = activeKind
+        self.ghostKind = ghostKind
+        self.flashBlocks = flashBlocks
+        self.flashAlpha = flashAlpha
+        self.lineClearRows = lineClearRows
+        self.lineClearAlpha = lineClearAlpha
+        self.scorePopups = scorePopups
+        self.tSpinKind = tSpinKind
+        self.tSpinAlpha = tSpinAlpha
+        self.activePulse = activePulse
+        self.isGrounded = isGrounded
+        self.isPaused = isPaused
+        self.isGameOver = isGameOver
+    }
+
+    init(
+        boardCells: [[Cell]],
+        activeBlocks: [(Int, Int)],
+        ghostBlocks: [(Int, Int)],
+        activeKind: TetrominoType?,
+        ghostKind: TetrominoType?,
+        flashBlocks: [(Int, Int)],
+        flashAlpha: Double,
+        lineClearRows: [Int],
+        lineClearAlpha: Double,
+        scorePopups: [ScorePopup],
+        tSpinKind: TSpinKind,
+        tSpinAlpha: Double,
+        activePulse: Double,
+        isGrounded: Bool,
+        isPaused: Bool,
+        isGameOver: Bool
+    ) {
+        self.boardCells = boardCells
         self.activeBlocks = activeBlocks
         self.ghostBlocks = ghostBlocks
         self.activeKind = activeKind
@@ -71,9 +124,6 @@ public struct ScorePopup: Equatable {
 
 public enum RenderMapper {
     public static func map(snapshot: GameStateSnapshot) -> RenderState {
-        let board = snapshot.boardCells.map { row in
-            row.map { $0.filled ? $0.kind : nil }
-        }
         let isGrounded = !snapshot.canMoveDown()
         let hideActive = snapshot.lineClearTimerMs > 0
         let activeBlocks = hideActive
@@ -112,7 +162,7 @@ public enum RenderMapper {
             lineClearScore: snapshot.lineClearScore
         )
         return RenderState(
-            board: board,
+            boardCells: snapshot.boardCells,
             activeBlocks: activeBlocks,
             ghostBlocks: ghostBlocks,
             activeKind: hideActive ? nil : snapshot.active.kind,

@@ -30,4 +30,31 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
         XCTAssertEqual(adapter.emitCount, 1)
         XCTAssertNotNil(adapter.lastSnapshot)
     }
+
+    func testCatchUpRunsEveryFixedStepThroughAdapterBoundary() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let adapter = SpyAdapter()
+        let driver = SceneDriver(loop: loop, audio: nil, adapter: adapter)
+
+        driver.tick(elapsedMs: 48, fixedSteps: 3)
+
+        XCTAssertEqual(adapter.pollCount, 3)
+        XCTAssertEqual(adapter.emitCount, 3)
+        XCTAssertEqual(adapter.lastSnapshot?.stepInPiece, 3)
+    }
+
+    func testAdapterCommandsApplyBeforeFixedStepBegins() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.paused = true
+        let loop = GameLoop(state: state)
+        let transport = InMemoryTransport()
+        transport.enqueueCommand(.action(actions: [.pause]))
+        let adapter = InMemoryAdapter(transport: transport)
+        let driver = SceneDriver(loop: loop, audio: nil, adapter: adapter)
+
+        driver.tick(elapsedMs: 16)
+
+        XCTAssertFalse(driver.stateSnapshot().paused)
+        XCTAssertEqual(driver.stateSnapshot().stepInPiece, 1)
+    }
 }

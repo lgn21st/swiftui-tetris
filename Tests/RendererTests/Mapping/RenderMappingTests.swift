@@ -3,6 +3,15 @@ import XCTest
 @testable import Core
 
 final class RenderMappingTests: XCTestCase {
+    func testRenderMappingPreservesBoardCellsWithoutKindProjection() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.board.cells[19][0] = Cell(filled: true, kind: .i)
+
+        let renderState = RenderMapper.map(snapshot: state.snapshot())
+
+        XCTAssertEqual(renderState.boardCells[19][0], Cell(filled: true, kind: .i))
+    }
+
     func testRenderMappingIncludesActiveAndGhostAfterMove() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)

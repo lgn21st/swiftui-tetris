@@ -105,17 +105,25 @@ public final class SceneDriver: ObservableObject {
 
     func tick(elapsedMs: Int, fixedSteps: Int = 1) {
         let elapsed = max(elapsedMs, 0)
-        let canAccept = !loop.state.paused && !loop.state.gameOver
-        loop.state.beginFixedStep()
-        adapter?.poll(elapsedMs: elapsed, state: &loop.state)
-        input.tick(elapsedMs: elapsed, canAccept: canAccept, state: &loop.state)
+        let stepCount = max(fixedSteps, 1)
+        let baseStepMs = elapsed / stepCount
+        let remainderMs = elapsed % stepCount
+
+        for stepIndex in 0..<stepCount {
+            let stepElapsed = baseStepMs + (stepIndex < remainderMs ? 1 : 0)
+            adapter?.poll(elapsedMs: stepElapsed, state: &loop.state)
+            loop.state.beginFixedStep()
+            let canAccept = !loop.state.paused && !loop.state.gameOver
+            input.tick(elapsedMs: stepElapsed, canAccept: canAccept, state: &loop.state)
+            loop.state.tick(elapsedMs: stepElapsed, softDrop: false)
+            adapter?.emit(snapshot: loop.state.snapshot())
+        }
+
         let shouldUpdateRenderState = !loop.state.paused || loop.state.gameOver
-        let renderState = shouldUpdateRenderState ? loop.stepFrame(elapsedMs: elapsed) : latestRenderState
         if shouldUpdateRenderState {
-            latestRenderState = renderState
+            latestRenderState = RenderMapper.map(snapshot: loop.state.snapshot())
             debugRenderStateVersion += 1
         }
-        adapter?.emit(snapshot: loop.state.snapshot())
         let events = loop.state.takeSoundEvents()
         if !isMuted {
             if let audio = audio {

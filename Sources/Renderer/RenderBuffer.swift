@@ -62,7 +62,8 @@ public final class RenderBuffer {
         for y in 0..<height {
             for x in 0..<width {
                 let index = y * width + x
-                let kind = state.board[y][x]
+                let boardCell = state.boardCells[y][x]
+                let kind = boardCell.filled ? boardCell.kind : nil
                 if previousBoardKinds[index] != kind {
                     previousBoardKinds[index] = kind
                     cells[index].kind = kind
