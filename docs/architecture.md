@@ -46,10 +46,10 @@ Where to edit:
 - TetrisScene.update(_:) runs every frame.
 - A fixed timestep clock advances Core logic in independent 16ms steps, including catch-up frames.
 - Rendering happens after logic.
-- Adapter polls for commands before each fixed step and emits observations after that step's snapshot.
+- Adapter begins a logical transition, polls commands, advances that fixed step, and emits its snapshot.
 
 ### External AI Transport
-- Adapter implements canonical Tetris AI Adapter Protocol 2.1.1; the normative package lives in the sibling `tui-tetris/protocol/adapter` directory.
+- Adapter implements canonical Tetris AI Adapter Protocol 3.0.0; the normative package lives in the sibling `tui-tetris/protocol/adapter` directory.
 - TCP defaults to `127.0.0.1:7777`; portable profile overrides are `TETRIS_AI_HOST` and `TETRIS_AI_PORT`.
 - Transport is line-delimited JSON (one message per line).
 - Clients must send `hello` before `command`; server replies with `welcome`, then `ack`/`error` for commands.

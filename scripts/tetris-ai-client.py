@@ -45,7 +45,7 @@ def main():
         "seq": 1,
         "ts": int(time.time() * 1000),
         "client": {"name": "tetris-ai-client", "version": "0.1.0"},
-        "protocol_version": "2.0.0",
+        "protocol_version": "3.0.0",
         "formats": ["json"],
         "requested": {"stream_observations": True, "command_mode": "action"},
     }

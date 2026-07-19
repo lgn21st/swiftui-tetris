@@ -40,7 +40,7 @@ final class WireCodecTests: XCTestCase {
             seq: 1,
             tsMs: 123,
             client: .init(name: "tetris-ai", version: "0.1.0"),
-            protocolVersion: "2.1.1",
+            protocolVersion: "3.0.0",
             formats: [.json],
             requested: .init(streamObservations: true, commandMode: .action)
         )
@@ -53,7 +53,7 @@ final class WireCodecTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(decodedHello.protocolVersion, "2.1.1")
+        XCTAssertEqual(decodedHello.protocolVersion, "3.0.0")
         XCTAssertEqual(decodedHello.client.name, "tetris-ai")
         XCTAssertEqual(decodedHello.requested.commandMode, .action)
     }
@@ -105,7 +105,7 @@ final class WireCodecTests: XCTestCase {
         let welcome = TetrisAIWelcome(
             seq: 1,
             tsMs: 2,
-            protocolVersion: "2.1.1",
+            protocolVersion: "3.0.0",
             clientId: 7,
             role: .observer,
             controllerId: nil,
@@ -125,6 +125,33 @@ final class WireCodecTests: XCTestCase {
         XCTAssertNotNil(capabilities["features_optional"])
         XCTAssertNotNil(capabilities["control_policy"])
         XCTAssertEqual(capabilities["formats"] as? [String], ["json"])
+        XCTAssertTrue((capabilities["features_always"] as? [String])?.contains("events") == true)
+        XCTAssertTrue((capabilities["features_always"] as? [String])?.contains("logical_step") == true)
+        XCTAssertFalse((capabilities["features_optional"] as? [String])?.contains("last_event") == true)
+    }
+
+    func testAckShapesCarryCorrelationAndOnlyCommandAckCarriesAppliedState() throws {
+        let control = TetrisAIAck(seq: 2, tsMs: 3, status: "ok", correlationSeq: 2)
+        let controlObject = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: WireCodec.encode(.ack(control))) as? [String: Any]
+        )
+        XCTAssertEqual(controlObject["correlation_seq"] as? Int, 2)
+        XCTAssertNil(controlObject["applied_step"])
+        XCTAssertNil(controlObject["state_hash"])
+
+        let command = TetrisAIAck(
+            seq: 4,
+            tsMs: 5,
+            status: "ok",
+            correlationSeq: 4,
+            appliedStep: 7,
+            stateHash: "0123456789abcdef"
+        )
+        let commandObject = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: WireCodec.encode(.ack(command))) as? [String: Any]
+        )
+        XCTAssertEqual(commandObject["applied_step"] as? Int, 7)
+        XCTAssertEqual(commandObject["state_hash"] as? String, "0123456789abcdef")
     }
 }
 

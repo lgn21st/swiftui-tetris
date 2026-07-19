@@ -14,7 +14,7 @@ The project has achieved feature completeness with broad TDD coverage. A compreh
 
 Resolved T-Spin lock-order scoring, fixed-step catch-up semantics, partial TCP writes, unbounded line framing, hot-path tetromino table reconstruction, per-frame board projection, and path-planner queue complexity. Documentation was reconciled with current focus-loss, queue, transport, asset, and layer behavior.
 
-Aligned the external Adapter from protocol 2.0.0 to canonical 2.1.1, including strict SemVer, deterministic welcome/control policy, seeded restart, immediate streaming snapshots, 65,536-byte framing, bounded per-client output, retry hints, and reconnect coverage. See `docs/adapter-conformance.md`.
+Aligned the external Adapter through canonical protocol 3.0.0. The current migration adds ordered bounded transition events, authoritative logical steps, correlated applied-state acknowledgements, and intentional v2 rejection while retaining the 2.1 transport, restart, control, and reconnect guarantees. See `docs/adapter-conformance.md`.
 
 ### Maintenance
 

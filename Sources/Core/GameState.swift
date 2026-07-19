@@ -6,10 +6,12 @@ public struct GameState {
     }
 
     public private(set) var episodeId: Int
+    public private(set) var logicalStep: Int
     public private(set) var episodeSeed: UInt64
     public private(set) var pieceId: Int
     public private(set) var stepInPiece: Int
     public private(set) var adapterLockedThisStep: Bool
+    public private(set) var transitionEvents: [GameTransitionEvent]
     public var restartSeedMode: RestartSeedMode
 
     public var board: Board
@@ -46,10 +48,12 @@ public struct GameState {
 
     public init(config: GameConfig, seed: UInt64 = 1) {
         self.episodeId = 0
+        self.logicalStep = 0
         self.episodeSeed = seed
         self.pieceId = 0
         self.stepInPiece = 0
         self.adapterLockedThisStep = false
+        self.transitionEvents = []
         self.restartSeedMode = .random
 
         self.board = Board()
@@ -87,11 +91,14 @@ public struct GameState {
         self.soundEvents = []
         self.ghostCache.reserveCapacity(4)
         self.landingFlashBlocks.reserveCapacity(4)
+        self.transitionEvents.reserveCapacity(4)
         updateGhostCache()
     }
 
     public mutating func beginFixedStep() {
+        logicalStep += 1
         adapterLockedThisStep = false
+        transitionEvents.removeAll(keepingCapacity: true)
         guard !paused && !gameOver else { return }
         stepInPiece += 1
     }
@@ -382,6 +389,18 @@ public struct GameState {
         board.lock(piece: active)
         let result = board.clearLines()
         applyLineClear(cleared: result.count, clearedRows: result.rows, tSpin: tSpin)
+        if transitionEvents.count < 4 {
+            transitionEvents.append(
+                GameTransitionEvent(
+                    locked: true,
+                    linesCleared: result.count,
+                    lineClearScore: lineClearScore,
+                    tSpin: lastLineClearTSpin,
+                    combo: combo,
+                    backToBack: backToBack
+                )
+            )
+        }
         lastActionRotate = false
         spawnNext()
     }
@@ -420,10 +439,12 @@ public struct GameState {
     public mutating func restart(seed: UInt64) {
         let preservedConfig = config
         let preservedMode = restartSeedMode
+        let preservedLogicalStep = logicalStep
         let nextEpisodeId = episodeId + 1
         self = GameState(config: preservedConfig, seed: seed)
         episodeId = nextEpisodeId
         restartSeedMode = preservedMode
+        logicalStep = preservedLogicalStep
     }
 
     private mutating func rngSeed() -> UInt64 {
@@ -471,6 +492,7 @@ public struct GameState {
 
     public func snapshot() -> GameStateSnapshot {
         GameStateSnapshot(
+            logicalStep: logicalStep,
             episodeId: episodeId,
             seed: episodeSeed,
             pieceId: pieceId,
@@ -500,6 +522,7 @@ public struct GameState {
             lockResetCount: lockResetCount,
             activeMovedSinceSpawn: activeMovedSinceSpawn,
             adapterLocked: adapterLockedThisStep,
+            transitionEvents: transitionEvents,
             ghostBlocks: ghostCache,
             config: config
         )

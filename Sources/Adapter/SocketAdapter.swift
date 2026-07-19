@@ -19,7 +19,7 @@ public struct SocketAdapterConfiguration: Equatable {
 
     public init(
         transport: SocketTransportConfiguration,
-        protocolVersion: String = "2.1.1",
+        protocolVersion: String = "3.0.0",
         gameId: String = "swiftui-spritekit-tetris",
         supportedFormats: [TetrisAIFormat] = [.json],
         supportedCommandModes: [TetrisAICommandMode] = [.action, .place],
@@ -28,11 +28,13 @@ public struct SocketAdapterConfiguration: Equatable {
             "next_queue",
             "can_hold",
             "board_id",
+            "events",
+            "logical_step",
             "state_hash",
             "score",
             "timers",
         ],
-        featuresOptional: [String] = ["hold", "ghost_y", "last_event"],
+        featuresOptional: [String] = ["hold", "ghost_y"],
         controlPolicy: TetrisAIControlPolicy = .init(
             autoPromoteOnDisconnect: true,
             promotionOrder: "lowest_client_id"
@@ -144,7 +146,14 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
                         state.apply(action: action)
                     }
                 }
-                sendAck(connectionId: pending.connectionId, seq: pending.seq, status: "ok")
+                let appliedSnapshot = state.snapshot()
+                sendAck(
+                    connectionId: pending.connectionId,
+                    seq: pending.seq,
+                    status: "ok",
+                    appliedStep: appliedSnapshot.logicalStep,
+                    stateHash: ObservationMapper.stateHash(appliedSnapshot)
+                )
             } catch let error as CommandMappingError {
                 let mapped = mapCommandError(error)
                 sendError(connectionId: pending.connectionId, seq: pending.seq, code: mapped.code, message: mapped.message)
@@ -405,8 +414,21 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         Int(Date().timeIntervalSince1970 * 1000)
     }
 
-    private func sendAck(connectionId: UUID, seq: Int, status: String) {
-        let ack = TetrisAIAck(seq: seq, tsMs: timeSource(), status: status)
+    private func sendAck(
+        connectionId: UUID,
+        seq: Int,
+        status: String,
+        appliedStep: Int? = nil,
+        stateHash: String? = nil
+    ) {
+        let ack = TetrisAIAck(
+            seq: seq,
+            tsMs: timeSource(),
+            status: status,
+            correlationSeq: seq,
+            appliedStep: appliedStep,
+            stateHash: stateHash
+        )
         if let data = try? WireCodec.encode(.ack(ack)) {
             sendLine(line: data, to: connectionId)
         }

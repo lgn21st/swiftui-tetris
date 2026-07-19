@@ -1,4 +1,30 @@
+public struct GameTransitionEvent: Equatable {
+    public let locked: Bool
+    public let linesCleared: Int
+    public let lineClearScore: Int
+    public let tSpin: TSpinKind
+    public let combo: Int
+    public let backToBack: Bool
+
+    public init(
+        locked: Bool,
+        linesCleared: Int,
+        lineClearScore: Int,
+        tSpin: TSpinKind,
+        combo: Int,
+        backToBack: Bool
+    ) {
+        self.locked = locked
+        self.linesCleared = linesCleared
+        self.lineClearScore = lineClearScore
+        self.tSpin = tSpin
+        self.combo = combo
+        self.backToBack = backToBack
+    }
+}
+
 public struct GameStateSnapshot {
+    public let logicalStep: Int
     public let episodeId: Int
     public let seed: UInt64
     public let pieceId: Int
@@ -28,10 +54,12 @@ public struct GameStateSnapshot {
     public let lockResetCount: Int
     public let activeMovedSinceSpawn: Bool
     public let adapterLocked: Bool
+    public let transitionEvents: [GameTransitionEvent]
     public let ghostBlocks: [(Int, Int)]
     public let config: GameConfig
 
     public init(
+        logicalStep: Int,
         episodeId: Int,
         seed: UInt64,
         pieceId: Int,
@@ -61,9 +89,11 @@ public struct GameStateSnapshot {
         lockResetCount: Int,
         activeMovedSinceSpawn: Bool,
         adapterLocked: Bool,
+        transitionEvents: [GameTransitionEvent],
         ghostBlocks: [(Int, Int)],
         config: GameConfig
     ) {
+        self.logicalStep = logicalStep
         self.episodeId = episodeId
         self.seed = seed
         self.pieceId = pieceId
@@ -93,6 +123,7 @@ public struct GameStateSnapshot {
         self.lockResetCount = lockResetCount
         self.activeMovedSinceSpawn = activeMovedSinceSpawn
         self.adapterLocked = adapterLocked
+        self.transitionEvents = transitionEvents
         self.ghostBlocks = ghostBlocks
         self.config = config
     }

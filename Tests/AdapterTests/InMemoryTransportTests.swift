@@ -2,8 +2,8 @@ import XCTest
 @testable import Adapter
 
 final class InMemoryTransportTests: XCTestCase {
-    private func defaultLastEvent() -> TetrisAILastEvent {
-        TetrisAILastEvent(
+    private func defaultEvent() -> TetrisAIEvent {
+        TetrisAIEvent(
             locked: false,
             linesCleared: 0,
             lineClearScore: 0,
@@ -31,6 +31,7 @@ final class InMemoryTransportTests: XCTestCase {
         let obs1 = TetrisAIObservation(
             seq: 1,
             tsMs: 1000,
+            logicalStep: 1,
             playable: true,
             paused: false,
             gameOver: false,
@@ -46,7 +47,7 @@ final class InMemoryTransportTests: XCTestCase {
             nextQueue: [.i, .o, .t, .s, .z],
             hold: nil,
             canHold: true,
-            lastEvent: defaultLastEvent(),
+            events: [defaultEvent()],
             stateHash: "",
             score: 0,
             level: 0,
@@ -56,6 +57,7 @@ final class InMemoryTransportTests: XCTestCase {
         let obs2 = TetrisAIObservation(
             seq: 2,
             tsMs: 1100,
+            logicalStep: 2,
             playable: false,
             paused: true,
             gameOver: false,
@@ -71,7 +73,7 @@ final class InMemoryTransportTests: XCTestCase {
             nextQueue: [.i, .o, .t, .s, .z],
             hold: nil,
             canHold: true,
-            lastEvent: defaultLastEvent(),
+            events: [],
             stateHash: "",
             score: 10,
             level: 1,

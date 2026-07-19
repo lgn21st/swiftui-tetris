@@ -94,7 +94,7 @@ public enum TetrisAITSpinKind: String, Equatable, Codable {
     case full
 }
 
-public struct TetrisAILastEvent: Equatable, Codable {
+public struct TetrisAIEvent: Equatable, Codable {
     public var locked: Bool
     public var linesCleared: Int
     public var lineClearScore: Int
@@ -131,6 +131,7 @@ public struct TetrisAILastEvent: Equatable, Codable {
 public struct TetrisAIObservation: Equatable, Codable {
     public var seq: Int
     public var tsMs: Int
+    public var logicalStep: Int
     public var playable: Bool
     public var paused: Bool
     public var gameOver: Bool
@@ -146,7 +147,7 @@ public struct TetrisAIObservation: Equatable, Codable {
     public var nextQueue: [TetrisAIPieceKind]
     public var hold: TetrisAIPieceKind?
     public var canHold: Bool
-    public var lastEvent: TetrisAILastEvent?
+    public var events: [TetrisAIEvent]
     public var stateHash: String
     public var score: Int
     public var level: Int
@@ -156,6 +157,7 @@ public struct TetrisAIObservation: Equatable, Codable {
     public init(
         seq: Int,
         tsMs: Int,
+        logicalStep: Int,
         playable: Bool,
         paused: Bool,
         gameOver: Bool,
@@ -171,7 +173,7 @@ public struct TetrisAIObservation: Equatable, Codable {
         nextQueue: [TetrisAIPieceKind],
         hold: TetrisAIPieceKind?,
         canHold: Bool,
-        lastEvent: TetrisAILastEvent?,
+        events: [TetrisAIEvent],
         stateHash: String,
         score: Int,
         level: Int,
@@ -180,6 +182,7 @@ public struct TetrisAIObservation: Equatable, Codable {
     ) {
         self.seq = seq
         self.tsMs = tsMs
+        self.logicalStep = logicalStep
         self.playable = playable
         self.paused = paused
         self.gameOver = gameOver
@@ -195,7 +198,7 @@ public struct TetrisAIObservation: Equatable, Codable {
         self.nextQueue = nextQueue
         self.hold = hold
         self.canHold = canHold
-        self.lastEvent = lastEvent
+        self.events = Array(events.prefix(4))
         self.stateHash = stateHash
         self.score = score
         self.level = level
@@ -206,6 +209,7 @@ public struct TetrisAIObservation: Equatable, Codable {
     private enum CodingKeys: String, CodingKey {
         case seq
         case tsMs = "ts"
+        case logicalStep = "logical_step"
         case playable
         case paused
         case gameOver = "game_over"
@@ -221,7 +225,7 @@ public struct TetrisAIObservation: Equatable, Codable {
         case nextQueue = "next_queue"
         case hold
         case canHold = "can_hold"
-        case lastEvent = "last_event"
+        case events
         case stateHash = "state_hash"
         case score
         case level
@@ -335,6 +339,7 @@ public enum CommandMapper {
             activeStart = Tetromino(kind: kind, x: spawn.x, y: spawn.y)
             activeStart.rotation = .north
             planningSnapshot = GameStateSnapshot(
+                logicalStep: snapshot.logicalStep,
                 episodeId: snapshot.episodeId,
                 seed: snapshot.seed,
                 pieceId: snapshot.pieceId + 1,
@@ -364,6 +369,7 @@ public enum CommandMapper {
                 lockResetCount: snapshot.lockResetCount,
                 activeMovedSinceSpawn: snapshot.activeMovedSinceSpawn,
                 adapterLocked: false,
+                transitionEvents: [],
                 ghostBlocks: snapshot.ghostBlocks,
                 config: snapshot.config
             )
@@ -487,30 +493,27 @@ public enum ObservationMapper {
             lineClearMs: snapshot.lineClearTimerMs
         )
 
-        let tspin: TetrisAITSpinKind?
-        switch snapshot.lastLineClearTSpin {
-        case .none: tspin = nil
-        case .mini: tspin = .mini
-        case .full: tspin = .full
-        }
-
-        let lastEvent: TetrisAILastEvent?
-        if snapshot.adapterLocked || !snapshot.lineClearRows.isEmpty {
-            lastEvent = TetrisAILastEvent(
-                locked: snapshot.adapterLocked,
-                linesCleared: snapshot.lineClearRows.count,
-                lineClearScore: snapshot.lineClearScore,
+        let events = snapshot.transitionEvents.prefix(4).map { event in
+            let tspin: TetrisAITSpinKind?
+            switch event.tSpin {
+            case .none: tspin = nil
+            case .mini: tspin = .mini
+            case .full: tspin = .full
+            }
+            return TetrisAIEvent(
+                locked: event.locked,
+                linesCleared: event.linesCleared,
+                lineClearScore: event.lineClearScore,
                 tspin: tspin,
-                combo: snapshot.combo,
-                backToBack: snapshot.backToBack
+                combo: event.combo,
+                backToBack: event.backToBack
             )
-        } else {
-            lastEvent = nil
         }
 
         return TetrisAIObservation(
             seq: seq,
             tsMs: tsMs,
+            logicalStep: snapshot.logicalStep,
             playable: !snapshot.paused && !snapshot.gameOver,
             paused: snapshot.paused,
             gameOver: snapshot.gameOver,
@@ -526,7 +529,7 @@ public enum ObservationMapper {
             nextQueue: nextQueue,
             hold: hold,
             canHold: snapshot.canHold,
-            lastEvent: lastEvent,
+            events: events,
             stateHash: stateHash(snapshot),
             score: snapshot.score,
             level: snapshot.level,
@@ -556,7 +559,7 @@ public enum ObservationMapper {
         return Int(hash)
     }
 
-    private static func stateHash(_ snapshot: GameStateSnapshot) -> String {
+    public static func stateHash(_ snapshot: GameStateSnapshot) -> String {
         var hash: UInt64 = 14695981039346656037
 
         func mixByte(_ b: UInt8) {

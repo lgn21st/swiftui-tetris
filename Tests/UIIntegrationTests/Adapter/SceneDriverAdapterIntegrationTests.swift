@@ -45,7 +45,7 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
         XCTAssertEqual(adapter.lastSnapshot?.stepInPiece, 3)
     }
 
-    func testAdapterCommandsApplyBeforeFixedStepBegins() {
+    func testFixedTransitionBeginsBeforeAdapterCommandsAndAdvancement() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.paused = true
         let loop = GameLoop(state: state)
@@ -58,5 +58,21 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
 
         XCTAssertFalse(driver.stateSnapshot().paused)
         XCTAssertEqual(driver.stateSnapshot().stepInPiece, 1)
+        XCTAssertEqual(driver.stateSnapshot().logicalStep, 1)
+    }
+
+    func testRemoteLockEventSurvivesUntilSameStepObservation() {
+        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
+        let transport = InMemoryTransport()
+        transport.enqueueCommand(.action(actions: [.hardDrop]))
+        let driver = SceneDriver(loop: loop, audio: nil, adapter: InMemoryAdapter(transport: transport))
+
+        driver.tick(elapsedMs: 16)
+
+        _ = transport.dequeueObservation() // initial snapshot
+        let observation = transport.dequeueObservation()
+        XCTAssertEqual(observation?.logicalStep, 1)
+        XCTAssertEqual(observation?.events.count, 1)
+        XCTAssertTrue(observation?.events.first?.locked == true)
     }
 }

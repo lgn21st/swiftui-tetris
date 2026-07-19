@@ -1,5 +1,13 @@
 # Progress Log
 
+## 2026-07-19
+- Upgraded the external Adapter from protocol 2.1.1 to canonical 3.0.0.
+- Replaced nullable `last_event` with a non-null, causally ordered `events` array bounded to four entries and added Core-owned `logical_step` to every observation.
+- Added mandatory ack correlation; successful game commands now prove applied state with `applied_step` and `state_hash`, while control ack intentionally omits game-state fields.
+- Reordered fixed-transition bookkeeping so remote commands, emitted events, observations, and command ack all refer to the same logical transition.
+- Added explicit v2 handshake rejection and updated the conformance matrix, project implementation profile, and Adapter development skills.
+- Canonical ready/claim/restart/determinism and live concurrency/backpressure/frame/reconnect/slow-client checks pass; XCTest remains blocked by the local CommandLineTools installation.
+
 ## 2026-07-17
 - Upgraded the external Adapter implementation from protocol 2.0.0 to canonical 2.1.1 and recorded the complete requirement/evidence matrix in `docs/adapter-conformance.md`.
 - Added strict compatible SemVer, required welcome identities and feature partitions, explicit control policy, seeded restart, immediate handshake snapshots, and portable host/port/disable settings.
@@ -8,7 +16,7 @@
 - Completed a full documentation, architecture, correctness, and performance review; added `docs/evaluation.md` and restored a focused `docs/todo.md`.
 - Fixed T-Spin classification to inspect lock-time geometry before line clearing shifts the board.
 - Fixed next-piece and Hold spawning to refresh the ghost after the new active piece is assigned.
-- Made `lineClearScore` include combo bonuses so renderer popups and Adapter `last_event` match the score delta.
+- Made `lineClearScore` include combo bonuses so renderer popups and the then-current Adapter `last_event` matched the score delta (3.0 now emits `events`).
 - Preserved fixed-timestep semantics during catch-up frames by running input, Adapter polling, Core tick, and observation emission once per accumulated step.
 - Ordered remote command polling before `beginFixedStep`, so pause/unpause and piece-changing commands receive correct step metadata.
 - Reused immutable tetromino shape tables, Core ghost/landing buffers, and snapshot board storage in rendering.

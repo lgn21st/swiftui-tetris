@@ -44,6 +44,30 @@ final class GameStateSnapshotTests: XCTestCase {
         assertBlocksEqual(snapshot.ghostBlocks, state.ghostBlocks())
     }
 
+    func testLogicalStepAdvancesAtTransitionStartAndSurvivesRestart() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        XCTAssertEqual(state.snapshot().logicalStep, 0)
+
+        state.beginFixedStep()
+        XCTAssertEqual(state.snapshot().logicalStep, 1)
+
+        state.restart(seed: 2)
+        XCTAssertEqual(state.snapshot().logicalStep, 1)
+    }
+
+    func testSnapshotCarriesBoundedCausallyOrderedLockEvents() {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.beginFixedStep()
+
+        for _ in 0..<5 {
+            state.apply(action: .hardDrop)
+        }
+
+        let events = state.snapshot().transitionEvents
+        XCTAssertEqual(events.count, 4)
+        XCTAssertTrue(events.allSatisfy(\.locked))
+    }
+
     private func assertBlocksEqual(_ lhs: [(Int, Int)], _ rhs: [(Int, Int)]) {
         XCTAssertEqual(lhs.count, rhs.count)
         for (index, value) in lhs.enumerated() {

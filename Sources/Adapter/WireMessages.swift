@@ -174,8 +174,10 @@ public struct TetrisAICapabilities: Codable, Equatable {
     public static let canonical = TetrisAICapabilities(
         formats: [.json],
         commandModes: [.action, .place],
-        featuresAlways: ["next", "next_queue", "can_hold", "board_id", "state_hash", "score", "timers"],
-        featuresOptional: ["hold", "ghost_y", "last_event"],
+        featuresAlways: [
+            "next", "next_queue", "can_hold", "board_id", "events", "logical_step", "state_hash", "score", "timers",
+        ],
+        featuresOptional: ["hold", "ghost_y"],
         controlPolicy: .init(autoPromoteOnDisconnect: true, promotionOrder: "lowest_client_id")
     )
 
@@ -292,6 +294,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
     public let type: String
     public var seq: Int
     public var tsMs: Int
+    public var logicalStep: Int
     public var playable: Bool
     public var paused: Bool
     public var gameOver: Bool
@@ -307,7 +310,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
     public var nextQueue: [TetrisAIPieceKind]
     public var hold: TetrisAIPieceKind?
     public var canHold: Bool
-    public var lastEvent: TetrisAILastEvent?
+    public var events: [TetrisAIEvent]
     public var stateHash: String
     public var score: Int
     public var level: Int
@@ -318,6 +321,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         self.type = "observation"
         self.seq = observation.seq
         self.tsMs = observation.tsMs
+        self.logicalStep = observation.logicalStep
         self.playable = observation.playable
         self.paused = observation.paused
         self.gameOver = observation.gameOver
@@ -333,7 +337,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         self.nextQueue = observation.nextQueue
         self.hold = observation.hold
         self.canHold = observation.canHold
-        self.lastEvent = observation.lastEvent
+        self.events = observation.events
         self.stateHash = observation.stateHash
         self.score = observation.score
         self.level = observation.level
@@ -345,6 +349,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         case type
         case seq
         case tsMs = "ts"
+        case logicalStep = "logical_step"
         case playable
         case paused
         case gameOver = "game_over"
@@ -360,7 +365,7 @@ public struct TetrisAIObservationEnvelope: Codable, Equatable {
         case nextQueue = "next_queue"
         case hold
         case canHold = "can_hold"
-        case lastEvent = "last_event"
+        case events
         case stateHash = "state_hash"
         case score
         case level
@@ -374,12 +379,25 @@ public struct TetrisAIAck: Codable, Equatable {
     public var seq: Int
     public var tsMs: Int
     public var status: String
+    public var correlationSeq: Int
+    public var appliedStep: Int?
+    public var stateHash: String?
 
-    public init(seq: Int, tsMs: Int, status: String) {
+    public init(
+        seq: Int,
+        tsMs: Int,
+        status: String,
+        correlationSeq: Int,
+        appliedStep: Int? = nil,
+        stateHash: String? = nil
+    ) {
         self.type = "ack"
         self.seq = seq
         self.tsMs = tsMs
         self.status = status
+        self.correlationSeq = correlationSeq
+        self.appliedStep = appliedStep
+        self.stateHash = stateHash
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -387,6 +405,9 @@ public struct TetrisAIAck: Codable, Equatable {
         case seq
         case tsMs = "ts"
         case status
+        case correlationSeq = "correlation_seq"
+        case appliedStep = "applied_step"
+        case stateHash = "state_hash"
     }
 }
 

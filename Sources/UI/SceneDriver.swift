@@ -112,8 +112,8 @@ public final class SceneDriver: ObservableObject {
 
         for stepIndex in 0..<stepCount {
             let stepElapsed = baseStepMs + (stepIndex < remainderMs ? 1 : 0)
-            adapter?.poll(elapsedMs: stepElapsed, state: &loop.state)
             loop.state.beginFixedStep()
+            adapter?.poll(elapsedMs: stepElapsed, state: &loop.state)
             let canAccept = !loop.state.paused && !loop.state.gameOver
             input.tick(elapsedMs: stepElapsed, canAccept: canAccept, state: &loop.state)
             loop.state.tick(elapsedMs: stepElapsed, softDrop: false)

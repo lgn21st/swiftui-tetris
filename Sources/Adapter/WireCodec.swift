@@ -52,6 +52,7 @@ enum WireCodec {
                 TetrisAIObservation(
                     seq: obs.seq,
                     tsMs: obs.tsMs,
+                    logicalStep: obs.logicalStep,
                     playable: obs.playable,
                     paused: obs.paused,
                     gameOver: obs.gameOver,
@@ -67,7 +68,7 @@ enum WireCodec {
                     nextQueue: obs.nextQueue,
                     hold: obs.hold,
                     canHold: obs.canHold,
-                    lastEvent: obs.lastEvent,
+                    events: obs.events,
                     stateHash: obs.stateHash,
                     score: obs.score,
                     level: obs.level,

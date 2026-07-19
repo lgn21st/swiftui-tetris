@@ -1,6 +1,6 @@
 # SwiftUI Tetris Adapter Implementation Profile
 
-Last aligned protocol version: **2.1.1** (2026-07-17)
+Last aligned protocol version: **3.0.0** (2026-07-19)
 
 The normative protocol is maintained by `tui-tetris` in
 `protocol/adapter/{VERSION,CHANGELOG.md,SPEC.md,schema.json,profiles/tcp-json-lines.md}`.
@@ -26,8 +26,8 @@ used to redefine portable wire behavior.
   queue.
 - `adapter.socket.state` owns client registration, sequencing, controller
   ownership, observation sequence allocation, and the inbound command queue.
-- SceneDriver remains authoritative: for every fixed step it drains/applies
-  commands, advances Core, then emits a full snapshot.
+- SceneDriver remains authoritative: for every fixed step it begins one logical
+  transition, drains/applies commands, advances Core, then emits a full snapshot.
 - `adapter.socket.log` serializes optional JSONL wire logs off the game loop.
 - Inbound commands are bounded by `TETRIS_AI_MAX_PENDING` (default `64`). A
   rejection returns `backpressure` with `retry_after_ms` from
@@ -53,6 +53,14 @@ used to redefine portable wire behavior.
 
 - SceneDriver primes the adapter with its initial snapshot, so a streaming
   hello receives welcome followed immediately by a full observation.
+- Core owns the monotonic `logical_step`; an episode restart resets game state
+  but does not rewind this connection-lifetime transition counter.
+- Core records lock outcomes in causal order for the current transition. The
+  wire `events` array retains the first four when a single command batch causes
+  more than four lock outcomes, preserving the protocol's hard size bound.
+- Successful game-command ack is created only after mutation and carries that
+  snapshot's `logical_step` and `state_hash`. Control ack carries only its
+  triggering `correlation_seq` because control does not apply game state.
 - `TETRIS_AI_OBSERVATION_MS` optionally throttles periodic snapshots; `0` or
   absence means every fixed step. Coalescing/throttling may create valid
   observation-sequence gaps.

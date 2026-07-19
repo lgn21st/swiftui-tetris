@@ -29,7 +29,7 @@
 
 ## Progress Updates
 - Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Adapter aligned to canonical Tetris AI Adapter Protocol 2.1.1.
+- Last update: Adapter aligned to canonical Tetris AI Adapter Protocol 3.0.0.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

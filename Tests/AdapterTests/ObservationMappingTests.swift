@@ -20,6 +20,8 @@ final class ObservationMappingTests: XCTestCase {
         let snapshot = state.snapshot()
         let observation = ObservationMapper.map(snapshot: snapshot, seq: 42, tsMs: 1700000000000)
 
+        XCTAssertEqual(observation.logicalStep, snapshot.logicalStep)
+        XCTAssertEqual(observation.events, [])
         XCTAssertFalse(observation.playable)
         XCTAssertTrue(observation.paused)
         XCTAssertFalse(observation.gameOver)
@@ -36,5 +38,21 @@ final class ObservationMappingTests: XCTestCase {
         XCTAssertEqual(observation.score, 1200)
         XCTAssertEqual(observation.level, 2)
         XCTAssertEqual(observation.lines, 17)
+    }
+
+    func testMapsOrderedTransitionEventsWithoutLegacyLastEvent() throws {
+        var state = GameState(config: GameConfig(), seed: 1)
+        state.beginFixedStep()
+        state.apply(action: .hardDrop)
+
+        let observation = ObservationMapper.map(snapshot: state.snapshot(), seq: 1, tsMs: 1)
+        XCTAssertEqual(observation.events.count, 1)
+        XCTAssertTrue(observation.events[0].locked)
+
+        let data = try WireCodec.encode(.observation(observation))
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertNotNil(object["events"])
+        XCTAssertNotNil(object["logical_step"])
+        XCTAssertNil(object["last_event"])
     }
 }
