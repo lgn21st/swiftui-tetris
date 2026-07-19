@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 @testable import Renderer
 @testable import Core
 
-final class RenderBufferTests: XCTestCase {
-    func testActiveOverridesGhost() {
+@Suite struct RenderBufferTests {
+    @Test func testActiveOverridesGhost() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -26,13 +26,13 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 1 }
-        XCTAssertEqual(cell?.isActive, true)
-        XCTAssertEqual(cell?.isGhost, false)
-        XCTAssertNil(cell?.kind)
-        XCTAssertEqual(buffer.changedIndices, [1 * Board.width + 1])
+        #expect(cell?.isActive == true)
+        #expect(cell?.isGhost == false)
+        #expect(cell?.kind == nil)
+        #expect(buffer.changedIndices == [1 * Board.width + 1])
     }
 
-    func testGhostFillsEmptyCell() {
+    @Test func testGhostFillsEmptyCell() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -55,12 +55,12 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 2 && $0.y == 2 }
-        XCTAssertEqual(cell?.isGhost, true)
-        XCTAssertEqual(cell?.kind, .i)
-        XCTAssertEqual(buffer.changedIndices, [2 * Board.width + 2])
+        #expect(cell?.isGhost == true)
+        #expect(cell?.kind == .i)
+        #expect(buffer.changedIndices == [2 * Board.width + 2])
     }
 
-    func testFlashMarksCells() {
+    @Test func testFlashMarksCells() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -83,12 +83,12 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 0 && $0.y == 0 }
-        XCTAssertEqual(cell?.isFlash, true)
-        XCTAssertEqual(cell?.kind, nil)
-        XCTAssertEqual(buffer.changedIndices, [0])
+        #expect(cell?.isFlash == true)
+        #expect(cell?.kind == nil)
+        #expect(buffer.changedIndices == [0])
     }
 
-    func testUpdateReportsNoChangesWhenStateUnchanged() {
+    @Test func testUpdateReportsNoChangesWhenStateUnchanged() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -111,10 +111,10 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         buffer.update(from: state)
-        XCTAssertEqual(buffer.changedIndices, [])
+        #expect(buffer.changedIndices == [])
     }
 
-    func testLineClearMarksRows() {
+    @Test func testLineClearMarksRows() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -136,14 +136,14 @@ final class RenderBufferTests: XCTestCase {
         )
         let buffer = RenderBuffer()
         buffer.update(from: state)
-        XCTAssertEqual(buffer.lineClearIndices.count, Board.width)
+        #expect(buffer.lineClearIndices.count == Board.width)
         for x in 0..<Board.width {
             let cell = buffer.cells.first { $0.x == x && $0.y == 5 }
-            XCTAssertEqual(cell?.isLineClear, true)
+            #expect(cell?.isLineClear == true)
         }
     }
 
-    func testUpdateTracksFlashIndices() {
+    @Test func testUpdateTracksFlashIndices() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -165,11 +165,11 @@ final class RenderBufferTests: XCTestCase {
         )
         let buffer = RenderBuffer()
         buffer.update(from: state)
-        XCTAssertEqual(buffer.flashIndices, [0, 2 * Board.width + 3])
-        XCTAssertEqual(buffer.changedIndices, [0, 2 * Board.width + 3])
+        #expect(buffer.flashIndices == [0, 2 * Board.width + 3])
+        #expect(buffer.changedIndices == [0, 2 * Board.width + 3])
     }
 
-    func testTrailIsIgnoredEvenWhenProvided() {
+    @Test func testTrailIsIgnoredEvenWhenProvided() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -192,10 +192,10 @@ final class RenderBufferTests: XCTestCase {
         let buffer = RenderBuffer()
         buffer.update(from: state)
         let cell = buffer.cells.first { $0.x == 1 && $0.y == 2 }
-        XCTAssertNil(cell?.kind)
+        #expect(cell?.kind == nil)
     }
 
-    func testUpdateReusesInternalBuffers() {
+    @Test func testUpdateReusesInternalBuffers() {
         let board = Array(repeating: Array(repeating: TetrominoType?.none, count: 10), count: 20)
         let state = RenderState(
             board: board,
@@ -220,7 +220,7 @@ final class RenderBufferTests: XCTestCase {
         let touchedCapacity = buffer.debugTouchedCapacity()
         let dynamicCapacity = buffer.debugDynamicCapacity()
         buffer.update(from: state)
-        XCTAssertEqual(buffer.debugTouchedCapacity(), touchedCapacity)
-        XCTAssertEqual(buffer.debugDynamicCapacity(), dynamicCapacity)
+        #expect(buffer.debugTouchedCapacity() == touchedCapacity)
+        #expect(buffer.debugDynamicCapacity() == dynamicCapacity)
     }
 }

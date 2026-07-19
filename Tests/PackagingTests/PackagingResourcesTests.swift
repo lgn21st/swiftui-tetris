@@ -1,8 +1,9 @@
-import XCTest
+import Testing
+import Foundation
 @testable import Packaging
 
-final class PackagingResourcesTests: XCTestCase {
-    func testBundleCopiesIconAndEntitlements() throws {
+@Suite struct PackagingResourcesTests {
+    @Test func testBundleCopiesIconAndEntitlements() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -33,16 +34,16 @@ final class PackagingResourcesTests: XCTestCase {
         let copiedIconURL = resourcesURL.appendingPathComponent("AppIcon.icns")
         let copiedEntitlementsURL = bundleURL.appendingPathComponent("Contents/Entitlements.plist")
 
-        XCTAssertTrue(FileManager.default.fileExists(atPath: copiedIconURL.path))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: copiedEntitlementsURL.path))
+        #expect(FileManager.default.fileExists(atPath: copiedIconURL.path))
+        #expect(FileManager.default.fileExists(atPath: copiedEntitlementsURL.path))
 
         let plistURL = bundleURL.appendingPathComponent("Contents/Info.plist")
         let plist = try String(contentsOf: plistURL, encoding: .utf8)
-        XCTAssertTrue(plist.contains("CFBundleIconFile"))
-        XCTAssertTrue(plist.contains("AppIcon.icns"))
+        #expect(plist.contains("CFBundleIconFile"))
+        #expect(plist.contains("AppIcon.icns"))
     }
 
-    func testBundleCopiesAssetsFolder() throws {
+    @Test func testBundleCopiesAssetsFolder() throws {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent("swiftui-tetris-tests", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -71,6 +72,6 @@ final class PackagingResourcesTests: XCTestCase {
         let copiedSound = bundleURL
             .appendingPathComponent("Contents/Resources/assets/sfx", isDirectory: true)
             .appendingPathComponent("move.wav")
-        XCTAssertTrue(FileManager.default.fileExists(atPath: copiedSound.path))
+        #expect(FileManager.default.fileExists(atPath: copiedSound.path))
     }
 }

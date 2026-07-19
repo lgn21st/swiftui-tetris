@@ -1,146 +1,146 @@
-import XCTest
+import Testing
 @testable import Renderer
 @testable import Core
 
-final class RenderMappingTests: XCTestCase {
-    func testRenderMappingPreservesBoardCellsWithoutKindProjection() {
+@Suite struct RenderMappingTests {
+    @Test func testRenderMappingPreservesBoardCellsWithoutKindProjection() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.board.cells[19][0] = Cell(filled: true, kind: .i)
 
         let renderState = RenderMapper.map(snapshot: state.snapshot())
 
-        XCTAssertEqual(renderState.boardCells[19][0], Cell(filled: true, kind: .i))
+        #expect(renderState.boardCells[19][0] == Cell(filled: true, kind: .i))
     }
 
-    func testRenderMappingIncludesActiveAndGhostAfterMove() {
+    @Test func testRenderMappingIncludesActiveAndGhostAfterMove() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
         state.activeMovedSinceSpawn = true
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertFalse(renderState.activeBlocks.isEmpty)
-        XCTAssertFalse(renderState.ghostBlocks.isEmpty)
-        XCTAssertEqual(renderState.ghostKind, .t)
+        #expect(!renderState.activeBlocks.isEmpty)
+        #expect(!renderState.ghostBlocks.isEmpty)
+        #expect(renderState.ghostKind == .t)
     }
 
-    func testRenderMappingHidesGhostUntilActiveMoves() {
+    @Test func testRenderMappingHidesGhostUntilActiveMoves() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
         state.activeMovedSinceSpawn = false
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
-        XCTAssertNil(renderState.ghostKind)
+        #expect(renderState.ghostBlocks.isEmpty)
+        #expect(renderState.ghostKind == nil)
     }
 
-    func testRenderMappingIncludesLockedCells() {
+    @Test func testRenderMappingIncludesLockedCells() {
         var state = GameState(config: GameConfig())
         state.board.cells[19][0] = Cell(filled: true, kind: .i)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.board[19][0], .i)
+        #expect(renderState.board[19][0] == .i)
     }
 
-    func testRenderMappingIncludesLandingFlashBlocks() {
+    @Test func testRenderMappingIncludesLandingFlashBlocks() {
         var state = GameState(config: GameConfig())
         state.setTimersForTesting(landingFlashTimerMs: GameConstants.landingFlashDurationMs)
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.flashBlocks.count, 1)
-        XCTAssertEqual(renderState.flashBlocks[0].0, 4)
-        XCTAssertEqual(renderState.flashBlocks[0].1, 10)
-        XCTAssertEqual(renderState.flashAlpha, 1, accuracy: 0.01)
+        #expect(renderState.flashBlocks.count == 1)
+        #expect(renderState.flashBlocks[0].0 == 4)
+        #expect(renderState.flashBlocks[0].1 == 10)
+        #expect(abs((renderState.flashAlpha) - (1)) <= (0.01))
     }
 
-    func testRenderMappingComputesFlashAlphaFromTimer() {
+    @Test func testRenderMappingComputesFlashAlphaFromTimer() {
         var state = GameState(config: GameConfig())
         state.setTimersForTesting(landingFlashTimerMs: GameConstants.landingFlashDurationMs / 2)
         state.landingFlashBlocks = [(4, 10)]
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.flashAlpha, 0.5, accuracy: 0.01)
+        #expect(abs((renderState.flashAlpha) - (0.5)) <= (0.01))
     }
 
-    func testRenderMappingHidesActiveAndGhostDuringLineClearPause() {
+    @Test func testRenderMappingHidesActiveAndGhostDuringLineClearPause() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.updateGhostCache()
         state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.activeBlocks.isEmpty)
-        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
-        XCTAssertNil(renderState.activeKind)
-        XCTAssertNil(renderState.ghostKind)
+        #expect(renderState.activeBlocks.isEmpty)
+        #expect(renderState.ghostBlocks.isEmpty)
+        #expect(renderState.activeKind == nil)
+        #expect(renderState.ghostKind == nil)
     }
 
-    func testRenderMappingIncludesLineClearRowsAndAlpha() {
+    @Test func testRenderMappingIncludesLineClearRowsAndAlpha() {
         var state = GameState(config: GameConfig())
         state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs / 2)
         state.lineClearRows = [18]
         state.lineClearScore = 400
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.lineClearRows, [18])
-        XCTAssertEqual(renderState.lineClearAlpha, 0.5, accuracy: 0.01)
-        XCTAssertEqual(renderState.scorePopups.count, 1)
-        XCTAssertEqual(renderState.scorePopups[0].text, "+400")
+        #expect(renderState.lineClearRows == [18])
+        #expect(abs((renderState.lineClearAlpha) - (0.5)) <= (0.01))
+        #expect(renderState.scorePopups.count == 1)
+        #expect(renderState.scorePopups[0].text == "+400")
     }
 
-    func testRenderMappingIncludesTSpinKindDuringLineClear() {
+    @Test func testRenderMappingIncludesTSpinKindDuringLineClear() {
         var state = GameState(config: GameConfig(ruleset: .modern))
         state.applyLineClear(cleared: 1, clearedRows: [18], tSpin: .full)
         state.setTimersForTesting(lineClearTimerMs: GameConstants.lineClearPauseMs / 2)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.tSpinKind, .full)
-        XCTAssertEqual(renderState.tSpinAlpha, 0.5, accuracy: 0.01)
+        #expect(renderState.tSpinKind == .full)
+        #expect(abs((renderState.tSpinAlpha) - (0.5)) <= (0.01))
     }
 
-    func testRenderMappingCopiesPauseAndGameOverFlags() {
+    @Test func testRenderMappingCopiesPauseAndGameOverFlags() {
         var state = GameState(config: GameConfig())
         state.paused = true
         state.gameOver = true
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.isPaused)
-        XCTAssertTrue(renderState.isGameOver)
+        #expect(renderState.isPaused)
+        #expect(renderState.isGameOver)
     }
 
-    func testRenderMappingComputesActivePulse() {
+    @Test func testRenderMappingComputesActivePulse() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(dropTimerMs: 0)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.activePulse, 0, accuracy: 0.001)
+        #expect(abs((renderState.activePulse) - (0)) <= (0.001))
     }
 
-    func testRenderMappingComputesActivePulseAtMidInterval() {
+    @Test func testRenderMappingComputesActivePulseAtMidInterval() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(dropTimerMs: 500)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertEqual(renderState.activePulse, 1, accuracy: 0.001)
+        #expect(abs((renderState.activePulse) - (1)) <= (0.001))
     }
 
-    func testRenderMappingHidesGhostDuringLockDelay() {
+    @Test func testRenderMappingHidesGhostDuringLockDelay() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .l, x: 4, y: 0)
         state.updateGhostCache()
         state.setTimersForTesting(lockTimerMs: GameConstants.lockDelayMs / 2)
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
-        XCTAssertNil(renderState.ghostKind)
+        #expect(renderState.ghostBlocks.isEmpty)
+        #expect(renderState.ghostKind == nil)
     }
 
-    func testRenderMappingHidesGhostWhenGroundedBeforeLockTimer() {
+    @Test func testRenderMappingHidesGhostWhenGroundedBeforeLockTimer() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .o, x: 4, y: Board.height - 2)
         state.updateGhostCache()
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.ghostBlocks.isEmpty)
-        XCTAssertNil(renderState.ghostKind)
+        #expect(renderState.ghostBlocks.isEmpty)
+        #expect(renderState.ghostKind == nil)
     }
 
 
 
-    func testRenderMappingFlagsGroundedWhenActiveCannotMoveDown() {
+    @Test func testRenderMappingFlagsGroundedWhenActiveCannotMoveDown() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .o, x: 4, y: Board.height - 2)
         state.updateGhostCache()
         let renderState = RenderMapper.map(snapshot: state.snapshot())
-        XCTAssertTrue(renderState.isGrounded)
+        #expect(renderState.isGrounded)
     }
 }

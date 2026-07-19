@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class QueueRngTests: XCTestCase {
-    func testRefillBagAppendsTwoPieces() {
+@Suite struct QueueRngTests {
+    @Test func testRefillBagAppendsTwoPieces() {
         var rng = SimpleRng(seed: 1)
         var queue: [TetrominoType] = []
         QueueRng.refillBag(rng: &rng, queue: &queue)
-        XCTAssertEqual(queue.count, 2)
+        #expect(queue.count == 2)
     }
 }

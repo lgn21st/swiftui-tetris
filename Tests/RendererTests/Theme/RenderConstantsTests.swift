@@ -1,15 +1,15 @@
-import XCTest
+import Testing
 @testable import Renderer
 
-final class RenderConstantsTests: XCTestCase {
-    func testRenderConstantsDefaults() {
-        XCTAssertEqual(RenderConstants.cellSize, 24)
-        XCTAssertEqual(RenderConstants.gridlineWidth, 1)
-        XCTAssertEqual(RenderConstants.gridlineZ, -1)
-        XCTAssertEqual(RenderConstants.activeOverlayZ, 5)
-        XCTAssertEqual(RenderConstants.scorePopupFontSize, 16)
-        XCTAssertEqual(RenderConstants.scorePopupZ, 10)
-        XCTAssertEqual(RenderConstants.tSpinBadgeFontSize, 18)
-        XCTAssertEqual(RenderConstants.tSpinBadgeZ, 12)
+@Suite struct RenderConstantsTests {
+    @Test func testRenderConstantsDefaults() {
+        #expect(RenderConstants.cellSize == 24)
+        #expect(RenderConstants.gridlineWidth == 1)
+        #expect(RenderConstants.gridlineZ == -1)
+        #expect(RenderConstants.activeOverlayZ == 5)
+        #expect(RenderConstants.scorePopupFontSize == 16)
+        #expect(RenderConstants.scorePopupZ == 10)
+        #expect(RenderConstants.tSpinBadgeFontSize == 18)
+        #expect(RenderConstants.tSpinBadgeZ == 12)
     }
 }

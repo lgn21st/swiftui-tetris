@@ -1,32 +1,32 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class HUDDetailTests: XCTestCase {
-    func testHudLockBarRatio() {
+@Suite struct HUDDetailTests {
+    @Test func testHudLockBarRatio() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(lockTimerMs: 225)
         state.config.lockDelayMs = 450
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.lockBarRatio, 0.5, accuracy: 0.001)
-        XCTAssertTrue(hud.isClassicRuleset)
+        #expect(abs((hud.lockBarRatio) - (0.5)) <= (0.001))
+        #expect(hud.isClassicRuleset)
     }
 
-    func testHudLockWarningPulseWhenActive() {
+    @Test func testHudLockWarningPulseWhenActive() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.config.lockDelayMs = 1000
         state.setTimersForTesting(lockTimerMs: 850)
         let hud = HUDState.from(state: state)
-        XCTAssertTrue(hud.lockWarningActive)
-        XCTAssertEqual(hud.lockWarningPulse, 0.55, accuracy: 0.001)
+        #expect(hud.lockWarningActive)
+        #expect(abs((hud.lockWarningPulse) - (0.55)) <= (0.001))
     }
 
-    func testHudLockWarningPulseWhenInactive() {
+    @Test func testHudLockWarningPulseWhenInactive() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.config.lockDelayMs = 1000
         state.setTimersForTesting(lockTimerMs: 200)
         let hud = HUDState.from(state: state)
-        XCTAssertFalse(hud.lockWarningActive)
-        XCTAssertEqual(hud.lockWarningPulse, 0, accuracy: 0.001)
+        #expect(!hud.lockWarningActive)
+        #expect(abs((hud.lockWarningPulse) - (0)) <= (0.001))
     }
 }

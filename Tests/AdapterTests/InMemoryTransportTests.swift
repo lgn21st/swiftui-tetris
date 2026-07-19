@@ -1,7 +1,7 @@
-import XCTest
+import Testing
 @testable import Adapter
 
-final class InMemoryTransportTests: XCTestCase {
+@Suite struct InMemoryTransportTests {
     private func defaultEvent() -> TetrisAIEvent {
         TetrisAIEvent(
             locked: false,
@@ -13,7 +13,7 @@ final class InMemoryTransportTests: XCTestCase {
         )
     }
 
-    func testCommandsAreDeliveredInOrder() {
+    @Test func testCommandsAreDeliveredInOrder() {
         let transport = InMemoryTransport()
         let first = TetrisAICommand.action(actions: [.rotateCw, .moveLeft])
         let second = TetrisAICommand.action(actions: [.hardDrop])
@@ -21,12 +21,12 @@ final class InMemoryTransportTests: XCTestCase {
         transport.enqueueCommand(first)
         transport.enqueueCommand(second)
 
-        XCTAssertEqual(transport.dequeueCommand(), first)
-        XCTAssertEqual(transport.dequeueCommand(), second)
-        XCTAssertNil(transport.dequeueCommand())
+        #expect(transport.dequeueCommand() == first)
+        #expect(transport.dequeueCommand() == second)
+        #expect(transport.dequeueCommand() == nil)
     }
 
-    func testObservationsAreDeliveredInOrder() {
+    @Test func testObservationsAreDeliveredInOrder() {
         let transport = InMemoryTransport()
         let obs1 = TetrisAIObservation(
             seq: 1,
@@ -84,8 +84,8 @@ final class InMemoryTransportTests: XCTestCase {
         transport.enqueueObservation(obs1)
         transport.enqueueObservation(obs2)
 
-        XCTAssertEqual(transport.dequeueObservation(), obs1)
-        XCTAssertEqual(transport.dequeueObservation(), obs2)
-        XCTAssertNil(transport.dequeueObservation())
+        #expect(transport.dequeueObservation() == obs1)
+        #expect(transport.dequeueObservation() == obs2)
+        #expect(transport.dequeueObservation() == nil)
     }
 }

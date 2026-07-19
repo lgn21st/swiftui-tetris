@@ -3,11 +3,11 @@
 Use this checklist before cutting a release build.
 
 ## Build + Test
-- Run `swift test` and ensure all tests pass.
-- Run `swift build -c release` with a clean tree.
+- Run `scripts/test` and ensure all tests pass.
+- Run `scripts/build -c release` with a clean tree.
 
 ## Manual QA (CLI-run)
-- `swift run App` launches a window immediately.
+- `scripts/run` launches a window immediately.
 - Keyboard: arrows, rotate, hard drop, hold, pause, restart.
 - Audio: confirm move/rotate/line clear events audible; ambient loop plays and ducks on line clears.
 - Fullscreen: Cmd+Ctrl+F toggles correctly.

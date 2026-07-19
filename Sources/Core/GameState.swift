@@ -99,6 +99,9 @@ public struct GameState {
         logicalStep += 1
         adapterLockedThisStep = false
         transitionEvents.removeAll(keepingCapacity: true)
+    }
+
+    public mutating func advanceFixedStep() {
         guard !paused && !gameOver else { return }
         stepInPiece += 1
     }

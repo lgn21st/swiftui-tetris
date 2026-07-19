@@ -1,32 +1,32 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class HUDDiagnosticsStateTests: XCTestCase {
-    func testDiagnosticsStateIncludesLastInputAndHint() {
+@Suite struct HUDDiagnosticsStateTests {
+    @Test func testDiagnosticsStateIncludesLastInputAndHint() {
         let state = GameState(config: GameConfig(), seed: 1)
         let diag = HUDDiagnosticsState.from(state: state, lastInput: .rotateCw)
-        XCTAssertEqual(diag.lastInputText, "Last input: Rotate CW")
-        XCTAssertEqual(diag.hintText, "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
+        #expect(diag.lastInputText == "Last input: Rotate CW")
+        #expect(diag.hintText == "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
     }
 
-    func testDiagnosticsStateIncludesGroundedAndLockResets() {
+    @Test func testDiagnosticsStateIncludesGroundedAndLockResets() {
         var state = GameState(config: GameConfig(lockResetLimit: 15), seed: 1)
         state.setTimersForTesting(lockResetCount: 3)
         let diag = HUDDiagnosticsState.from(state: state)
-        XCTAssertEqual(diag.lockResetsText, "Lock resets: 12/15")
-        XCTAssertEqual(diag.groundedText, "Grounded: No")
+        #expect(diag.lockResetsText == "Lock resets: 12/15")
+        #expect(diag.groundedText == "Grounded: No")
     }
 
-    func testDiagnosticsStateReportsActiveAndGhost() {
+    @Test func testDiagnosticsStateReportsActiveAndGhost() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .i, x: 1, y: 2)
         state.updateGhostCache()
         let diag = HUDDiagnosticsState.from(state: state)
         let ghostBlocks = state.ghostBlocks()
-        XCTAssertEqual(diag.activeText, "Active: i @ (1, 2)")
-        XCTAssertEqual(diag.ghostText, "Ghost blocks: \(ghostBlocks.count)")
-        XCTAssertEqual(diag.ghostBoundsText, ghostBoundsDescription(ghostBlocks))
+        #expect(diag.activeText == "Active: i @ (1, 2)")
+        #expect(diag.ghostText == "Ghost blocks: \(ghostBlocks.count)")
+        #expect(diag.ghostBoundsText == ghostBoundsDescription(ghostBlocks))
     }
 
     private func ghostBoundsDescription(_ blocks: [(Int, Int)]) -> String {
@@ -44,15 +44,15 @@ final class HUDDiagnosticsStateTests: XCTestCase {
         return "Ghost bounds: x[\(minX)..\(maxX)] y[\(minY)..\(maxY)]"
     }
 
-    func testDiagnosticsStateShowsComboAndB2BForModernRules() {
+    @Test func testDiagnosticsStateShowsComboAndB2BForModernRules() {
         var config = GameConfig()
         config.ruleset = .modern
         var state = GameState(config: config, seed: 1)
         state.combo = 2
         state.backToBack = true
         let diag = HUDDiagnosticsState.from(state: state)
-        XCTAssertEqual(diag.comboText, "Combo: 2")
-        XCTAssertEqual(diag.b2bText, "B2B: Yes")
-        XCTAssertFalse(diag.isClassicRuleset)
+        #expect(diag.comboText == "Combo: 2")
+        #expect(diag.b2bText == "B2B: Yes")
+        #expect(!diag.isClassicRuleset)
     }
 }

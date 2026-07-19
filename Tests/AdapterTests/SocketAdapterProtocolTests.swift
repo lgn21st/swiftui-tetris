@@ -1,16 +1,16 @@
-import XCTest
+import Testing
 import Core
 import Foundation
 @testable import Adapter
 
-final class SocketAdapterProtocolTests: XCTestCase {
-    func testHelloReceivesWelcome() throws {
+@Suite struct SocketAdapterProtocolTests {
+    @Test func testHelloReceivesWelcome() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -26,25 +26,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(lineData: try WireCodec.encode(.hello(hello)))
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected welcome")
+            Issue.record("Expected welcome")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .welcome(let welcome) = message else {
-            XCTFail("Expected welcome message")
+            Issue.record("Expected welcome message")
             return
         }
-        XCTAssertEqual(welcome.protocolVersion, "3.0.0")
-        XCTAssertEqual(welcome.capabilities, .canonical)
+        #expect(welcome.protocolVersion == "3.0.0")
+        #expect(welcome.capabilities == .canonical)
     }
 
-    func testSecondClientCannotCommand() throws {
+    @Test func testSecondClientCannotCommand() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -73,24 +73,24 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         try client2.send(lineData: try WireCodec.encode(.command(command)))
         guard let line = try client2.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
-        XCTAssertEqual(error.code, "not_controller")
+        #expect(error.code == "not_controller")
     }
 
-    func testObservationBroadcastsToAllClients() throws {
+    @Test func testObservationBroadcastsToAllClients() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -115,29 +115,29 @@ final class SocketAdapterProtocolTests: XCTestCase {
         adapter.emit(snapshot: snapshot)
 
         guard let line1 = try client1.readLine(timeoutMs: 500) else {
-            XCTFail("Expected observation")
+            Issue.record("Expected observation")
             return
         }
         guard let line2 = try client2.readLine(timeoutMs: 500) else {
-            XCTFail("Expected observation")
+            Issue.record("Expected observation")
             return
         }
 
         if case .observation = try WireCodec.decode(line1) {} else {
-            XCTFail("Expected observation")
+            Issue.record("Expected observation")
         }
         if case .observation = try WireCodec.decode(line2) {} else {
-            XCTFail("Expected observation")
+            Issue.record("Expected observation")
         }
     }
 
-    func testCommandBeforeHelloReceivesError() throws {
+    @Test func testCommandBeforeHelloReceivesError() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -152,24 +152,24 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(lineData: try WireCodec.encode(.command(command)))
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "handshake_required")
+        #expect(error.code == "handshake_required")
     }
 
-    func testCommandAfterHelloReceivesAck() throws {
+    @Test func testCommandAfterHelloReceivesAck() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -195,31 +195,28 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(lineData: try WireCodec.encode(.command(command)))
 
         var state = GameState(config: GameConfig(), seed: 1)
-        adapter.poll(elapsedMs: 16, state: &state)
-
-        guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected ack")
+        guard let message = try pollMessage(adapter: adapter, state: &state, client: client) else {
+            Issue.record("Expected ack")
             return
         }
-        let message = try WireCodec.decode(line)
         guard case .ack(let ack) = message else {
-            XCTFail("Expected ack message")
+            Issue.record("Expected ack message")
             return
         }
-        XCTAssertEqual(ack.seq, 42)
-        XCTAssertEqual(ack.correlationSeq, 42)
-        XCTAssertEqual(ack.appliedStep, state.snapshot().logicalStep)
-        XCTAssertEqual(ack.stateHash, ObservationMapper.stateHash(state.snapshot()))
-        XCTAssertEqual(ack.status, "ok")
+        #expect(ack.seq == 42)
+        #expect(ack.correlationSeq == 42)
+        #expect(ack.appliedStep == state.snapshot().logicalStep)
+        #expect(ack.stateHash == ObservationMapper.stateHash(state.snapshot()))
+        #expect(ack.status == "ok")
     }
 
-    func testInvalidPlaceReceivesErrorAfterPoll() throws {
+    @Test func testInvalidPlaceReceivesErrorAfterPoll() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -256,24 +253,24 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
 
         guard let line else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "invalid_place")
+        #expect(error.code == "invalid_place")
     }
 
-    func testControlReleaseAndClaim() throws {
+    @Test func testControlReleaseAndClaim() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -301,21 +298,21 @@ final class SocketAdapterProtocolTests: XCTestCase {
         let claim = TetrisAIControl(seq: 11, tsMs: 1, action: .claim)
         try client2.send(lineData: try WireCodec.encode(.control(claim)))
         guard let line = try client2.readLine(timeoutMs: 1500) else {
-            XCTFail("Expected ack")
+            Issue.record("Expected ack")
             return
         }
         if case .ack = try WireCodec.decode(line) {} else {
-            XCTFail("Expected ack")
+            Issue.record("Expected ack")
         }
     }
 
-    func testReleaseLeavesControlUnassignedUntilExplicitClaim() throws {
+    @Test func testReleaseLeavesControlUnassignedUntilExplicitClaim() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -351,17 +348,17 @@ final class SocketAdapterProtocolTests: XCTestCase {
         var state = GameState(config: GameConfig(), seed: 1)
         adapter.poll(elapsedMs: 16, state: &state)
         guard let line = try client2.readLine(timeoutMs: 500) else {
-            XCTFail("Expected not_controller")
+            Issue.record("Expected not_controller")
             return
         }
         if case .error(let error) = try WireCodec.decode(line) {
-            XCTAssertEqual(error.code, "not_controller")
+            #expect(error.code == "not_controller")
         } else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
         }
     }
 
-    func testBackpressureRejectsCommand() throws {
+    @Test func testBackpressureRejectsCommand() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(
                 transport: .tcp(host: "127.0.0.1", port: 0),
@@ -370,7 +367,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -404,19 +401,19 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         try client.send(lineData: try WireCodec.encode(.command(second)))
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
-        XCTAssertEqual(error.code, "backpressure")
-        XCTAssertEqual(error.retryAfterMs, 50)
+        #expect(error.code == "backpressure")
+        #expect(error.retryAfterMs == 50)
     }
 
-    func testObservationThrottleSkipsFastUpdates() throws {
+    @Test func testObservationThrottleSkipsFastUpdates() throws {
         var now = 0
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(
@@ -427,7 +424,7 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -450,16 +447,16 @@ final class SocketAdapterProtocolTests: XCTestCase {
         now += 10
         adapter.emit(snapshot: snapshot)
         let line = try client.readLine(timeoutMs: 50)
-        XCTAssertNil(line)
+        #expect(line == nil)
     }
 
-    func testHelloWithMismatchedMajorProtocolReceivesError() throws {
+    @Test func testHelloWithMismatchedMajorProtocolReceivesError() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -475,24 +472,24 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(lineData: try WireCodec.encode(.hello(hello)))
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "protocol_mismatch")
+        #expect(error.code == "protocol_mismatch")
     }
 
-    func testHelloSeqNotOneReceivesInvalidCommand() throws {
+    @Test func testHelloSeqNotOneReceivesInvalidCommand() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -502,25 +499,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "invalid_command")
-        XCTAssertEqual(error.seq, 2)
+        #expect(error.code == "invalid_command")
+        #expect(error.seq == 2)
     }
 
-    func testHelloRoleObserverNeverBecomesController() throws {
+    @Test func testHelloRoleObserverNeverBecomesController() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -545,25 +542,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
         }
 
         guard let line else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "not_controller")
-        XCTAssertEqual(error.seq, 2)
+        #expect(error.code == "not_controller")
+        #expect(error.seq == 2)
     }
 
-    func testInvalidJsonReceivesInvalidCommandError() throws {
+    @Test func testInvalidJsonReceivesInvalidCommandError() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -571,25 +568,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(line: "{")
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "invalid_command")
-        XCTAssertEqual(error.seq, 0)
+        #expect(error.code == "invalid_command")
+        #expect(error.seq == 0)
     }
 
-    func testMissingRequiredFieldsReceivesInvalidCommandErrorEchoingSeq() throws {
+    @Test func testMissingRequiredFieldsReceivesInvalidCommandErrorEchoingSeq() throws {
         let adapter = SocketAdapter(
             configuration: SocketAdapterConfiguration(transport: .tcp(host: "127.0.0.1", port: 0))
         )
         defer { adapter.stop() }
         guard let port = adapter.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
@@ -597,112 +594,120 @@ final class SocketAdapterProtocolTests: XCTestCase {
         try client.send(line: #"{"type":"command","seq":7,"ts":1}"#)
 
         guard let line = try client.readLine(timeoutMs: 500) else {
-            XCTFail("Expected error")
+            Issue.record("Expected error")
             return
         }
         let message = try WireCodec.decode(line)
         guard case .error(let error) = message else {
-            XCTFail("Expected error message")
+            Issue.record("Expected error message")
             return
         }
-        XCTAssertEqual(error.code, "invalid_command")
-        XCTAssertEqual(error.seq, 7)
+        #expect(error.code == "invalid_command")
+        #expect(error.seq == 7)
     }
 
-    func testStreamingHelloImmediatelyReceivesLatestFullSnapshot() throws {
+    @Test func testStreamingHelloImmediatelyReceivesLatestFullSnapshot() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
         adapter.emit(snapshot: GameState(config: GameConfig(), seed: 99).snapshot())
 
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(adapter.boundPort))
         try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .observer, stream: true))))
-        guard case .welcome = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected welcome first")
+        guard case .welcome = try readMessage(from: client) else {
+            Issue.record("Expected welcome first")
+            return
         }
-        guard case .observation(let observation) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected immediate observation")
+        guard case .observation(let observation) = try readMessage(from: client) else {
+            Issue.record("Expected immediate observation")
+            return
         }
-        XCTAssertEqual(observation.seed, 99)
-        XCTAssertEqual(observation.nextQueue.count, 5)
+        #expect(observation.seed == 99)
+        #expect(observation.nextQueue.count == 5)
     }
 
-    func testStrictSemVerAcceptsCompatibleThreeXAndRejectsMalformedVersion() throws {
+    @Test func testStrictSemVerAcceptsCompatibleThreeXAndRejectsMalformedVersion() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let port = try XCTUnwrap(adapter.boundPort)
+        let port = try #require(adapter.boundPort)
 
         let compatible = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         var hello = makeHello(role: .observer, stream: false)
         hello.protocolVersion = "3.9.0-rc.1+build.5"
         try compatible.send(lineData: try WireCodec.encode(.hello(hello)))
-        guard case .welcome = try WireCodec.decode(try XCTUnwrap(compatible.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected compatible 3.x welcome")
+        guard case .welcome = try readMessage(from: compatible) else {
+            Issue.record("Expected compatible 3.x welcome")
+            return
         }
 
         let malformed = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         hello.protocolVersion = "3.01.0"
         try malformed.send(lineData: try WireCodec.encode(.hello(hello)))
-        guard case .error(let error) = try WireCodec.decode(try XCTUnwrap(malformed.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected protocol mismatch")
+        guard case .error(let error) = try readMessage(from: malformed) else {
+            Issue.record("Expected protocol mismatch")
+            return
         }
-        XCTAssertEqual(error.code, "protocol_mismatch")
+        #expect(error.code == "protocol_mismatch")
     }
 
-    func testVersionTwoHandshakeIsExplicitlyRejected() throws {
+    @Test func testVersionTwoHandshakeIsExplicitlyRejected() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(adapter.boundPort))
         var hello = makeHello(role: .observer, stream: false)
         hello.protocolVersion = "2.1.1"
 
         try client.send(lineData: try WireCodec.encode(.hello(hello)))
 
-        guard case .error(let error) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected protocol_mismatch")
+        guard case .error(let error) = try readMessage(from: client) else {
+            Issue.record("Expected protocol_mismatch")
+            return
         }
-        XCTAssertEqual(error.code, "protocol_mismatch")
+        #expect(error.code == "protocol_mismatch")
     }
 
-    func testObserverMayExplicitlyClaimUnassignedControl() throws {
+    @Test func testObserverMayExplicitlyClaimUnassignedControl() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(adapter.boundPort))
         try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .observer, stream: false))))
         _ = try client.readLine(timeoutMs: 500)
         try client.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
-        guard case .ack(let ack) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected explicit claim to succeed")
+        guard case .ack(let ack) = try readMessage(from: client) else {
+            Issue.record("Expected explicit claim to succeed")
+            return
         }
-        XCTAssertEqual(ack.correlationSeq, 2)
-        XCTAssertNil(ack.appliedStep)
-        XCTAssertNil(ack.stateHash)
+        #expect(ack.correlationSeq == 2)
+        #expect(ack.appliedStep == nil)
+        #expect(ack.stateHash == nil)
     }
 
-    func testActionLimitAndRestartPayloadSemanticsAreValidated() throws {
+    @Test func testActionLimitAndRestartPayloadSemanticsAreValidated() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(adapter.boundPort))
         try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
         _ = try client.readLine(timeoutMs: 500)
 
         let actions = Array(repeating: "moveLeft", count: 33).map { "\"\($0)\"" }.joined(separator: ",")
         try client.send(line: "{\"type\":\"command\",\"seq\":2,\"ts\":1,\"mode\":\"action\",\"actions\":[\(actions)]}")
-        guard case .error(let tooMany) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected action limit error")
+        guard case .error(let tooMany) = try readMessage(from: client) else {
+            Issue.record("Expected action limit error")
+            return
         }
-        XCTAssertEqual(tooMany.code, "invalid_command")
+        #expect(tooMany.code == "invalid_command")
 
         try client.send(line: #"{"type":"command","seq":3,"ts":1,"mode":"action","actions":["moveLeft"],"restart":{"seed":123}}"#)
-        guard case .error(let invalidRestart) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected restart semantic error")
+        guard case .error(let invalidRestart) = try readMessage(from: client) else {
+            Issue.record("Expected restart semantic error")
+            return
         }
-        XCTAssertEqual(invalidRestart.code, "invalid_command")
+        #expect(invalidRestart.code == "invalid_command")
     }
 
-    func testRestartSeedAppliesDeterministicallyBeforeAck() throws {
+    @Test func testRestartSeedAppliesDeterministicallyBeforeAck() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(adapter.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(adapter.boundPort))
         try client.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
         _ = try client.readLine(timeoutMs: 500)
         let command = TetrisAICommandEnvelope(
@@ -710,20 +715,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
         )
         try client.send(lineData: try WireCodec.encode(.command(command)))
         var state = GameState(config: GameConfig(), seed: 1)
-        adapter.poll(elapsedMs: 0, state: &state)
-        guard case .ack(let ack) = try WireCodec.decode(try XCTUnwrap(client.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected ack")
+        guard let message = try pollMessage(
+            adapter: adapter,
+            state: &state,
+            client: client,
+            elapsedMs: 0
+        ), case .ack(let ack) = message else {
+            Issue.record("Expected ack")
+            return
         }
-        XCTAssertEqual(state.seed, UInt64(UInt32.max))
-        XCTAssertEqual(ack.correlationSeq, 2)
-        XCTAssertEqual(ack.appliedStep, state.snapshot().logicalStep)
-        XCTAssertEqual(ack.stateHash, ObservationMapper.stateHash(state.snapshot()))
+        #expect(state.snapshot().seed == UInt64(UInt32.max))
+        #expect(ack.correlationSeq == 2)
+        #expect(ack.appliedStep == state.snapshot().logicalStep)
+        #expect(ack.stateHash == ObservationMapper.stateHash(state.snapshot()))
     }
 
-    func testDisconnectPromotionAndReconnectKeepSingleController() throws {
+    @Test func testDisconnectPromotionAndReconnectKeepSingleController() throws {
         let adapter = SocketAdapter(configuration: .init(transport: .tcp(host: "127.0.0.1", port: 0)))
         defer { adapter.stop() }
-        let port = try XCTUnwrap(adapter.boundPort)
+        let port = try #require(adapter.boundPort)
         let first = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         let eligible = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try first.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
@@ -734,21 +744,24 @@ final class SocketAdapterProtocolTests: XCTestCase {
         Thread.sleep(forTimeInterval: 0.05)
 
         try eligible.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
-        guard case .ack = try WireCodec.decode(try XCTUnwrap(eligible.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected promoted controller")
+        guard case .ack = try readMessage(from: eligible) else {
+            Issue.record("Expected promoted controller")
+            return
         }
 
         let reconnected = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try reconnected.send(lineData: try WireCodec.encode(.hello(makeHello(role: .controller, stream: false))))
-        guard case .welcome(let welcome) = try WireCodec.decode(try XCTUnwrap(reconnected.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected reconnect welcome")
+        guard case .welcome(let welcome) = try readMessage(from: reconnected) else {
+            Issue.record("Expected reconnect welcome")
+            return
         }
-        XCTAssertEqual(welcome.role, .observer)
+        #expect(welcome.role == .observer)
         try reconnected.send(lineData: try WireCodec.encode(.control(.init(seq: 2, tsMs: 1, action: .claim))))
-        guard case .error(let error) = try WireCodec.decode(try XCTUnwrap(reconnected.readLine(timeoutMs: 500))) else {
-            return XCTFail("Expected controller_active")
+        guard case .error(let error) = try readMessage(from: reconnected) else {
+            Issue.record("Expected controller_active")
+            return
         }
-        XCTAssertEqual(error.code, "controller_active")
+        #expect(error.code == "controller_active")
     }
 
     private func makeHello(role: TetrisAIRole, stream: Bool) -> TetrisAIHello {
@@ -760,5 +773,25 @@ final class SocketAdapterProtocolTests: XCTestCase {
             formats: [.json],
             requested: .init(streamObservations: stream, commandMode: .action, role: role)
         )
+    }
+
+    private func readMessage(from client: SocketTestClient) throws -> TetrisAIWireMessage {
+        let line = try client.readLine(timeoutMs: 500)
+        return try WireCodec.decode(try #require(line))
+    }
+
+    private func pollMessage(
+        adapter: SocketAdapter,
+        state: inout GameState,
+        client: SocketTestClient,
+        elapsedMs: Int = 16
+    ) throws -> TetrisAIWireMessage? {
+        for _ in 0..<10 {
+            adapter.poll(elapsedMs: elapsedMs, state: &state)
+            if let line = try client.readLine(timeoutMs: 50) {
+                return try WireCodec.decode(line)
+            }
+        }
+        return nil
     }
 }

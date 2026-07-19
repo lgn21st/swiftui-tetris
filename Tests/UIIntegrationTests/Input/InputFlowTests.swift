@@ -1,12 +1,12 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class InputFlowTests: XCTestCase {
-    func testInputEngineAppliesActions() {
+@Suite struct InputFlowTests {
+    @Test func testInputEngineAppliesActions() {
         var state = GameState(config: GameConfig(), seed: 1)
         let engine = InputEngine()
         engine.apply(action: .moveRight, to: &state)
-        XCTAssertEqual(state.active.x, 4)
+        #expect(state.active.x == 4)
     }
 }

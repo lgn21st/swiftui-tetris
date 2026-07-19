@@ -4,13 +4,13 @@ Use the SwiftPM `Packager` executable to create a macOS `.app` bundle from the r
 
 ## Build the binary
 ```sh
-swift build -c release
+scripts/build -c release
 ```
 
 If module cache permissions fail, set an explicit cache path:
 ```sh
 mkdir -p .build/module-cache
-CLANG_MODULE_CACHE_PATH="$(pwd)/.build/module-cache" swift build -c release
+CLANG_MODULE_CACHE_PATH="$(pwd)/.build/module-cache" scripts/build -c release
 ```
 
 ## Package the app

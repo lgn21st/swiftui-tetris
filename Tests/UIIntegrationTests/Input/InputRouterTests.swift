@@ -1,20 +1,20 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class InputRouterTests: XCTestCase {
-    func testRoutesKeyboardActions() {
-        XCTAssertEqual(InputRouter.action(forKey: "left"), .moveLeft)
-        XCTAssertEqual(InputRouter.action(forKey: "up"), .rotateCw)
+@Suite struct InputRouterTests {
+    @Test func testRoutesKeyboardActions() {
+        #expect(InputRouter.action(forKey: "left") == .moveLeft)
+        #expect(InputRouter.action(forKey: "up") == .rotateCw)
     }
 
-    func testRoutesUppercaseKeys() {
-        XCTAssertEqual(InputRouter.action(forKey: "C"), .hold)
-        XCTAssertEqual(InputRouter.action(forKey: "P"), .pause)
+    @Test func testRoutesUppercaseKeys() {
+        #expect(InputRouter.action(forKey: "C") == .hold)
+        #expect(InputRouter.action(forKey: "P") == .pause)
     }
 
-    func testRoutesGamepadActions() {
-        XCTAssertEqual(InputRouter.action(forButton: .buttonA), .rotateCw)
-        XCTAssertEqual(InputRouter.action(forButton: .menu), .pause)
+    @Test func testRoutesGamepadActions() {
+        #expect(InputRouter.action(forButton: .buttonA) == .rotateCw)
+        #expect(InputRouter.action(forButton: .menu) == .pause)
     }
 }

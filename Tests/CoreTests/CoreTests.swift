@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class CoreTests: XCTestCase {
-    func testCoreVersion() {
-        XCTAssertEqual(CoreVersion.value, "0.1.0")
+@Suite struct CoreTests {
+    @Test func testCoreVersion() {
+        #expect(CoreVersion.value == "0.1.0")
     }
 }

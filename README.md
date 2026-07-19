@@ -11,10 +11,11 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Convention-over-configuration defaults: no Settings UI or persistence; minimal menu actions.
 
 ## Run (CLI-first)
-- Tests: `swift test`
-- Build (debug): `swift build`
-- Build (release): `swift build -c release`
-- Run app: `swift run App`
+- Requirements: macOS 14+, Swift 6.2 Command Line Tools. Xcode is not required.
+- Tests: `scripts/test`
+- Build (debug): `scripts/build`
+- Build (release): `scripts/build -c release`
+- Run app: `scripts/run`
 
 ## External AI (Adapter)
 Adapter implements Tetris AI Adapter Protocol `3.0.0` over TCP JSON Lines. Environment variables:

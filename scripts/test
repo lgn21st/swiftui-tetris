@@ -1,0 +1,44 @@
+#!/bin/zsh
+
+set -euo pipefail
+source "${0:A:h}/swift-env"
+
+testing_frameworks="${TETRIS_DEVELOPER_ROOT}/Library/Developer/Frameworks"
+testing_flags=()
+if [[ -d "${testing_frameworks}/Testing.framework" ]]; then
+    testing_overlay_dir="${TETRIS_PROJECT_ROOT}/.build/testing-overlays"
+    testing_target="$(uname -m)-apple-macosx14.0"
+    mkdir -p "${testing_overlay_dir}"
+    "${TETRIS_SWIFT_BIN}c" \
+        -sdk "${SDKROOT}" \
+        -F "${testing_frameworks}" \
+        -target "${testing_target}" \
+        -Xfrontend -disable-cross-import-overlays \
+        -parse-as-library \
+        -emit-module \
+        -module-name _Testing_Foundation \
+        "${TETRIS_PROJECT_ROOT}/scripts/testing-foundation-shim.swift" \
+        -emit-module-path "${testing_overlay_dir}/_Testing_Foundation.swiftmodule"
+
+    testing_flags=(
+        -Xswiftc -F
+        -Xswiftc "${testing_frameworks}"
+        -Xswiftc -I
+        -Xswiftc "${testing_overlay_dir}"
+        -Xswiftc -suppress-warnings
+        -Xlinker -rpath
+        -Xlinker "${testing_frameworks}"
+    )
+fi
+
+if rg -q '^import XCTest' "${TETRIS_PROJECT_ROOT}/Tests"; then
+    print -u2 "XCTest is not supported. Migrate every test to Swift Testing."
+    exit 1
+fi
+
+exec "${TETRIS_SWIFT_BIN}" test \
+    --enable-swift-testing \
+    --disable-xctest \
+    --no-parallel \
+    "${testing_flags[@]}" \
+    "$@"

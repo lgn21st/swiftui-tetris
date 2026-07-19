@@ -1,45 +1,45 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class CommandHandlingTests: XCTestCase {
-    func testCommandStartClearsTitleOverlay() {
+@Suite struct CommandHandlingTests {
+    @Test func testCommandStartClearsTitleOverlay() {
         let driver = SceneDriver()
 
-        XCTAssertTrue(driver.overlayState.isTitle)
+        #expect(driver.overlayState.isTitle)
 
         driver.commandStartGame()
 
-        XCTAssertFalse(driver.overlayState.isTitle)
+        #expect(!driver.overlayState.isTitle)
     }
 
-    func testCommandTogglePauseTogglesGameState() {
+    @Test func testCommandTogglePauseTogglesGameState() {
         let driver = SceneDriver()
         driver.commandStartGame()
 
         driver.commandTogglePause()
-        XCTAssertTrue(driver.stateSnapshot().paused)
+        #expect(driver.stateSnapshot().paused)
 
         driver.commandTogglePause()
-        XCTAssertFalse(driver.stateSnapshot().paused)
+        #expect(!driver.stateSnapshot().paused)
     }
 
-    func testCommandRestartClearsPause() {
+    @Test func testCommandRestartClearsPause() {
         let driver = SceneDriver()
         driver.commandTogglePause()
 
         driver.commandRestartGame()
 
-        XCTAssertFalse(driver.stateSnapshot().paused)
-        XCTAssertFalse(driver.overlayState.isTitle)
+        #expect(!driver.stateSnapshot().paused)
+        #expect(!driver.overlayState.isTitle)
     }
 
-    func testToggleFullScreenInvokesHandler() {
+    @Test func testToggleFullScreenInvokesHandler() {
         let handler = FullScreenHandlerSpy()
         let driver = SceneDriver(fullScreenHandler: handler)
 
         driver.toggleFullScreen()
 
-        XCTAssertEqual(handler.toggleCount, 1)
+        #expect(handler.toggleCount == 1)
     }
 }
 

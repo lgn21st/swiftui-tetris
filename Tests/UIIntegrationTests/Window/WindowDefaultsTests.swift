@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import AppKit
 @testable import UI
 
-final class WindowDefaultsTests: XCTestCase {
-    func testWindowDefaultsApplySizeAndRestoration() {
+@Suite @MainActor struct WindowDefaultsTests {
+    @Test func testWindowDefaultsApplySizeAndRestoration() {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -14,10 +14,10 @@ final class WindowDefaultsTests: XCTestCase {
         WindowDefaults.apply(to: window)
 
         let contentSize = window.contentRect(forFrameRect: window.frame).size
-        XCTAssertEqual(contentSize.width, WindowConfig.defaultWidth, accuracy: 0.5)
-        XCTAssertEqual(contentSize.height, WindowConfig.defaultHeight, accuracy: 0.5)
-        XCTAssertEqual(window.contentMinSize.width, WindowConfig.minWidth)
-        XCTAssertEqual(window.contentMinSize.height, WindowConfig.minHeight)
-        XCTAssertFalse(window.isRestorable)
+        #expect(abs((contentSize.width) - (WindowConfig.defaultWidth)) <= (0.5))
+        #expect(abs((contentSize.height) - (WindowConfig.defaultHeight)) <= (0.5))
+        #expect(window.contentMinSize.width == WindowConfig.minWidth)
+        #expect(window.contentMinSize.height == WindowConfig.minHeight)
+        #expect(!window.isRestorable)
     }
 }

@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import AppKit
 @testable import UI
 
-final class KeyCaptureViewTests: XCTestCase {
-    func testKeyCaptureReacquiresFirstResponderOnWindowKey() {
+@Suite @MainActor struct KeyCaptureViewTests {
+    @Test func testKeyCaptureReacquiresFirstResponderOnWindowKey() {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
@@ -20,6 +20,6 @@ final class KeyCaptureViewTests: XCTestCase {
         window.makeFirstResponder(nil)
         NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: window)
 
-        XCTAssertTrue(window.firstResponder === view)
+        #expect(window.firstResponder === view)
     }
 }

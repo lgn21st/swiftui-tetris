@@ -1,12 +1,12 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class AudioEngineResolveTests: XCTestCase {
-    func testResolveSoundURLUsesSfxDir() {
+@Suite struct AudioEngineResolveTests {
+    @Test func testResolveSoundURLUsesSfxDir() {
         let base = AssetLocator.sfxDirectory()
         let engine = AudioEngine(baseURL: base)
         let url = engine.resolveURL(for: .move)
-        XCTAssertNotNil(url)
+        #expect(url != nil)
     }
 }

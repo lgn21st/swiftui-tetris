@@ -1,39 +1,41 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class InputRepeatTests: XCTestCase {
-    func testPressReturnsTrueOnce() {
+@Suite struct InputRepeatTests {
+    @Test func testPressReturnsTrueOnce() {
         var state = RepeatState()
-        XCTAssertTrue(state.press())
-        XCTAssertFalse(state.press())
+        let firstPress = state.press()
+        let secondPress = state.press()
+        #expect(firstPress)
+        #expect(!secondPress)
     }
 
-    func testRepeatAfterDasAndArr() {
+    @Test func testRepeatAfterDasAndArr() {
         var state = RepeatState()
         let config = RepeatConfig(dasMs: GameConstants.defaultDasMs, arrMs: GameConstants.defaultArrMs)
         _ = state.press()
 
-        XCTAssertEqual(state.tick(elapsedMs: 149, config: config), 0)
-        XCTAssertEqual(state.tick(elapsedMs: 1, config: config), 0)
-        XCTAssertEqual(state.tick(elapsedMs: 50, config: config), 1)
-        XCTAssertEqual(state.tick(elapsedMs: 50, config: config), 1)
+        #expect(state.tick(elapsedMs: 149, config: config) == 0)
+        #expect(state.tick(elapsedMs: 1, config: config) == 0)
+        #expect(state.tick(elapsedMs: 50, config: config) == 1)
+        #expect(state.tick(elapsedMs: 50, config: config) == 1)
     }
 
-    func testReleaseResetsState() {
+    @Test func testReleaseResetsState() {
         var state = RepeatState()
         let config = RepeatConfig(dasMs: GameConstants.defaultDasMs, arrMs: GameConstants.defaultArrMs)
         _ = state.press()
         _ = state.tick(elapsedMs: 200, config: config)
         state.release()
-        XCTAssertEqual(state.tick(elapsedMs: 200, config: config), 0)
+        #expect(state.tick(elapsedMs: 200, config: config) == 0)
     }
 
-    func testSyncHeldResetsRepeatCounters() {
+    @Test func testSyncHeldResetsRepeatCounters() {
         var state = RepeatState()
         let config = RepeatConfig(dasMs: 0, arrMs: 50)
         _ = state.press()
-        XCTAssertEqual(state.tick(elapsedMs: 200, config: config), 4)
+        #expect(state.tick(elapsedMs: 200, config: config) == 4)
         state.syncHeld(true)
-        XCTAssertEqual(state.tick(elapsedMs: 50, config: config), 1)
+        #expect(state.tick(elapsedMs: 50, config: config) == 1)
     }
 }

@@ -1,30 +1,30 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class KeyboardInputTests: XCTestCase {
-    func testKeyboardMappingLeftRight() {
-        XCTAssertEqual(InputRouter.action(forKey: "left"), .moveLeft)
-        XCTAssertEqual(InputRouter.action(forKey: "right"), .moveRight)
+@Suite struct KeyboardInputTests {
+    @Test func testKeyboardMappingLeftRight() {
+        #expect(InputRouter.action(forKey: "left") == .moveLeft)
+        #expect(InputRouter.action(forKey: "right") == .moveRight)
     }
 
-    func testKeyboardMappingRotateDropHold() {
-        XCTAssertEqual(InputRouter.action(forKey: "up"), .rotateCw)
-        XCTAssertEqual(InputRouter.action(forKey: " "), .hardDrop)
-        XCTAssertEqual(InputRouter.action(forKey: "c"), .hold)
+    @Test func testKeyboardMappingRotateDropHold() {
+        #expect(InputRouter.action(forKey: "up") == .rotateCw)
+        #expect(InputRouter.action(forKey: " ") == .hardDrop)
+        #expect(InputRouter.action(forKey: "c") == .hold)
     }
 
-    func testKeyCodeMapperArrows() {
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 123), "left")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 124), "right")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 125), "down")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 126), "up")
+    @Test func testKeyCodeMapperArrows() {
+        #expect(KeyCodeMapper.keyString(for: 123) == "left")
+        #expect(KeyCodeMapper.keyString(for: 124) == "right")
+        #expect(KeyCodeMapper.keyString(for: 125) == "down")
+        #expect(KeyCodeMapper.keyString(for: 126) == "up")
     }
 
-    func testKeyCodeMapperNonCharacterKeys() {
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 53), "escape")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 48), "tab")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 69), "+")
-        XCTAssertEqual(KeyCodeMapper.keyString(for: 78), "-")
+    @Test func testKeyCodeMapperNonCharacterKeys() {
+        #expect(KeyCodeMapper.keyString(for: 53) == "escape")
+        #expect(KeyCodeMapper.keyString(for: 48) == "tab")
+        #expect(KeyCodeMapper.keyString(for: 69) == "+")
+        #expect(KeyCodeMapper.keyString(for: 78) == "-")
     }
 }

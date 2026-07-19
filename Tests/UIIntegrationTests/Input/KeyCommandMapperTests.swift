@@ -1,18 +1,18 @@
-import XCTest
+import Testing
 import AppKit
 @testable import UI
 
-final class KeyCommandMapperTests: XCTestCase {
-    func testFullscreenToggleShortcut() {
-        XCTAssertTrue(KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.command, .control]))
+@Suite struct KeyCommandMapperTests {
+    @Test func testFullscreenToggleShortcut() {
+        #expect(KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.command, .control]))
     }
 
-    func testFullscreenToggleShortcutIgnoresMissingModifiers() {
-        XCTAssertFalse(KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.command]))
-        XCTAssertFalse(KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.control]))
+    @Test func testFullscreenToggleShortcutIgnoresMissingModifiers() {
+        #expect(!KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.command]))
+        #expect(!KeyCommandMapper.isFullScreenToggle(key: "f", modifiers: [.control]))
     }
 
-    func testFullscreenToggleShortcutIgnoresOtherKeys() {
-        XCTAssertFalse(KeyCommandMapper.isFullScreenToggle(key: "p", modifiers: [.command, .control]))
+    @Test func testFullscreenToggleShortcutIgnoresOtherKeys() {
+        #expect(!KeyCommandMapper.isFullScreenToggle(key: "p", modifiers: [.command, .control]))
     }
 }

@@ -4,19 +4,19 @@ Last reviewed: 2026-07-19
 
 ## Executive Summary
 
-The project has a sound separation between deterministic Core rules, SpriteKit rendering, SwiftUI coordination, and the optional Adapter. The review found no reason for a wholesale rewrite. It did find correctness and transport defects at subsystem boundaries plus several avoidable hot-path allocations; those issues were fixed in this review.
+The previous architecture was serviceable but retained the wrong runtime boundary: SpriteKit pacing, UI coordination, Core mutation, and Adapter acknowledgement were too tightly coupled. The project is now intentionally being rebuilt around a deterministic headless runtime, with SwiftUI/SpriteKit as a thin platform shell and Swift Testing as the only test system.
 
 Current assessment:
 
 | Area | Assessment | Evidence |
 | --- | --- | --- |
 | Core correctness | Strong after fixes | Deterministic state, rules tests, lock-time T-Spin fix |
-| Architecture | Strong | Core has no UI dependency; Renderer maps snapshots; SceneDriver coordinates |
+| Architecture | Rebuild in progress | Core remains UI-free; fixed-step ownership still needs to leave SceneDriver/SpriteKit |
 | Rendering | Strong | Preallocated nodes, texture cache, incremental cell buffer, direct snapshot board reuse |
 | Input/timing | Strong after fixes | DAS/ARR isolation and per-step catch-up processing |
 | Adapter | Aligned to 3.0.0 | Conformance matrix, logical transitions/events, applied-state ack, bounded transport |
 | Documentation | Reconciled | Canonical protocol is external; local implementation profile and project docs agree |
-| Verification environment | Needs repair | Debug/Release builds work; local Command Line Tools lacks macOS XCTest module |
+| Verification environment | Strong | CLI Debug/Release builds and all 280 Swift Testing tests pass without Xcode or XCTest |
 
 ## Correctness Findings Resolved
 
@@ -49,7 +49,7 @@ Current assessment:
 - `Adapter`: contains protocol DTOs, command planning, observations, framing, and transport.
 - `Packaging`/`App`: remain thin entry and delivery layers.
 
-Large files (`TetrisAIProtocol.swift`, `SocketAdapter.swift`, and `GameState.swift`) are cohesive enough to retain for now. Splitting them without a behavioral need would add navigation overhead; future extraction thresholds are tracked in `docs/todo.md`.
+Large files are no longer preserved merely to minimize diff size. Extraction is justified where it produces a smaller public API or separates deterministic policy from I/O; otherwise code stays together.
 
 ## Verification Record
 
@@ -58,10 +58,11 @@ Large files (`TetrisAIProtocol.swift`, `SocketAdapter.swift`, and `GameState.swi
 - Live Adapter stress checks passed: control concurrency, inbound backpressure/retry hints, frame-boundary disconnect, slow-client isolation, and disconnect/reconnect ownership.
 - Targeted executable checks: passed for T-Spin scoring, combo event score, spawn ghost refresh, shape invariants, framing limit, planner depth, and a 512 KiB localhost TCP write.
 - `git diff --check`: passed after all edits.
-- `swift test`: blocked before test compilation because the active Command Line Tools installation has no importable macOS `XCTest` module. This is an environment/toolchain defect, not a test failure.
+- `scripts/test`: all 280 tests in 91 suites pass with native Swift Testing and no XCTest dependency.
+- `scripts/build` and `scripts/build -c release`: pass using Command Line Tools.
 
 ## Residual Risks
 
-- Automated tests must be rerun once XCTest is restored; the newly added socket stress test is particularly important.
+- Runtime extraction can now proceed from the green Swift Testing baseline; protocol and performance gates must remain green after each batch.
 - Adapter queue capacities are implementation-local defaults and should be load-tested before exposing the endpoint beyond a trusted local interface.
 - Performance changes are complexity/allocation improvements validated by code inspection and builds, not Instruments measurements. Capture Instruments baselines before making claims about FPS or latency percentages.

@@ -1,43 +1,47 @@
-import XCTest
+import Testing
 import Foundation
+import Dispatch
 @testable import Adapter
 
-final class SocketTransportTests: XCTestCase {
-    func testTcpTransportReceivesLinesFromClient() throws {
+@Suite struct SocketTransportTests {
+    @Test func testTcpTransportReceivesLinesFromClient() throws {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
-        let receiveExpectation = expectation(description: "received")
+        let received = DispatchSemaphore(value: 0)
         transport.onReceive = { _, data in
             let text = String(data: data, encoding: .utf8)
             if text == "ping" {
-                receiveExpectation.fulfill()
+                received.signal()
             }
         }
 
         try transport.start()
         guard let port = transport.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
         let client = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try client.send(line: "ping")
 
-        wait(for: [receiveExpectation], timeout: 2.0)
+        #expect(received.wait(timeout: .now() + 2) == .success)
         transport.stop()
     }
 
-    func testTcpTransportStartFailsWhenPortAlreadyInUse() throws {
+    @Test func testTcpTransportStartFailsWhenPortAlreadyInUse() throws {
         let transport1 = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0))
         try transport1.start()
         guard let port = transport1.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
         let transport2 = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: port))
-        XCTAssertThrowsError(try transport2.start()) { error in
+        let error = #expect(throws: (any Error).self) {
+            try transport2.start()
+        }
+        if let error {
             guard case SocketTransportError.addressInUse = error else {
-                XCTFail("Expected addressInUse, got: \(error)")
+                Issue.record("Expected addressInUse, got: \(error)")
                 return
             }
         }
@@ -45,89 +49,94 @@ final class SocketTransportTests: XCTestCase {
         transport1.stop()
     }
 
-    func testTcpTransportRejectsInvalidHostInsteadOfBindingAllInterfaces() {
+    @Test func testTcpTransportRejectsInvalidHostInsteadOfBindingAllInterfaces() {
         let transport = SocketServerTransport(configuration: .tcp(host: "not-an-ip-address", port: 0))
-        XCTAssertThrowsError(try transport.start()) { error in
+        let error = #expect(throws: (any Error).self) {
+            try transport.start()
+        }
+        if let error {
             guard case SocketTransportError.invalidHost = error else {
-                return XCTFail("Expected invalidHost, got: \(error)")
+                Issue.record("Expected invalidHost, got: \(error)")
+                return
             }
         }
     }
 
-    func testIdleTimeoutDisconnectsClient() throws {
+    @Test func testIdleTimeoutDisconnectsClient() throws {
         let transport = SocketServerTransport(configuration: .tcp(host: "127.0.0.1", port: 0), idleTimeoutMs: 50)
-        let disconnectExpectation = expectation(description: "disconnect")
+        let disconnected = DispatchSemaphore(value: 0)
         var didDisconnect = false
         transport.onDisconnect = { _ in
             if !didDisconnect {
                 didDisconnect = true
-                disconnectExpectation.fulfill()
+                disconnected.signal()
             }
         }
 
         try transport.start()
         guard let port = transport.boundPort else {
-            XCTFail("Expected bound port")
+            Issue.record("Expected bound port")
             return
         }
 
         _ = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
-        wait(for: [disconnectExpectation], timeout: 2.0)
+        #expect(disconnected.wait(timeout: .now() + 2) == .success)
         transport.stop()
     }
 
-    func testTcpTransportWritesEntireLargeLine() throws {
+    @Test func testTcpTransportWritesEntireLargeLine() throws {
         let transport = SocketServerTransport(
             configuration: .tcp(host: "127.0.0.1", port: 0),
             maxQueuedBytes: 1_048_576
         )
         defer { transport.stop() }
-        let receiveExpectation = expectation(description: "connection identified")
+        let connected = DispatchSemaphore(value: 0)
         var connectionId: UUID?
         transport.onReceive = { id, _ in
             connectionId = id
-            receiveExpectation.fulfill()
+            connected.signal()
         }
 
         try transport.start()
-        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try XCTUnwrap(transport.boundPort))
+        let client = try SocketTestClient.tcp(host: "127.0.0.1", port: try #require(transport.boundPort))
         try client.send(line: "ready")
-        wait(for: [receiveExpectation], timeout: 2.0)
+        #expect(connected.wait(timeout: .now() + 2) == .success)
 
         let payload = Data(repeating: UInt8(ascii: "x"), count: 512 * 1024)
-        transport.send(line: payload, to: try XCTUnwrap(connectionId))
+        transport.send(line: payload, to: try #require(connectionId))
 
-        let received = try XCTUnwrap(client.readLine(timeoutMs: 5_000))
-        XCTAssertEqual(received, payload)
+        let line = try client.readLine(timeoutMs: 5_000)
+        let received = try #require(line)
+        #expect(received == payload)
     }
 
-    func testRequiredOutputOverflowDisconnectsOnlySlowClient() throws {
+    @Test func testRequiredOutputOverflowDisconnectsOnlySlowClient() throws {
         let transport = SocketServerTransport(
             configuration: .tcp(host: "127.0.0.1", port: 0),
             maxQueuedBytes: 512
         )
         defer { transport.stop() }
-        let connected = expectation(description: "connections identified")
-        connected.expectedFulfillmentCount = 2
+        let connected = DispatchSemaphore(value: 0)
         var ids: [String: UUID] = [:]
         transport.onReceive = { id, data in
             if let name = String(data: data, encoding: .utf8), ids[name] == nil {
                 ids[name] = id
-                connected.fulfill()
+                connected.signal()
             }
         }
         try transport.start()
-        let port = try XCTUnwrap(transport.boundPort)
+        let port = try #require(transport.boundPort)
         let slow = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         let fast = try SocketTestClient.tcp(host: "127.0.0.1", port: port)
         try slow.send(line: "slow")
         try fast.send(line: "fast")
-        wait(for: [connected], timeout: 2.0)
+        #expect(connected.wait(timeout: .now() + 2) == .success)
+        #expect(connected.wait(timeout: .now() + 2) == .success)
 
-        transport.send(line: Data(repeating: 1, count: 513), to: try XCTUnwrap(ids["slow"]), delivery: .required)
-        transport.send(line: Data("ok".utf8), to: try XCTUnwrap(ids["fast"]), delivery: .required)
+        transport.send(line: Data(repeating: 1, count: 513), to: try #require(ids["slow"]), delivery: .required)
+        transport.send(line: Data("ok".utf8), to: try #require(ids["fast"]), delivery: .required)
 
-        XCTAssertEqual(try fast.readLine(timeoutMs: 1_000), Data("ok".utf8))
-        XCTAssertNil(try slow.readLine(timeoutMs: 1_000))
+        #expect(try fast.readLine(timeoutMs: 1_000) == Data("ok".utf8))
+        #expect(try slow.readLine(timeoutMs: 1_000) == nil)
     }
 }

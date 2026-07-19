@@ -1,23 +1,23 @@
-import XCTest
+import Testing
 import Adapter
 @testable import UI
 
-final class AdapterBootstrapTests: XCTestCase {
-    func testConfigurationDefaultsToTcpWhenEnvMissing() {
+@Suite struct AdapterBootstrapTests {
+    @Test func testConfigurationDefaultsToTcpWhenEnvMissing() {
         let env: [String: String] = [:]
 
         let config = AdapterBootstrap.configuration(from: env)
 
-        XCTAssertEqual(config?.transport, .tcp(host: "127.0.0.1", port: 7777))
-        XCTAssertEqual(config?.idleTimeoutMs, 2000)
-        XCTAssertEqual(config?.maxPendingCommands, 64)
-        XCTAssertEqual(config?.maxOutboundBytes, 262_144)
-        XCTAssertEqual(config?.backpressureRetryAfterMs, 50)
-        XCTAssertNil(config?.observationIntervalMs)
-        XCTAssertEqual(config?.logPath, "auto")
+        #expect(config?.transport == .tcp(host: "127.0.0.1", port: 7777))
+        #expect(config?.idleTimeoutMs == 2000)
+        #expect(config?.maxPendingCommands == 64)
+        #expect(config?.maxOutboundBytes == 262_144)
+        #expect(config?.backpressureRetryAfterMs == 50)
+        #expect(config?.observationIntervalMs == nil)
+        #expect(config?.logPath == "auto")
     }
 
-    func testConfigurationParsesOverridesForTcp() {
+    @Test func testConfigurationParsesOverridesForTcp() {
         let env: [String: String] = [
             "TETRIS_AI_HOST": "0.0.0.0",
             "TETRIS_AI_PORT": "8888",
@@ -29,32 +29,32 @@ final class AdapterBootstrapTests: XCTestCase {
 
         let config = AdapterBootstrap.configuration(from: env)
 
-        XCTAssertEqual(config?.transport, .tcp(host: "0.0.0.0", port: 8888))
-        XCTAssertNil(config?.idleTimeoutMs)
-        XCTAssertEqual(config?.maxPendingCommands, 12)
-        XCTAssertEqual(config?.observationIntervalMs, 50)
-        XCTAssertEqual(config?.logPath, "/tmp/adapter.log")
+        #expect(config?.transport == .tcp(host: "0.0.0.0", port: 8888))
+        #expect(config?.idleTimeoutMs == nil)
+        #expect(config?.maxPendingCommands == 12)
+        #expect(config?.observationIntervalMs == 50)
+        #expect(config?.logPath == "/tmp/adapter.log")
     }
 
-    func testConfigurationReturnsNilWhenDisabled() {
+    @Test func testConfigurationReturnsNilWhenDisabled() {
         let env: [String: String] = [
             "TETRIS_AI_DISABLED": "1"
         ]
 
         let config = AdapterBootstrap.configuration(from: env)
 
-        XCTAssertNil(config)
+        #expect(config == nil)
     }
 
 
-    func testConfigurationRecognizesTrueAsDisabledAndParsesResourceOverrides() {
-        XCTAssertNil(AdapterBootstrap.configuration(from: ["TETRIS_AI_DISABLED": "true"]))
+    @Test func testConfigurationRecognizesTrueAsDisabledAndParsesResourceOverrides() {
+        #expect(AdapterBootstrap.configuration(from: ["TETRIS_AI_DISABLED": "true"]) == nil)
 
         let config = AdapterBootstrap.configuration(from: [
             "TETRIS_AI_MAX_OUTBOUND_BYTES": "131072",
             "TETRIS_AI_BACKPRESSURE_RETRY_MS": "25",
         ])
-        XCTAssertEqual(config?.maxOutboundBytes, 131_072)
-        XCTAssertEqual(config?.backpressureRetryAfterMs, 25)
+        #expect(config?.maxOutboundBytes == 131_072)
+        #expect(config?.backpressureRetryAfterMs == 25)
     }
 }

@@ -1,10 +1,11 @@
-import XCTest
+import Testing
+import Foundation
 import AVFoundation
 @testable import UI
 @testable import Core
 
-final class AudioEnginePlaybackTests: XCTestCase {
-    func testAudioEnginePreloadsBuffers() {
+@Suite struct AudioEnginePlaybackTests {
+    @Test func testAudioEnginePreloadsBuffers() {
         let backend = FakeAudioBackend()
         let baseURL = URL(fileURLWithPath: "/tmp/audio")
 
@@ -14,56 +15,56 @@ final class AudioEnginePlaybackTests: XCTestCase {
             .map { baseURL.appendingPathComponent($0).path }
             .sorted()
         let loaded = backend.loadedURLs.map(\.path).sorted()
-        XCTAssertEqual(loaded, expected)
+        #expect(loaded == expected)
     }
 
-    func testAudioEngineReusesIdlePlayer() {
+    @Test func testAudioEngineReusesIdlePlayer() {
         let backend = FakeAudioBackend()
         let engine = AudioEngine(baseURL: nil, maxPlayersPerSound: 2, backend: backend)
 
         engine.play(.move)
-        XCTAssertEqual(backend.nodes.count, 1)
+        #expect(backend.nodes.count == 1)
         backend.nodes[0].isPlaying = false
 
         engine.play(.move)
-        XCTAssertEqual(backend.nodes.count, 1)
-        XCTAssertEqual(backend.nodes[0].playCount, 2)
+        #expect(backend.nodes.count == 1)
+        #expect(backend.nodes[0].playCount == 2)
     }
 
-    func testAudioEngineCreatesNewPlayerWhenBusy() {
+    @Test func testAudioEngineCreatesNewPlayerWhenBusy() {
         let backend = FakeAudioBackend()
         let engine = AudioEngine(baseURL: nil, maxPlayersPerSound: 2, backend: backend)
 
         engine.play(.rotate)
         engine.play(.rotate)
 
-        XCTAssertEqual(backend.nodes.count, 2)
-        XCTAssertEqual(backend.nodes[0].playCount, 1)
-        XCTAssertEqual(backend.nodes[1].playCount, 1)
+        #expect(backend.nodes.count == 2)
+        #expect(backend.nodes[0].playCount == 1)
+        #expect(backend.nodes[1].playCount == 1)
     }
 
-    func testAudioEngineReusesPlayerWhenAtCap() {
+    @Test func testAudioEngineReusesPlayerWhenAtCap() {
         let backend = FakeAudioBackend()
         let engine = AudioEngine(baseURL: nil, maxPlayersPerSound: 1, backend: backend)
 
         engine.play(.lineClear(1))
         engine.play(.lineClear(1))
 
-        XCTAssertEqual(backend.nodes.count, 1)
-        XCTAssertEqual(backend.nodes[0].playCount, 2)
+        #expect(backend.nodes.count == 1)
+        #expect(backend.nodes[0].playCount == 2)
     }
 
-    func testAmbientLoopSchedulesWithLoopingAndDucking() {
+    @Test func testAmbientLoopSchedulesWithLoopingAndDucking() {
         let backend = FakeAudioBackend()
         let engine = AudioEngine(baseURL: nil, maxPlayersPerSound: 1, backend: backend)
 
         engine.setAmbientLoop(enabled: true, masterVolume: 1.0)
-        XCTAssertEqual(backend.nodes.count, 1)
-        XCTAssertEqual(backend.nodes[0].lastScheduledLoops, true)
+        #expect(backend.nodes.count == 1)
+        #expect(backend.nodes[0].lastScheduledLoops == true)
         let initialVolume = backend.nodes[0].volume
 
         engine.setAmbientDucking(enabled: true)
-        XCTAssertLessThan(backend.nodes[0].volume, initialVolume)
+        #expect(backend.nodes[0].volume < initialVolume)
     }
 }
 

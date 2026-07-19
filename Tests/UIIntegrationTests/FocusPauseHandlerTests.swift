@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import Core
 @testable import UI
 
-final class FocusPauseHandlerTests: XCTestCase {
-    func testHandlerDoesNotPauseOnDeactivate() {
+@Suite struct FocusPauseHandlerTests {
+    @Test func testHandlerDoesNotPauseOnDeactivate() {
         var state = GameState(config: GameConfig())
         let input = InputEngine()
         let handler = FocusPauseHandler()
@@ -16,11 +16,11 @@ final class FocusPauseHandlerTests: XCTestCase {
             started: true
         )
 
-        XCTAssertFalse(state.paused)
-        XCTAssertFalse(overlay.isPaused)
+        #expect(!state.paused)
+        #expect(!overlay.isPaused)
 
         let originalX = state.active.x
         input.tick(elapsedMs: 100, canAccept: true, state: &state)
-        XCTAssertEqual(state.active.x, originalX)
+        #expect(state.active.x == originalX)
     }
 }

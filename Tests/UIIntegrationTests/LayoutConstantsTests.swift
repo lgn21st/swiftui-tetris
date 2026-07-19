@@ -1,35 +1,35 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class LayoutConstantsTests: XCTestCase {
-    func testLayoutConstantsDefaults() {
-        XCTAssertEqual(LayoutConstants.basePadding, 16)
-        XCTAssertEqual(LayoutConstants.baseGap, 16)
-        XCTAssertEqual(LayoutConstants.panelSectionSpacing, 9.6, accuracy: 0.01)
-        XCTAssertEqual(LayoutConstants.panelItemSpacing, 3.2, accuracy: 0.01)
-        XCTAssertEqual(LayoutConstants.panelDividerHeight, 1)
-        XCTAssertEqual(LayoutConstants.panelDividerPadding, 6)
-        XCTAssertEqual(LayoutConstants.overlaySpacing, 8)
-        XCTAssertEqual(LayoutConstants.hudSpacing, 6)
-        XCTAssertEqual(LayoutConstants.nextPreviewCell, 10)
-        XCTAssertEqual(LayoutConstants.panelCornerRadius, 8)
-        XCTAssertEqual(LayoutConstants.panelShadowRadius, 10)
-        XCTAssertEqual(LayoutConstants.groupCornerRadius, 12)
-        XCTAssertEqual(LayoutConstants.groupBorderWidth, 1)
-        XCTAssertEqual(LayoutConstants.overlayAnimationDuration, 0.12)
-        XCTAssertEqual(LayoutConstants.hudPadding, 8)
-        XCTAssertEqual(LayoutConstants.hudCornerRadius, 6)
-        XCTAssertEqual(LayoutConstants.panelBorderWidth, 1)
-        XCTAssertEqual(LayoutConstants.boardBorderWidth, 1)
-        XCTAssertEqual(LayoutConstants.scaleAnchor, .center)
-        XCTAssertEqual(LayoutConstants.baseAlignment, .center)
-        XCTAssertEqual(LayoutConstants.windowAlignment, .center)
-        XCTAssertEqual(LayoutConstants.contentWidth, 448)
-        XCTAssertEqual(LayoutConstants.contentHeight, 480)
+@Suite struct LayoutConstantsTests {
+    @Test func testLayoutConstantsDefaults() {
+        #expect(LayoutConstants.basePadding == 16)
+        #expect(LayoutConstants.baseGap == 16)
+        #expect(abs((LayoutConstants.panelSectionSpacing) - (9.6)) <= (0.01))
+        #expect(abs((LayoutConstants.panelItemSpacing) - (3.2)) <= (0.01))
+        #expect(LayoutConstants.panelDividerHeight == 1)
+        #expect(LayoutConstants.panelDividerPadding == 6)
+        #expect(LayoutConstants.overlaySpacing == 8)
+        #expect(LayoutConstants.hudSpacing == 6)
+        #expect(LayoutConstants.nextPreviewCell == 10)
+        #expect(LayoutConstants.panelCornerRadius == 8)
+        #expect(LayoutConstants.panelShadowRadius == 10)
+        #expect(LayoutConstants.groupCornerRadius == 12)
+        #expect(LayoutConstants.groupBorderWidth == 1)
+        #expect(LayoutConstants.overlayAnimationDuration == 0.12)
+        #expect(LayoutConstants.hudPadding == 8)
+        #expect(LayoutConstants.hudCornerRadius == 6)
+        #expect(LayoutConstants.panelBorderWidth == 1)
+        #expect(LayoutConstants.boardBorderWidth == 1)
+        #expect(LayoutConstants.scaleAnchor == .center)
+        #expect(LayoutConstants.baseAlignment == .center)
+        #expect(LayoutConstants.windowAlignment == .center)
+        #expect(LayoutConstants.contentWidth == 448)
+        #expect(LayoutConstants.contentHeight == 480)
     }
 
-    func testOverlayAnimationRespectsReduceMotion() {
-        XCTAssertNil(LayoutConstants.overlayAnimation(reduceMotion: true))
-        XCTAssertNotNil(LayoutConstants.overlayAnimation(reduceMotion: false))
+    @Test func testOverlayAnimationRespectsReduceMotion() {
+        #expect(LayoutConstants.overlayAnimation(reduceMotion: true) == nil)
+        #expect(LayoutConstants.overlayAnimation(reduceMotion: false) != nil)
     }
 }

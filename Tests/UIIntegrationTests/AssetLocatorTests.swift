@@ -1,16 +1,17 @@
-import XCTest
+import Testing
+import Foundation
 @testable import UI
 
-final class AssetLocatorTests: XCTestCase {
-    func testSfxDirectoryExists() {
+@Suite struct AssetLocatorTests {
+    @Test func testSfxDirectoryExists() {
         let url = AssetLocator.sfxDirectory()
-        XCTAssertNotNil(url)
+        #expect(url != nil)
         if let url {
-            XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
+            #expect(FileManager.default.fileExists(atPath: url.path))
         }
     }
 
-    func testSfxDirectoryPrefersBundleResourcesWhenAvailable() throws {
+    @Test func testSfxDirectoryPrefersBundleResourcesWhenAvailable() throws {
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let bundleRoot = tempDir.appendingPathComponent("Test.app", isDirectory: true)
         let contents = bundleRoot.appendingPathComponent("Contents", isDirectory: true)
@@ -23,16 +24,18 @@ final class AssetLocatorTests: XCTestCase {
             atomically: true,
             encoding: .utf8
         )
-        let bundle = try XCTUnwrap(Bundle(path: bundleRoot.path))
+        let bundle = try #require(Bundle(path: bundleRoot.path))
         let located = AssetLocator.sfxDirectory(bundle: bundle, cwd: "/tmp/does-not-exist")
-        XCTAssertEqual(located?.path, sfxDir.path)
+        #expect(located?.path == sfxDir.path)
     }
 
-    func testSfxDirectoryFallsBackToCwdWhenBundleMissing() throws {
+    @Test func testSfxDirectoryFallsBackToCwdWhenBundleMissing() throws {
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let sfxDir = tempDir.appendingPathComponent("assets/sfx", isDirectory: true)
         try FileManager.default.createDirectory(at: sfxDir, withIntermediateDirectories: true)
-        let located = AssetLocator.sfxDirectory(bundle: Bundle(for: AssetLocatorTests.self), cwd: tempDir.path)
-        XCTAssertEqual(located?.path, sfxDir.path)
+        let located = AssetLocator.sfxDirectory(bundle: Bundle(for: BundleToken.self), cwd: tempDir.path)
+        #expect(located?.path == sfxDir.path)
     }
+
+    private final class BundleToken: NSObject {}
 }

@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "swiftui-tetris",
-    platforms: [.macOS(.v13)],
+    platforms: [.macOS(.v14)],
     products: [
         .library(name: "Core", targets: ["Core"]),
         .library(name: "Renderer", targets: ["Renderer"]),

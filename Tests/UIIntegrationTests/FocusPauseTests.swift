@@ -1,20 +1,20 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class FocusPauseTests: XCTestCase {
-    func testFocusLossPausesGame() {
+@Suite struct FocusPauseTests {
+    @Test func testFocusLossPausesGame() {
         let driver = SceneDriver()
         driver.handleKeyDown("\n")
-        XCTAssertFalse(driver.stateSnapshot().paused)
+        #expect(!driver.stateSnapshot().paused)
         driver.handleAppActiveChanged(isActive: false)
-        XCTAssertFalse(driver.stateSnapshot().paused)
+        #expect(!driver.stateSnapshot().paused)
     }
 
-    func testFocusGainDoesNotAutoUnpause() {
+    @Test func testFocusGainDoesNotAutoUnpause() {
         let driver = SceneDriver()
         driver.handleKeyDown("\n")
         driver.handleAppActiveChanged(isActive: false)
         driver.handleAppActiveChanged(isActive: true)
-        XCTAssertFalse(driver.stateSnapshot().paused)
+        #expect(!driver.stateSnapshot().paused)
     }
 }

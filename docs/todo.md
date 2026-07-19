@@ -4,7 +4,7 @@ Last reviewed: 2026-07-17
 
 ## Verification
 
-- [ ] Repair or reinstall Xcode Command Line Tools so macOS `XCTest` is importable, then run `swift test`.
+- [ ] Finish the native Swift Testing migration and keep `scripts/test` green without Xcode or XCTest.
 - [ ] Run the release checklist in `docs/release-checklist.md`, including keyboard, gamepad, audio, focus loss, packaging, and Adapter smoke tests.
 - [ ] Capture an Instruments Time Profiler + Allocations baseline for a 10-minute game and an Adapter place-command burst; record results here or in a dated performance report.
 

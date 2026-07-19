@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class GameStateSnapshotTests: XCTestCase {
-    func testSnapshotCopiesCoreFields() {
+@Suite struct GameStateSnapshotTests {
+    @Test func testSnapshotCopiesCoreFields() {
         var state = GameState(config: GameConfig())
         state.paused = true
         state.gameOver = true
@@ -18,23 +18,23 @@ final class GameStateSnapshotTests: XCTestCase {
 
         let snapshot = state.snapshot()
 
-        XCTAssertEqual(snapshot.score, 1200)
-        XCTAssertEqual(snapshot.level, 3)
-        XCTAssertEqual(snapshot.lines, 15)
-        XCTAssertTrue(snapshot.paused)
-        XCTAssertTrue(snapshot.gameOver)
-        XCTAssertEqual(snapshot.dropTimerMs, 320)
-        XCTAssertEqual(snapshot.lineClearTimerMs, GameConstants.lineClearPauseMs)
-        XCTAssertEqual(snapshot.lineClearRows, [18])
-        XCTAssertEqual(snapshot.lineClearScore, 40)
-        XCTAssertEqual(snapshot.lastLineClearTSpin, .full)
-        XCTAssertEqual(snapshot.landingFlashTimerMs, 60)
+        #expect(snapshot.score == 1200)
+        #expect(snapshot.level == 3)
+        #expect(snapshot.lines == 15)
+        #expect(snapshot.paused)
+        #expect(snapshot.gameOver)
+        #expect(snapshot.dropTimerMs == 320)
+        #expect(snapshot.lineClearTimerMs == GameConstants.lineClearPauseMs)
+        #expect(snapshot.lineClearRows == [18])
+        #expect(snapshot.lineClearScore == 40)
+        #expect(snapshot.lastLineClearTSpin == .full)
+        #expect(snapshot.landingFlashTimerMs == 60)
         assertBlocksEqual(snapshot.landingFlashBlocks, [(4, 10)])
-        XCTAssertTrue(snapshot.softDropActive)
-        XCTAssertTrue(snapshot.activeMovedSinceSpawn)
+        #expect(snapshot.softDropActive)
+        #expect(snapshot.activeMovedSinceSpawn)
     }
 
-    func testSnapshotIncludesGhostBlocks() {
+    @Test func testSnapshotIncludesGhostBlocks() {
         var state = GameState(config: GameConfig())
         state.active = Tetromino(kind: .i, x: 3, y: 0)
         state.updateGhostCache()
@@ -44,18 +44,18 @@ final class GameStateSnapshotTests: XCTestCase {
         assertBlocksEqual(snapshot.ghostBlocks, state.ghostBlocks())
     }
 
-    func testLogicalStepAdvancesAtTransitionStartAndSurvivesRestart() {
+    @Test func testLogicalStepAdvancesAtTransitionStartAndSurvivesRestart() {
         var state = GameState(config: GameConfig(), seed: 1)
-        XCTAssertEqual(state.snapshot().logicalStep, 0)
+        #expect(state.snapshot().logicalStep == 0)
 
         state.beginFixedStep()
-        XCTAssertEqual(state.snapshot().logicalStep, 1)
+        #expect(state.snapshot().logicalStep == 1)
 
         state.restart(seed: 2)
-        XCTAssertEqual(state.snapshot().logicalStep, 1)
+        #expect(state.snapshot().logicalStep == 1)
     }
 
-    func testSnapshotCarriesBoundedCausallyOrderedLockEvents() {
+    @Test func testSnapshotCarriesBoundedCausallyOrderedLockEvents() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.beginFixedStep()
 
@@ -64,15 +64,16 @@ final class GameStateSnapshotTests: XCTestCase {
         }
 
         let events = state.snapshot().transitionEvents
-        XCTAssertEqual(events.count, 4)
-        XCTAssertTrue(events.allSatisfy(\.locked))
+        #expect(events.count == 4)
+        let allLocked = events.allSatisfy { $0.locked }
+        #expect(allLocked)
     }
 
     private func assertBlocksEqual(_ lhs: [(Int, Int)], _ rhs: [(Int, Int)]) {
-        XCTAssertEqual(lhs.count, rhs.count)
+        #expect(lhs.count == rhs.count)
         for (index, value) in lhs.enumerated() {
-            XCTAssertEqual(value.0, rhs[index].0)
-            XCTAssertEqual(value.1, rhs[index].1)
+            #expect(value.0 == rhs[index].0)
+            #expect(value.1 == rhs[index].1)
         }
     }
 }

@@ -1,68 +1,68 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class HUDStateTests: XCTestCase {
-    func testHudStateFormatsValues() {
+@Suite struct HUDStateTests {
+    @Test func testHudStateFormatsValues() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.score = 120
         state.level = 2
         state.lines = 11
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.scoreText, "Score: 120")
-        XCTAssertEqual(hud.levelText, "Level: 2")
-        XCTAssertEqual(hud.linesText, "Lines: 11")
+        #expect(hud.scoreText == "Score: 120")
+        #expect(hud.levelText == "Level: 2")
+        #expect(hud.linesText == "Lines: 11")
     }
 
-    func testHudHoldStatus() {
+    @Test func testHudHoldStatus() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.canHold = true
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.holdText, "Hold: Ready")
+        #expect(hud.holdText == "Hold: Ready")
     }
 
-    func testHudLockWarningActivatesNearLock() {
+    @Test func testHudLockWarningActivatesNearLock() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(lockTimerMs: 400)
         let hud = HUDState.from(state: state)
-        XCTAssertTrue(hud.lockWarningActive)
+        #expect(hud.lockWarningActive)
     }
 
-    func testHudLockWarningInactiveEarly() {
+    @Test func testHudLockWarningInactiveEarly() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(lockTimerMs: 100)
         let hud = HUDState.from(state: state)
-        XCTAssertFalse(hud.lockWarningActive)
+        #expect(!hud.lockWarningActive)
     }
 
-    func testHudRulesetTextReflectsConfig() {
+    @Test func testHudRulesetTextReflectsConfig() {
         let classic = GameState(config: GameConfig(ruleset: .classic), seed: 1)
-        XCTAssertEqual(HUDState.from(state: classic).rulesetText, "Rules: Classic")
+        #expect(HUDState.from(state: classic).rulesetText == "Rules: Classic")
 
         let modern = GameState(config: GameConfig(ruleset: .modern), seed: 1)
-        XCTAssertEqual(HUDState.from(state: modern).rulesetText, "Rules: Modern")
+        #expect(HUDState.from(state: modern).rulesetText == "Rules: Modern")
     }
 
-    func testHudStatusText() {
+    @Test func testHudStatusText() {
         var state = GameState(config: GameConfig(), seed: 1)
-        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Playing")
+        #expect(HUDState.from(state: state).statusText == "Status: Playing")
 
         state.paused = true
-        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Paused")
+        #expect(HUDState.from(state: state).statusText == "Status: Paused")
 
         state.paused = false
         state.gameOver = true
-        XCTAssertEqual(HUDState.from(state: state).statusText, "Status: Game Over")
+        #expect(HUDState.from(state: state).statusText == "Status: Game Over")
     }
 
-    func testHudStatusTextBeforeStart() {
+    @Test func testHudStatusTextBeforeStart() {
         let state = GameState(config: GameConfig(), seed: 1)
-        XCTAssertEqual(HUDState.from(state: state, started: false).statusText, "Status: Ready")
+        #expect(HUDState.from(state: state, started: false).statusText == "Status: Ready")
     }
 
-    func testHudNextKindsShowsThree() {
+    @Test func testHudNextKindsShowsThree() {
         let state = GameState(config: GameConfig(), seed: 1)
         let hud = HUDState.from(state: state)
-        XCTAssertEqual(hud.nextKinds.count, 3)
+        #expect(hud.nextKinds.count == 3)
     }
 }

@@ -1,15 +1,15 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class BoardTests: XCTestCase {
-    func testBoardDimensions() {
-        XCTAssertEqual(Board.width, 10)
-        XCTAssertEqual(Board.height, 20)
+@Suite struct BoardTests {
+    @Test func testBoardDimensions() {
+        #expect(Board.width == 10)
+        #expect(Board.height == 20)
     }
 
-    func testBoardStartsEmpty() {
+    @Test func testBoardStartsEmpty() {
         let board = Board()
         let filled = board.cells.flatMap { $0 }.filter { $0.filled }
-        XCTAssertTrue(filled.isEmpty)
+        #expect(filled.isEmpty)
     }
 }

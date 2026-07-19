@@ -1,16 +1,16 @@
-import XCTest
+import Testing
 import Core
 @testable import Adapter
 
-final class CommandMappingTests: XCTestCase {
-    func testMapsActionCommandToGameActions() throws {
+@Suite struct CommandMappingTests {
+    @Test func testMapsActionCommandToGameActions() throws {
         let command = TetrisAICommand.action(actions: [.rotateCw, .moveLeft, .hardDrop])
         let actions = try CommandMapper.map(command: command, snapshot: nil)
 
-        XCTAssertEqual(actions, [.rotateCw, .moveLeft, .hardDrop])
+        #expect(actions == [.rotateCw, .moveLeft, .hardDrop])
     }
 
-    func testMapsPlaceCommandToActions() throws {
+    @Test func testMapsPlaceCommandToActions() throws {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.active.rotation = .north
@@ -19,11 +19,11 @@ final class CommandMappingTests: XCTestCase {
 
         let actions = try CommandMapper.map(command: command, snapshot: snapshot)
 
-        XCTAssertEqual(actions.last, .hardDrop)
-        XCTAssertTrue(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 5, targetRotation: .east))
+        #expect(actions.last == .hardDrop)
+        #expect(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 5, targetRotation: .east))
     }
 
-    func testMapsPlaceCommandWithHold() throws {
+    @Test func testMapsPlaceCommandWithHold() throws {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         state.hold = .z
@@ -33,11 +33,11 @@ final class CommandMappingTests: XCTestCase {
 
         let actions = try CommandMapper.map(command: command, snapshot: snapshot)
 
-        XCTAssertEqual(actions.first, .hold)
-        XCTAssertEqual(actions.last, .hardDrop)
+        #expect(actions.first == .hold)
+        #expect(actions.last == .hardDrop)
     }
 
-    func testPlacePlanUsesKickNearWall() throws {
+    @Test func testPlacePlanUsesKickNearWall() throws {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .t, x: 0, y: 0)
         state.active.rotation = .north
@@ -46,21 +46,24 @@ final class CommandMappingTests: XCTestCase {
 
         let actions = try CommandMapper.map(command: command, snapshot: snapshot)
 
-        XCTAssertEqual(actions.last, .hardDrop)
-        XCTAssertTrue(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 1, targetRotation: .west))
+        #expect(actions.last == .hardDrop)
+        #expect(apply(actions: Array(actions.dropLast()), to: snapshot, targetX: 1, targetRotation: .west))
     }
 
-    func testPlaceCommandFailsWhenXOutOfBounds() {
+    @Test func testPlaceCommandFailsWhenXOutOfBounds() {
         let state = GameState(config: GameConfig(), seed: 1)
         let snapshot = state.snapshot()
         let command = TetrisAICommand.place(x: 99, rotation: .north, useHold: false)
 
-        XCTAssertThrowsError(try CommandMapper.map(command: command, snapshot: snapshot)) { error in
-            XCTAssertEqual(error as? CommandMappingError, .invalidPlace)
+        let error = #expect(throws: (any Error).self) {
+            try CommandMapper.map(command: command, snapshot: snapshot)
+        }
+        if let error {
+            #expect(error as? CommandMappingError == .invalidPlace)
         }
     }
 
-    func testPlaceCommandFailsWhenBlockedAtSpawn() {
+    @Test func testPlaceCommandFailsWhenBlockedAtSpawn() {
         var state = GameState(config: GameConfig(), seed: 1)
         let spawn = spawnPosition()
         for (dx, dy) in state.active.blocks(rotation: state.active.rotation) {
@@ -73,19 +76,22 @@ final class CommandMappingTests: XCTestCase {
         let snapshot = state.snapshot()
         let command = TetrisAICommand.place(x: spawn.x, rotation: .north, useHold: false)
 
-        XCTAssertThrowsError(try CommandMapper.map(command: command, snapshot: snapshot)) { error in
-            XCTAssertEqual(error as? CommandMappingError, .invalidPlace)
+        let error = #expect(throws: (any Error).self) {
+            try CommandMapper.map(command: command, snapshot: snapshot)
+        }
+        if let error {
+            #expect(error as? CommandMappingError == .invalidPlace)
         }
     }
 
-    func testPlacePlannerHonorsDepthAndReturnsMinimumLengthReachablePlan() {
+    @Test func testPlacePlannerHonorsDepthAndReturnsMinimumLengthReachablePlan() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .t, x: 3, y: 0)
         let snapshot = state.snapshot()
 
-        XCTAssertNil(PlacePlanner.plan(snapshot: snapshot, targetX: 5, targetRotation: .east, maxDepth: 2))
+        #expect(PlacePlanner.plan(snapshot: snapshot, targetX: 5, targetRotation: .east, maxDepth: 2) == nil)
         let plan = PlacePlanner.plan(snapshot: snapshot, targetX: 5, targetRotation: .east, maxDepth: 3)
-        XCTAssertEqual(plan?.count, 3)
+        #expect(plan?.count == 3)
     }
 
     private func apply(

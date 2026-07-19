@@ -72,32 +72,31 @@ Where to edit:
 ### Tests (TDD)
 1) Add or update a test in Tests/.
 2) Implement the change in code.
-3) Run swift test.
+3) Run `scripts/test`.
 
 ### Common CLI Commands
-- Tests: swift test
-- Run: swift run App
-- Build (debug): swift build
-- Build (release): swift build -c release
+- Tests: `scripts/test`
+- Run: `scripts/run`
+- Build (debug): `scripts/build`
+- Build (release): `scripts/build -c release`
 
 ## Principles
-- **SpriteKit owns the game loop**: use `SKScene.update(_:)` with a fixed timestep accumulator.
+- **Runtime owns game transactions**: Core commands, fixed-step advancement, events, snapshots, and Adapter acknowledgements share one deterministic boundary.
+- **SpriteKit owns frame pacing only**: `SKScene.update(_:)` supplies elapsed time and renders the latest immutable state.
 - **SwiftUI owns composition**: overlays, HUD, and window behaviors should be SwiftUI-first.
 - **Core is deterministic**: all rule changes are test-first and isolated from rendering/input.
 - **Bounded hot-path allocation**: reuse nodes, buffers, cached shape tables, textures, and Core board storage; transient four-block overlay arrays remain intentionally small.
 - **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
 ## Status
-- Architecture alignment is complete; see `docs/progress.md` for the change log.
+- The architecture is being rebuilt around a headless runtime and Swift Testing. The historical “alignment complete” claim is retired.
 
 ## Target Architecture
 ### Loop & Timing
-- `TetrisScene` becomes the authoritative loop driver:
-  - Maintain `accumulatorMs` + `fixedStepMs` (16ms).
-  - Call `Core.GameState.tick` in fixed steps; render once per frame.
-- `SceneDriver` becomes a coordinator:
-  - Owns Core state and input engine.
-  - Exposes a `RenderState` snapshot for the scene to consume.
+- A UI-agnostic runtime becomes the authoritative owner of the 16 ms accumulator and fixed-step transaction.
+- Each transaction begins a logical step, applies local and Adapter commands, advances Core once, captures events, then publishes one snapshot and correlated Adapter result.
+- `SceneDriver` becomes a thin platform coordinator for input, audio, rendering, and lifecycle.
+- Headless tests and external controllers drive the same runtime API as SpriteKit.
 
 ### Rendering
 - Pre-allocate node grids for board + ghost + effects.
@@ -134,6 +133,8 @@ Where to edit:
 - Core tests remain the contract for rules and timing.
 - UI integration tests cover input routing and overlay state.
 - Renderer tests validate mapping logic and resource reuse.
+- Adapter tests cover protocol, concurrency, bounded backpressure, disconnect, and reconnect behavior through public boundaries.
+- Swift Testing is the only test framework; XCTest and Xcode projects are intentionally absent.
 
 ## Risks
 - Migrating the loop can change timing; guard with deterministic tests.

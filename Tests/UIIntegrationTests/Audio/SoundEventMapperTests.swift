@@ -1,10 +1,10 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class SoundEventMapperTests: XCTestCase {
-    func testSoundEventMapsToFileName() {
-        XCTAssertEqual(SoundEventMapper.fileName(for: .move), "move.wav")
-        XCTAssertEqual(SoundEventMapper.fileName(for: .lineClear(2)), "line_clear_2.wav")
+@Suite struct SoundEventMapperTests {
+    @Test func testSoundEventMapsToFileName() {
+        #expect(SoundEventMapper.fileName(for: .move) == "move.wav")
+        #expect(SoundEventMapper.fileName(for: .lineClear(2)) == "line_clear_2.wav")
     }
 }

@@ -1,18 +1,18 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class WindowConfigTests: XCTestCase {
-    func testWindowDefaultsMatchBaseLayout() {
-        XCTAssertEqual(WindowConfig.defaultWidth, 480)
-        XCTAssertEqual(WindowConfig.defaultHeight, 720)
+@Suite struct WindowConfigTests {
+    @Test func testWindowDefaultsMatchBaseLayout() {
+        #expect(WindowConfig.defaultWidth == 480)
+        #expect(WindowConfig.defaultHeight == 720)
     }
 
-    func testWindowMinScale() {
-        XCTAssertEqual(WindowConfig.minWidth, 288)
-        XCTAssertEqual(WindowConfig.minHeight, 432)
+    @Test func testWindowMinScale() {
+        #expect(WindowConfig.minWidth == 288)
+        #expect(WindowConfig.minHeight == 432)
     }
 
-    func testWindowResizabilityFlag() {
-        XCTAssertTrue(WindowConfig.allowsResize)
+    @Test func testWindowResizabilityFlag() {
+        #expect(WindowConfig.allowsResize)
     }
 }

@@ -1,37 +1,39 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class HoldTests: XCTestCase {
-    func testHoldStoresCurrentPieceAndSpawnsNext() {
+@Suite struct HoldTests {
+    @Test func testHoldStoresCurrentPieceAndSpawnsNext() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .i, x: 3, y: 0)
         state.nextQueue = [.t]
         let didHold = state.holdAction()
-        XCTAssertTrue(didHold)
-        XCTAssertEqual(state.hold, .i)
-        XCTAssertEqual(state.active.kind, .t)
-        XCTAssertFalse(state.canHold)
+        #expect(didHold)
+        #expect(state.hold == .i)
+        #expect(state.active.kind == .t)
+        #expect(!state.canHold)
     }
 
-    func testHoldSwapsWhenAlreadyHeld() {
+    @Test func testHoldSwapsWhenAlreadyHeld() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .o, x: 3, y: 0)
         state.hold = .t
         state.canHold = true
         let didHold = state.holdAction()
-        XCTAssertTrue(didHold)
-        XCTAssertEqual(state.hold, .o)
-        XCTAssertEqual(state.active.kind, .t)
-        XCTAssertFalse(state.canHold)
+        #expect(didHold)
+        #expect(state.hold == .o)
+        #expect(state.active.kind == .t)
+        #expect(!state.canHold)
     }
 
-    func testHoldOnlyOncePerSpawn() {
+    @Test func testHoldOnlyOncePerSpawn() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .l, x: 3, y: 0)
         state.nextQueue = [.j]
-        XCTAssertTrue(state.holdAction())
-        XCTAssertFalse(state.holdAction())
-        XCTAssertEqual(state.hold, .l)
-        XCTAssertEqual(state.active.kind, .j)
+        let firstHold = state.holdAction()
+        let secondHold = state.holdAction()
+        #expect(firstHold)
+        #expect(!secondHold)
+        #expect(state.hold == .l)
+        #expect(state.active.kind == .j)
     }
 }

@@ -1,52 +1,52 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class GameTickTests: XCTestCase {
-    func testLineClearPauseBlocksGravity() {
+@Suite struct GameTickTests {
+    @Test func testLineClearPauseBlocksGravity() {
         var state = GameState(config: GameConfig())
         state.setTimersForTesting(dropTimerMs: 200, lineClearTimerMs: 100)
         state.tick(elapsedMs: 50, softDrop: false)
-        XCTAssertEqual(state.dropTimerMs, 200)
-        XCTAssertEqual(state.lineClearTimerMs, 50)
+        #expect(state.dropTimerMs == 200)
+        #expect(state.lineClearTimerMs == 50)
     }
 
-    func testSoftDropGraceExpires() {
+    @Test func testSoftDropGraceExpires() {
         var state = GameState(config: GameConfig())
         state.activateSoftDrop()
-        XCTAssertTrue(state.softDropActive)
+        #expect(state.softDropActive)
         state.tick(elapsedMs: GameConstants.softDropGraceMs, softDrop: false)
-        XCTAssertFalse(state.softDropActive)
+        #expect(!state.softDropActive)
     }
 
-    func testLockDelayLocksPieceAfterThreshold() {
+    @Test func testLockDelayLocksPieceAfterThreshold() {
         var config = GameConfig()
         config.lockDelayMs = 100
         var state = GameState(config: config)
         state.active = Tetromino(kind: .o, x: 0, y: Board.height - 2)
         state.tick(elapsedMs: 50, softDrop: false)
-        XCTAssertEqual(state.lockTimerMs, 50)
+        #expect(state.lockTimerMs == 50)
         state.tick(elapsedMs: 50, softDrop: false)
-        XCTAssertEqual(state.lockTimerMs, 0)
-        XCTAssertTrue(state.board.cells[Board.height - 1][1].filled)
+        #expect(state.lockTimerMs == 0)
+        #expect(state.board.cells[Board.height - 1][1].filled)
     }
 
-    func testGravityAdvancesAfterInterval() {
+    @Test func testGravityAdvancesAfterInterval() {
         var config = GameConfig()
         config.baseDropMs = 100
         var state = GameState(config: config)
         let startY = state.active.y
         state.tick(elapsedMs: 100, softDrop: false)
-        XCTAssertEqual(state.active.y, startY + 1)
+        #expect(state.active.y == startY + 1)
     }
 
-    func testGravityUsesLevelInterval() {
+    @Test func testGravityUsesLevelInterval() {
         var config = GameConfig()
         config.baseDropMs = 1000
         var state = GameState(config: config)
         state.level = 1
         let startY = state.active.y
         state.tick(elapsedMs: 800, softDrop: false)
-        XCTAssertEqual(state.active.y, startY + 1)
+        #expect(state.active.y == startY + 1)
     }
 
 }

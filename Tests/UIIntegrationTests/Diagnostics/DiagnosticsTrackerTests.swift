@@ -1,28 +1,28 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class DiagnosticsTrackerTests: XCTestCase {
-    func testDiagnosticsTrackerUpdatesFpsAfterWindow() {
+@Suite struct DiagnosticsTrackerTests {
+    @Test func testDiagnosticsTrackerUpdatesFpsAfterWindow() {
         var tracker = DiagnosticsTracker()
         var state = DiagnosticsState.empty
         for _ in 0..<60 {
             state = tracker.recordFrame(elapsedMs: 16)
         }
-        XCTAssertEqual(state.fpsText, "FPS: --")
+        #expect(state.fpsText == "FPS: --")
         state = tracker.recordFrame(elapsedMs: 40)
-        XCTAssertEqual(state.tickText, "Tick: 40ms")
+        #expect(state.tickText == "Tick: 40ms")
         let parts = state.fpsText.split(separator: " ")
         let fpsValue = Int(parts.last ?? "") ?? 0
-        XCTAssertTrue((60...62).contains(fpsValue))
+        #expect((60...62).contains(fpsValue))
     }
 
-    func testSceneDriverUpdatesDiagnosticsFromFrame() {
+    @Test func testSceneDriverUpdatesDiagnosticsFromFrame() {
         let driver = SceneDriver()
         driver.scene.update(1.0)
         driver.scene.update(1.05)
         driver.scene.update(1.10)
         driver.scene.update(1.15)
         driver.scene.update(1.20)
-        XCTAssertEqual(driver.diagnosticsState.tickText, "Tick: 50ms")
+        #expect(driver.diagnosticsState.tickText == "Tick: 50ms")
     }
 }

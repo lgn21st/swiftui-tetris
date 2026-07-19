@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 import AppKit
 @testable import UI
 
-final class AppActivationTests: XCTestCase {
+@Suite struct AppActivationTests {
     private final class MockApp: ApplicationActivating {
         var policy: NSApplication.ActivationPolicy?
         var activatedFlag: Bool?
@@ -17,10 +17,10 @@ final class AppActivationTests: XCTestCase {
         }
     }
 
-    func testAppActivationConfiguresPolicyAndActivation() {
+    @Test func testAppActivationConfiguresPolicyAndActivation() {
         let mock = MockApp()
         AppActivation.configure(app: mock)
-        XCTAssertEqual(mock.policy, .regular)
-        XCTAssertEqual(mock.activatedFlag, true)
+        #expect(mock.policy == .regular)
+        #expect(mock.activatedFlag == true)
     }
 }

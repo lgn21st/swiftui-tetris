@@ -1,15 +1,9 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class SidePanelTypographyTests: XCTestCase {
-    func testPanelTypographyHierarchyUsesDescendingSizes() {
-        XCTAssertGreaterThan(
-            TypographyConstants.sidePanelFontSize,
-            TypographyConstants.sidePanelSectionFontSize
-        )
-        XCTAssertGreaterThan(
-            TypographyConstants.sidePanelSectionFontSize,
-            TypographyConstants.sidePanelHintFontSize
-        )
+@Suite struct SidePanelTypographyTests {
+    @Test func testPanelTypographyHierarchyUsesDescendingSizes() {
+        #expect(TypographyConstants.sidePanelFontSize > TypographyConstants.sidePanelSectionFontSize)
+        #expect(TypographyConstants.sidePanelSectionFontSize > TypographyConstants.sidePanelHintFontSize)
     }
 }

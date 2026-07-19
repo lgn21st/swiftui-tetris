@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 import AppKit
 import SpriteKit
 @testable import Renderer
 @testable import Core
 
-final class TetrisSceneRenderTests: XCTestCase {
-    func testSceneRendersEachUpdateWhenProviderAvailable() {
+@Suite @MainActor struct TetrisSceneRenderTests {
+    @Test func testSceneRendersEachUpdateWhenProviderAvailable() {
         let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
         var renderCalls = 0
         scene.onRender = {
@@ -16,10 +16,10 @@ final class TetrisSceneRenderTests: XCTestCase {
         scene.update(1.0)
         scene.update(1.1)
 
-        XCTAssertEqual(renderCalls, 2)
+        #expect(renderCalls == 2)
     }
 
-    func testSceneSkipsRenderWhenPaused() {
+    @Test func testSceneSkipsRenderWhenPaused() {
         let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
         var renderCalls = 0
         scene.onRender = {
@@ -30,10 +30,10 @@ final class TetrisSceneRenderTests: XCTestCase {
         scene.update(1.0)
         scene.update(1.1)
 
-        XCTAssertEqual(renderCalls, 2)
+        #expect(renderCalls == 2)
     }
 
-    func testSceneRendersWhenGameOverEvenIfPaused() {
+    @Test func testSceneRendersWhenGameOverEvenIfPaused() {
         let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
         var renderCalls = 0
         scene.onRender = {
@@ -44,10 +44,10 @@ final class TetrisSceneRenderTests: XCTestCase {
         scene.update(1.0)
         scene.update(1.1)
 
-        XCTAssertEqual(renderCalls, 2)
+        #expect(renderCalls == 2)
     }
 
-    func testSceneRendersActiveOverlayWithoutBoardCells() {
+    @Test func testSceneRendersActiveOverlayWithoutBoardCells() {
         let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
         let activeBlocks = [(4, 0), (5, 0), (4, 1), (5, 1)]
         let renderState = Self.emptyRenderState(
@@ -58,23 +58,23 @@ final class TetrisSceneRenderTests: XCTestCase {
         scene.render(state: renderState)
 
         let activeNodes = scene.debugActiveNodes()
-        XCTAssertEqual(activeNodes.count, activeBlocks.count)
+        #expect(activeNodes.count == activeBlocks.count)
         for node in activeNodes {
-            XCTAssertFalse(node.isHidden)
-            XCTAssertNotNil(node.texture)
+            #expect(!node.isHidden)
+            #expect(node.texture != nil)
         }
         for (x, y) in activeBlocks {
-            XCTAssertTrue(scene.debugCellNode(atX: x, y: y).isHidden)
+            #expect(scene.debugCellNode(atX: x, y: y).isHidden)
         }
     }
 
-    func testCanRenderReturnsFalseForNilView() {
-        XCTAssertFalse(TetrisScene.canRender(view: nil))
+    @Test func testCanRenderReturnsFalseForNilView() {
+        #expect(!TetrisScene.canRender(view: nil))
     }
 
-    func testCanRenderRequiresWindowAndSize() {
+    @Test func testCanRenderRequiresWindowAndSize() {
         let view = SKView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-        XCTAssertFalse(TetrisScene.canRender(view: view))
+        #expect(!TetrisScene.canRender(view: view))
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
             styleMask: [.titled],
@@ -82,9 +82,9 @@ final class TetrisSceneRenderTests: XCTestCase {
             defer: false
         )
         window.contentView = view
-        XCTAssertTrue(TetrisScene.canRender(view: view))
+        #expect(TetrisScene.canRender(view: view))
         view.frame = .zero
-        XCTAssertFalse(TetrisScene.canRender(view: view))
+        #expect(!TetrisScene.canRender(view: view))
     }
 
     private static func emptyRenderState(isPaused: Bool = false, isGameOver: Bool = false) -> RenderState {

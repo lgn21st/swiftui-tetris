@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 import Core
 import Adapter
 @testable import UI
 
-final class SceneDriverAdapterIntegrationTests: XCTestCase {
+@Suite struct SceneDriverAdapterIntegrationTests {
     private final class SpyAdapter: AdapterHandling {
         private(set) var pollCount = 0
         private(set) var emitCount = 0
@@ -19,33 +19,33 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
         }
     }
 
-    func testTickPollsAdapterAndEmitsObservation() {
+    @Test func testTickPollsAdapterAndEmitsObservation() {
         let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let adapter = SpyAdapter()
         let driver = SceneDriver(loop: loop, adapter: adapter)
 
-        XCTAssertEqual(adapter.emitCount, 1, "initial snapshot primes streaming handshakes")
+        #expect(adapter.emitCount == 1, "initial snapshot primes streaming handshakes")
 
         driver.tick(elapsedMs: 16)
 
-        XCTAssertEqual(adapter.pollCount, 1)
-        XCTAssertEqual(adapter.emitCount, 2)
-        XCTAssertNotNil(adapter.lastSnapshot)
+        #expect(adapter.pollCount == 1)
+        #expect(adapter.emitCount == 2)
+        #expect(adapter.lastSnapshot != nil)
     }
 
-    func testCatchUpRunsEveryFixedStepThroughAdapterBoundary() {
+    @Test func testCatchUpRunsEveryFixedStepThroughAdapterBoundary() {
         let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let adapter = SpyAdapter()
         let driver = SceneDriver(loop: loop, audio: nil, adapter: adapter)
 
         driver.tick(elapsedMs: 48, fixedSteps: 3)
 
-        XCTAssertEqual(adapter.pollCount, 3)
-        XCTAssertEqual(adapter.emitCount, 4)
-        XCTAssertEqual(adapter.lastSnapshot?.stepInPiece, 3)
+        #expect(adapter.pollCount == 3)
+        #expect(adapter.emitCount == 4)
+        #expect(adapter.lastSnapshot?.stepInPiece == 3)
     }
 
-    func testFixedTransitionBeginsBeforeAdapterCommandsAndAdvancement() {
+    @Test func testFixedTransitionBeginsBeforeAdapterCommandsAndAdvancement() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.paused = true
         let loop = GameLoop(state: state)
@@ -56,12 +56,12 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
 
         driver.tick(elapsedMs: 16)
 
-        XCTAssertFalse(driver.stateSnapshot().paused)
-        XCTAssertEqual(driver.stateSnapshot().stepInPiece, 1)
-        XCTAssertEqual(driver.stateSnapshot().logicalStep, 1)
+        #expect(!driver.stateSnapshot().paused)
+        #expect(driver.stateSnapshot().stepInPiece == 1)
+        #expect(driver.stateSnapshot().logicalStep == 1)
     }
 
-    func testRemoteLockEventSurvivesUntilSameStepObservation() {
+    @Test func testRemoteLockEventSurvivesUntilSameStepObservation() {
         let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let transport = InMemoryTransport()
         transport.enqueueCommand(.action(actions: [.hardDrop]))
@@ -71,8 +71,8 @@ final class SceneDriverAdapterIntegrationTests: XCTestCase {
 
         _ = transport.dequeueObservation() // initial snapshot
         let observation = transport.dequeueObservation()
-        XCTAssertEqual(observation?.logicalStep, 1)
-        XCTAssertEqual(observation?.events.count, 1)
-        XCTAssertTrue(observation?.events.first?.locked == true)
+        #expect(observation?.logicalStep == 1)
+        #expect(observation?.events.count == 1)
+        #expect(observation?.events.first?.locked == true)
     }
 }

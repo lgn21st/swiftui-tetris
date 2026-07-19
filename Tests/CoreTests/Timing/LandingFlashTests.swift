@@ -1,14 +1,14 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class LandingFlashTests: XCTestCase {
-    func testHardDropSetsLandingFlashBlocks() {
+@Suite struct LandingFlashTests {
+    @Test func testHardDropSetsLandingFlashBlocks() {
         var state = GameState(config: GameConfig())
         state.apply(action: .hardDrop)
-        XCTAssertEqual(state.landingFlashTimerMs, GameConstants.landingFlashDurationMs)
-        XCTAssertEqual(state.landingFlashBlocks.count, 4)
+        #expect(state.landingFlashTimerMs == GameConstants.landingFlashDurationMs)
+        #expect(state.landingFlashBlocks.count == 4)
         for (x, y) in state.landingFlashBlocks {
-            XCTAssertTrue(state.board.cells[y][x].filled)
+            #expect(state.board.cells[y][x].filled)
         }
     }
 }

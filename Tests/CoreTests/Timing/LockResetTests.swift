@@ -1,8 +1,8 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class LockResetTests: XCTestCase {
-    func testGroundedMoveResetsLockTimerUntilLimit() {
+@Suite struct LockResetTests {
+    @Test func testGroundedMoveResetsLockTimerUntilLimit() {
         var config = GameConfig()
         config.lockDelayMs = 1000
         config.lockResetLimit = 1
@@ -11,11 +11,11 @@ final class LockResetTests: XCTestCase {
         state.setTimersForTesting(lockTimerMs: 900)
 
         state.apply(action: .moveRight)
-        XCTAssertEqual(state.lockTimerMs, 0)
-        XCTAssertEqual(state.lockResetCount, 1)
+        #expect(state.lockTimerMs == 0)
+        #expect(state.lockResetCount == 1)
 
         state.setTimersForTesting(lockTimerMs: 900)
         state.apply(action: .moveLeft)
-        XCTAssertEqual(state.lockTimerMs, 900)
+        #expect(state.lockTimerMs == 900)
     }
 }

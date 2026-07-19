@@ -1,18 +1,18 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class RotationTests: XCTestCase {
-    func testRotationCwCycles() {
-        XCTAssertEqual(Rotation.north.cw(), .east)
-        XCTAssertEqual(Rotation.east.cw(), .south)
-        XCTAssertEqual(Rotation.south.cw(), .west)
-        XCTAssertEqual(Rotation.west.cw(), .north)
+@Suite struct RotationTests {
+    @Test func testRotationCwCycles() {
+        #expect(Rotation.north.cw() == .east)
+        #expect(Rotation.east.cw() == .south)
+        #expect(Rotation.south.cw() == .west)
+        #expect(Rotation.west.cw() == .north)
     }
 
-    func testRotationCcwCycles() {
-        XCTAssertEqual(Rotation.north.ccw(), .west)
-        XCTAssertEqual(Rotation.west.ccw(), .south)
-        XCTAssertEqual(Rotation.south.ccw(), .east)
-        XCTAssertEqual(Rotation.east.ccw(), .north)
+    @Test func testRotationCcwCycles() {
+        #expect(Rotation.north.ccw() == .west)
+        #expect(Rotation.west.ccw() == .south)
+        #expect(Rotation.south.ccw() == .east)
+        #expect(Rotation.east.ccw() == .north)
     }
 }

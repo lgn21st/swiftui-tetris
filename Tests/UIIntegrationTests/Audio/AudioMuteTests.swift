@@ -1,35 +1,35 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Core
 
-final class AudioMuteTests: XCTestCase {
-    func testMuteToggleSuppressesPlaybackAndAmbientLoop() {
+@Suite struct AudioMuteTests {
+    @Test func testMuteToggleSuppressesPlaybackAndAmbientLoop() {
         let audio = RecordingAudio()
         let driver = SceneDriver(audio: audio)
 
         driver.start()
-        XCTAssertEqual(audio.ambientEnabledStates, [true])
+        #expect(audio.ambientEnabledStates == [true])
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
         driver.handleKeyUp("left")
-        XCTAssertEqual(audio.playEvents.count, 1)
+        #expect(audio.playEvents.count == 1)
 
         driver.handleKeyDown("m")
-        XCTAssertEqual(audio.ambientEnabledStates.last, false)
+        #expect(audio.ambientEnabledStates.last == false)
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
         driver.handleKeyUp("left")
-        XCTAssertEqual(audio.playEvents.count, 1)
+        #expect(audio.playEvents.count == 1)
 
         driver.handleKeyDown("m")
-        XCTAssertEqual(audio.ambientEnabledStates.last, true)
+        #expect(audio.ambientEnabledStates.last == true)
 
         driver.handleKeyDown("left")
         driver.tick(elapsedMs: 16)
         driver.handleKeyUp("left")
-        XCTAssertEqual(audio.playEvents.count, 2)
+        #expect(audio.playEvents.count == 2)
     }
 }
 

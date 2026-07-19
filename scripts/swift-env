@@ -1,0 +1,34 @@
+#!/bin/zsh
+
+set -euo pipefail
+
+TETRIS_PROJECT_ROOT="${0:A:h:h}"
+TETRIS_DEVELOPER_ROOT="${DEVELOPER_DIR:-/Library/Developer/CommandLineTools}"
+TETRIS_SWIFT_BIN="${TETRIS_SWIFT_BIN:-${commands[swift]}}"
+
+if [[ -z "${TETRIS_SWIFT_BIN}" || ! -x "${TETRIS_SWIFT_BIN}" ]]; then
+    print -u2 "Swift compiler not found. Install the pinned version from .swift-version with Swiftly."
+    exit 1
+fi
+
+if [[ -z "${SDKROOT:-}" ]]; then
+    for candidate in \
+        "${TETRIS_DEVELOPER_ROOT}/SDKs/MacOSX15.5.sdk" \
+        "${TETRIS_DEVELOPER_ROOT}/SDKs/MacOSX15.sdk" \
+        "${TETRIS_DEVELOPER_ROOT}/SDKs/MacOSX.sdk"
+    do
+        if [[ -d "${candidate}" ]]; then
+            export SDKROOT="${candidate}"
+            break
+        fi
+    done
+fi
+
+if [[ -z "${SDKROOT:-}" || ! -d "${SDKROOT}" ]]; then
+    print -u2 "A macOS SDK from Command Line Tools is required."
+    exit 1
+fi
+
+export CLANG_MODULE_CACHE_PATH="${TETRIS_MODULE_CACHE_ROOT:-/tmp/swiftui-tetris-clang-cache}"
+export SWIFTPM_MODULECACHE_OVERRIDE="${TETRIS_SWIFTPM_CACHE_ROOT:-/tmp/swiftui-tetris-swiftpm-cache}"
+export TETRIS_PROJECT_ROOT TETRIS_DEVELOPER_ROOT TETRIS_SWIFT_BIN

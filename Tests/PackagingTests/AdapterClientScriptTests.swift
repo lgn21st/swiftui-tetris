@@ -1,7 +1,8 @@
-import XCTest
+import Testing
+import Foundation
 
-final class AdapterClientScriptTests: XCTestCase {
-    func testExampleClientUsesCurrentAdapterProtocolMajor() throws {
+@Suite struct AdapterClientScriptTests {
+    @Test func testExampleClientUsesCurrentAdapterProtocolMajor() throws {
         let testFile = URL(fileURLWithPath: #filePath)
         let repositoryRoot = testFile
             .deletingLastPathComponent()
@@ -12,7 +13,7 @@ final class AdapterClientScriptTests: XCTestCase {
             encoding: .utf8
         )
 
-        XCTAssertTrue(client.contains(#""protocol_version": "3.0.0""#))
-        XCTAssertFalse(client.contains(#""protocol_version": "2.0.0""#))
+        #expect(client.contains(#""protocol_version": "3.0.0""#))
+        #expect(!client.contains(#""protocol_version": "2.0.0""#))
     }
 }

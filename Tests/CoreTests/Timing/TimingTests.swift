@@ -1,85 +1,61 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class TimingTests: XCTestCase {
-    func testDropIntervalTableAndFloor() {
-        XCTAssertEqual(
-            Timing.dropInterval(
+@Suite struct TimingTests {
+    @Test func testDropIntervalTableAndFloor() {
+        #expect((Timing.dropInterval(
                 level: 0,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.dropTable[0]
-        )
-        XCTAssertEqual(
-            Timing.dropInterval(
+            )) == (GameConstants.dropTable[0]))
+        #expect((Timing.dropInterval(
                 level: 1,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.dropTable[1]
-        )
-        XCTAssertEqual(
-            Timing.dropInterval(
+            )) == (GameConstants.dropTable[1]))
+        #expect((Timing.dropInterval(
                 level: 8,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.dropTable[8]
-        )
-        XCTAssertEqual(
-            Timing.dropInterval(
+            )) == (GameConstants.dropTable[8]))
+        #expect((Timing.dropInterval(
                 level: 9,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.dropTableFallbackMs
-        )
+            )) == (GameConstants.dropTableFallbackMs))
     }
 
-    func testDropIntervalClampsToBaseAndMinimum() {
-        XCTAssertEqual(
-            Timing.dropInterval(
+    @Test func testDropIntervalClampsToBaseAndMinimum() {
+        #expect((Timing.dropInterval(
                 level: 0,
                 baseDropMs: 900,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            900
-        )
-        XCTAssertEqual(
-            Timing.dropInterval(
+            )) == (900))
+        #expect((Timing.dropInterval(
                 level: 0,
                 baseDropMs: 50,
                 softDrop: false,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.minimumDropMs
-        )
+            )) == (GameConstants.minimumDropMs))
     }
 
-    func testSoftDropIntervalUsesMultiplier() {
-        XCTAssertEqual(
-            Timing.dropInterval(
+    @Test func testSoftDropIntervalUsesMultiplier() {
+        #expect((Timing.dropInterval(
                 level: 0,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: true,
                 softDropMultiplier: GameConstants.softDropMultiplier
-            ),
-            GameConstants.minimumDropMs
-        )
-        XCTAssertEqual(
-            Timing.dropInterval(
+            )) == (GameConstants.minimumDropMs))
+        #expect((Timing.dropInterval(
                 level: 0,
                 baseDropMs: GameConstants.baseDropMs,
                 softDrop: true,
                 softDropMultiplier: 0
-            ),
-            GameConstants.baseDropMs
-        )
+            )) == (GameConstants.baseDropMs))
     }
 }

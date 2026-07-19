@@ -3,6 +3,7 @@ import Darwin
 
 final class SocketTestClient {
     private var fd: Int32
+    private var readBuffer = Data()
 
     private init(fd: Int32) {
         self.fd = fd
@@ -42,42 +43,29 @@ final class SocketTestClient {
     }
 
     func send(line: String) throws {
-        let data = Array((line + "\n").utf8)
-        let result = data.withUnsafeBytes { buffer -> Int in
-            guard let base = buffer.baseAddress else { return -1 }
-            return write(fd, base, buffer.count)
-        }
-        if result < 0 {
-            throw SocketTestError.writeFailed
-        }
+        try sendAll(Data((line + "\n").utf8))
     }
 
     func send(lineData: Data) throws {
         var data = lineData
         data.append(0x0A)
-        let result = data.withUnsafeBytes { buffer -> Int in
-            guard let base = buffer.baseAddress else { return -1 }
-            return write(fd, base, buffer.count)
-        }
-        if result < 0 {
-            throw SocketTestError.writeFailed
-        }
+        try sendAll(data)
     }
 
     func readLine(timeoutMs: Int) throws -> Data? {
         let flags = fcntl(fd, F_GETFL, 0)
         _ = fcntl(fd, F_SETFL, flags | O_NONBLOCK)
         let deadline = Date().addingTimeInterval(Double(timeoutMs) / 1000.0)
-        var buffer = Data()
-
         while Date() < deadline {
-            var chunk = [UInt8](repeating: 0, count: 1024)
+            if let line = takeBufferedLine() {
+                return line
+            }
+
+            var chunk = [UInt8](repeating: 0, count: 16 * 1024)
             let readCount = read(fd, &chunk, chunk.count)
             if readCount > 0 {
-                buffer.append(contentsOf: chunk.prefix(readCount))
-                if let range = buffer.firstRange(of: Data([0x0A])) {
-                    return buffer.subdata(in: buffer.startIndex..<range.lowerBound)
-                }
+                readBuffer.append(contentsOf: chunk.prefix(readCount))
+                continue
             } else if readCount == 0 {
                 return nil
             } else {
@@ -89,6 +77,30 @@ final class SocketTestClient {
         }
 
         return nil
+    }
+
+    private func takeBufferedLine() -> Data? {
+        guard let newline = readBuffer.firstIndex(of: 0x0A) else { return nil }
+        let line = Data(readBuffer[..<newline])
+        readBuffer.removeSubrange(...newline)
+        return line
+    }
+
+    private func sendAll(_ data: Data) throws {
+        try data.withUnsafeBytes { buffer in
+            guard let base = buffer.baseAddress else { return }
+            var sent = 0
+            while sent < buffer.count {
+                let count = write(fd, base.advanced(by: sent), buffer.count - sent)
+                if count > 0 {
+                    sent += count
+                } else if count < 0, errno == EWOULDBLOCK || errno == EAGAIN {
+                    usleep(1_000)
+                } else {
+                    throw SocketTestError.writeFailed
+                }
+            }
+        }
     }
 }
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-The core feature scope is complete. Current focus is on polish, bug fixes, and technical debt cleanup.
+The legacy “feature complete” phase is closed. The project is being simplified around a deterministic headless runtime, a thin SwiftUI/SpriteKit shell, Adapter Protocol 3.0.0, and an Xcode-independent Swift Testing toolchain.
 
 ## Tech Debt Cleanup Plan
 
@@ -20,7 +20,8 @@ Aligned the external Adapter through canonical protocol 3.0.0. The current migra
 
 Ongoing: small polish, bug fixes, and keep tests green.
 Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revisions.
-Ongoing: restore a complete Xcode/Command Line Tools installation so `swift test` can import the macOS XCTest module on every development machine.
+In progress: replace XCTest entirely with Swift Testing and make the verified CLI wrappers the only supported developer entry points.
+Next: move fixed-step ownership out of SpriteKit, reduce Core mutation surfaces, and split Adapter transport/session/protocol responsibilities.
 
 ---
 

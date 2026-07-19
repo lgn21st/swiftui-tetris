@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+set -euo pipefail
+source "${0:A:h}/swift-env"
+
+exec "${TETRIS_SWIFT_BIN}" run App "$@"

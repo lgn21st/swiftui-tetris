@@ -1,10 +1,10 @@
-import XCTest
+import Testing
 @testable import UI
 
-final class GameLoopTests: XCTestCase {
-    func testGameLoopReturnsRenderState() {
+@Suite struct GameLoopTests {
+    @Test func testGameLoopReturnsRenderState() {
         let loop = GameLoop()
         let renderState = loop.stepFrame(elapsedMs: 0)
-        XCTAssertFalse(renderState.activeBlocks.isEmpty)
+        #expect(!renderState.activeBlocks.isEmpty)
     }
 }

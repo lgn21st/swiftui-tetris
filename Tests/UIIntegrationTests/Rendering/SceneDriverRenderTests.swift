@@ -1,20 +1,20 @@
-import XCTest
+import Testing
 @testable import UI
 @testable import Renderer
 @testable import Core
 
-final class SceneDriverRenderTests: XCTestCase {
-    func testSceneDriverTickDoesNotRenderDirectly() {
+@Suite struct SceneDriverRenderTests {
+    @Test func testSceneDriverTickDoesNotRenderDirectly() {
         let driver = SceneDriver(
             audio: nil,
             fullScreenHandler: FullScreenHandlerSpy()
         )
-        XCTAssertEqual(driver.scene.debugRenderCount, 0)
+        #expect(driver.scene.debugRenderCount == 0)
         driver.tick(elapsedMs: 16)
-        XCTAssertEqual(driver.scene.debugRenderCount, 0)
+        #expect(driver.scene.debugRenderCount == 0)
     }
 
-    func testSceneDriverSkipsRenderStateUpdateWhenPaused() {
+    @Test func testSceneDriverSkipsRenderStateUpdateWhenPaused() {
         let driver = SceneDriver(
             audio: nil,
             fullScreenHandler: FullScreenHandlerSpy()
@@ -24,11 +24,11 @@ final class SceneDriverRenderTests: XCTestCase {
 
         driver.commandTogglePause()
         driver.tick(elapsedMs: 16)
-        XCTAssertEqual(driver.debugRenderStateVersion, baselineVersion)
+        #expect(driver.debugRenderStateVersion == baselineVersion)
 
         driver.commandTogglePause()
         driver.tick(elapsedMs: 16)
-        XCTAssertGreaterThan(driver.debugRenderStateVersion, baselineVersion)
+        #expect(driver.debugRenderStateVersion > baselineVersion)
     }
 }
 

@@ -1,10 +1,10 @@
-import XCTest
+import Testing
 @testable import Core
 
-final class NextQueueTests: XCTestCase {
-    func testSpawnNextKeepsFivePreviewsAvailable() {
+@Suite struct NextQueueTests {
+    @Test func testSpawnNextKeepsFivePreviewsAvailable() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.spawnNext()
-        XCTAssertGreaterThanOrEqual(state.nextQueue.count, 5)
+        #expect(state.nextQueue.count >= 5)
     }
 }
