@@ -1,8 +1,9 @@
-# Architecture & Design Review (SwiftUI + SpriteKit)
+# Architecture
 
-This document defines the target architecture and refactor plan for a SwiftUI + SpriteKit-native Tetris, without porting constraints. The goal is to maximize responsiveness, maintainability, and testability while using platform-appropriate patterns.
+This document describes the implemented architecture of the local SwiftUI +
+SpriteKit Tetris application and its UI-free Adapter server.
 
-## Beginner Overview
+## Overview
 This section explains the codebase in plain language for new contributors.
 
 ### Big Picture
@@ -104,41 +105,7 @@ Where to edit:
 - **Bounded hot-path allocation**: reuse nodes, buffers, cached shape tables, textures, and Core board storage; transient four-block overlay arrays remain intentionally small.
 - **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
-## Status
-- The headless Runtime and standalone server, private mutable-state boundary,
-  Swift Testing migration, and Adapter transport/session/execution decomposition
-  are complete.
-
-## Target Architecture
-### Loop & Timing
-- A UI-agnostic runtime becomes the authoritative owner of the 16 ms accumulator and fixed-step transaction.
-- Each transaction begins a logical step, applies local and Adapter commands, advances Core once, captures events, then publishes one snapshot and correlated Adapter result.
-- Local UI actions are queued; InputEngine produces actions without seeing `GameState`, and changes become visible at the next fixed transaction.
-- `SceneDriver` becomes a thin platform coordinator for input, audio, rendering, and lifecycle.
-- Headless tests and external controllers drive the same runtime API as SpriteKit.
-
-### Rendering
-- Pre-allocate node grids for board + ghost + effects.
-- Use a render buffer to track changed and flash cells without per-frame allocations.
-- Update only nodes whose cell state changed, plus flash cells when flash alpha changes.
-- Use cached `SKTexture`s for each tetromino color to avoid per-frame drawing.
-
-### Input
-- Create a single `InputRouter` that maps keyboard/gamepad to `GameAction`.
-- Support SwiftUI `Commands` for minimal menu actions (Pause, Restart).
-- Keep key capture and gamepad handling decoupled from gameplay logic.
-
-### Audio
-- Migrate to `AVAudioEngine` with preloaded `AVAudioPCMBuffer`s.
-- Mix per-event gain and master volume in a single audio mixer.
-- Guarantee low-latency playback for rapid events (move/rotate).
-
-### SwiftUI Composition
-- Keep `SpriteView` fixed-size in logical coordinates and scale via SwiftUI.
-- Overlay HUD with `ZStack`.
-- Provide accessibility: reduce motion, keyboard focus order, and legible text sizes.
-
-## Current Alignment
+## Implemented Boundaries
 - Fixed-step ownership lives in `GameRuntime`; `TetrisScene.update(_:)` only reports frame time and renders.
 - Standalone scheduling lives in `HeadlessServer`; it reuses the same Runtime transaction API and imports no UI framework.
 - Render pipeline reuses buffers/nodes and caches textures.
@@ -163,7 +130,7 @@ Where to edit:
 - Adapter queue capacities are project-local defaults and require fresh load
   evidence before exposing the endpoint beyond a trusted local interface.
 - Headless throughput does not measure rendered FPS, input latency, or audio
-  latency; validate those through the manual Release checklist before making
+  latency; validate those through the local manual checklist before making
   quantitative UI claims.
 - Rules and timing changes require deterministic Core/Runtime tests; UI and
   Renderer must remain snapshot-only consumers.
@@ -173,7 +140,7 @@ Where to edit:
 - `scripts/verify` is the authoritative machine gate: architecture boundaries,
   Swift Testing, Debug/Release builds, disposable Release packaging, canonical
   Adapter 3.0.0 checks, and a one-million-step Headless time/RSS budget.
-- The current suite contains 290 tests across 92 suites and uses no XCTest or
-  Xcode project.
+- The current suite contains 289 Swift tests across 91 suites plus three Python
+  JSONL client tests, and uses no XCTest or Xcode project.
 - Release Headless verification passes ready, claim, restart, deterministic
   seeded replay, and the project concurrency/backpressure/reconnect suites.

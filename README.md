@@ -41,7 +41,7 @@ Example (tuning):
 TETRIS_AI_IDLE_TIMEOUT_MS=0 \
 TETRIS_AI_MAX_PENDING=128 \
 TETRIS_AI_OBSERVATION_MS=50 \
-swift run App
+scripts/run
 ```
 
 For protocol clients and unattended validation, prefer the UI-free server:
@@ -66,11 +66,9 @@ only a bounded local soak/performance mode.
 - `docs/feature-matrix.md`: feature checklist.
 - `docs/rules-spec.md`: rules + timing constants.
 - `docs/cli-packaging.md`: packaging steps.
-- `docs/codesign-notarize.md`: codesign + notarization steps.
-- `docs/release-checklist.md`: pre-release QA checklist.
-- `docs/runtime-differences.md`: CLI vs packaged behavior notes.
+- `docs/local-checklist.md`: local machine and packaged-app QA checklist.
 - `docs/adapter-implementation-profile.md`: local Adapter queues, scheduling, logging, and startup.
 - `docs/adapter-conformance.md`: protocol 3.0.0 requirement/evidence matrix.
 
 ## Status
-Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. `scripts/verify` is the Xcode-independent release gate for architecture, tests, builds, protocol conformance, and headless soak performance. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). Current architecture and residual risks are recorded in `docs/architecture.md`.
+Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. `scripts/verify` is the Xcode-independent verification gate for architecture, tests, builds, protocol conformance, packaging, and headless performance. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). Current architecture and residual risks are recorded in `docs/architecture.md`.

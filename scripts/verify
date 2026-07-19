@@ -19,6 +19,7 @@ if [[ "${protocol_version}" != "3.0.0" ]]; then
 fi
 
 "${TETRIS_PROJECT_ROOT}/scripts/check-architecture"
+python3 -m unittest discover -s "${TETRIS_PROJECT_ROOT}/scripts/tests" -v
 "${TETRIS_PROJECT_ROOT}/scripts/test"
 "${TETRIS_PROJECT_ROOT}/scripts/build"
 "${TETRIS_PROJECT_ROOT}/scripts/build" -c release

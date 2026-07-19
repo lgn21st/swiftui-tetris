@@ -8,7 +8,8 @@
 ## Key Docs
 - `docs/rules-spec.md`: authoritative rules/timing constants.
 - `docs/feature-matrix.md`: feature checklist.
-- `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment plan.
+- `docs/architecture.md`: implemented architecture and dependency boundaries.
+- `docs/local-checklist.md`: local interactive and packaged-app QA.
 - `docs/adapter-conformance.md`: current protocol version and requirement/test evidence.
 - `docs/adapter-implementation-profile.md`: project-local Adapter runtime policy.
 
@@ -26,14 +27,14 @@
 - Use Swift Testing only; XCTest and Xcode-specific test infrastructure are not supported.
 - Keep Swift tools/language mode at 6.2; AppKit/SpriteKit coordinators and their tests are `@MainActor`, while queue-confined I/O uses reviewed Sendable contracts.
 - Use `scripts/test`, `scripts/build`, `scripts/run`, and `scripts/server` so CLI builds select the verified SDK and module caches consistently.
-- Run `scripts/verify` before every completed batch; it is the authoritative machine release gate.
+- Run `scripts/verify` before every completed batch; it is the authoritative machine verification gate.
 - Update Core and tests first; UI changes come after logic is stable.
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.
 - Avoid mixing SpriteKit state mutations with Core rule logic.
 
 ## Documentation Updates
 - Keep `README.md`, architecture, rules, feature matrix, conformance evidence,
-  implementation profile, and release checklist current. Do not maintain
+  implementation profile, and local checklist current. Do not maintain
   historical progress or completed-work ledgers.
 
 ## Skills

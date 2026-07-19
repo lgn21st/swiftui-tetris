@@ -1,32 +1,15 @@
 # CLI Packaging
 
-Use the SwiftPM `Packager` executable to create a macOS `.app` bundle from the release binary.
+Use the SwiftPM `Packager` executable to create a local macOS `.app` bundle.
 
 ## Build the binary
 ```sh
 scripts/build -c release
 ```
 
-If module cache permissions fail, set an explicit cache path:
+## Package the app with local assets
 ```sh
-mkdir -p .build/module-cache
-CLANG_MODULE_CACHE_PATH="$(pwd)/.build/module-cache" scripts/build -c release
-```
-
-## Package the app
-```sh
-swift run Packager \
-  --binary-path .build/release/App \
-  --output dist/SwiftUITetris.app \
-  --bundle-id com.example.swiftui-tetris \
-  --name SwiftUITetris \
-  --version 0.1.0 \
-  --build 1
-```
-
-## Include icon, entitlements, and assets
-```sh
-swift run Packager \
+.build/release/Packager \
   --binary-path .build/release/App \
   --output dist/SwiftUITetris.app \
   --bundle-id com.example.swiftui-tetris \
@@ -34,7 +17,6 @@ swift run Packager \
   --version 0.1.0 \
   --build 1 \
   --icon-path assets/AppIcon.icns \
-  --entitlements assets/App.entitlements \
   --assets-path assets
 ```
 
@@ -42,9 +24,8 @@ swift run Packager \
 - The packager writes `Contents/Info.plist` and copies the binary into `Contents/MacOS/`.
 - Generated bundles declare macOS 14.0 as their minimum system version and omit Finder `.DS_Store` metadata from copied assets.
 - If `--icon-path` is provided, the `.icns` file is copied into `Contents/Resources/` and referenced in `Info.plist`.
-- If `--entitlements` is provided, the file is copied to `Contents/Entitlements.plist` for later codesign usage.
 - If `--assets-path` is provided, its contents are copied to `Contents/Resources/assets/`.
 - If `dist/SwiftUITetris.app` already exists, delete it before re-running (or use a versioned output path).
 - Audio assets are expected under `assets/sfx/` (see `assets/README.md`).
-- See `docs/runtime-differences.md` for CLI vs packaged runtime checks.
-- If you see `sandbox-exec: sandbox_apply: Operation not permitted` or SwiftPM cache permission errors, run the packaging steps on a local machine with a writable module cache (see the `CLANG_MODULE_CACHE_PATH` workaround above).
+- `scripts/verify` builds and validates a disposable bundle automatically.
+- See `docs/local-checklist.md` for CLI and packaged-app checks.

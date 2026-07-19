@@ -5,22 +5,49 @@ import socket
 import sys
 import time
 
+MAX_FRAME_BYTES = 65_536
+
 
 def send_line(sock, payload):
     data = json.dumps(payload).encode("utf-8") + b"\n"
     sock.sendall(data)
 
 
-def read_line(sock):
-    buffer = b""
+class JsonLineReader:
+    def __init__(self, sock):
+        self.sock = sock
+        self.buffer = bytearray()
+
+    def read_message(self):
+        while True:
+            if b"\n" in self.buffer:
+                line, remainder = self.buffer.split(b"\n", 1)
+                self.buffer = bytearray(remainder)
+                if len(line) > MAX_FRAME_BYTES:
+                    raise ValueError("adapter frame exceeds 65,536 payload bytes")
+                if not line:
+                    continue
+                message = json.loads(line.decode("utf-8"))
+                if not isinstance(message, dict):
+                    raise ValueError("adapter message is not a JSON object")
+                return message
+
+            chunk = self.sock.recv(4096)
+            if not chunk:
+                return None
+            self.buffer.extend(chunk)
+            if len(self.buffer) > MAX_FRAME_BYTES and b"\n" not in self.buffer:
+                raise ValueError("adapter frame exceeds 65,536 payload bytes")
+
+
+def receive_until(reader, predicate):
     while True:
-        chunk = sock.recv(4096)
-        if not chunk:
-            return None
-        buffer += chunk
-        if b"\n" in buffer:
-            line, _ = buffer.split(b"\n", 1)
-            return line
+        message = reader.read_message()
+        if message is None:
+            raise ConnectionError("adapter closed the connection")
+        print("<<", json.dumps(message, separators=(",", ":")))
+        if predicate(message):
+            return message
 
 
 def main():
@@ -51,46 +78,54 @@ def main():
     }
     send_line(sock, hello)
 
-    line = read_line(sock)
-    if not line:
-        print("No response from server", file=sys.stderr)
+    reader = JsonLineReader(sock)
+    try:
+        receive_until(reader, lambda message: message.get("type") == "welcome")
+        seq = 1
+
+        if args.command:
+            seq += 1
+            actions = [item.strip() for item in args.command.split(",") if item.strip()]
+            send_line(sock, {
+                "type": "command",
+                "seq": seq,
+                "ts": int(time.time() * 1000),
+                "mode": "action",
+                "actions": actions,
+            })
+            receive_until(
+                reader,
+                lambda message: message.get("type") in {"ack", "error"}
+                and message.get("seq") == seq,
+            )
+
+        if args.claim or args.release:
+            seq += 1
+            send_line(sock, {
+                "type": "control",
+                "seq": seq,
+                "ts": int(time.time() * 1000),
+                "action": "claim" if args.claim else "release",
+            })
+            receive_until(
+                reader,
+                lambda message: message.get("type") in {"ack", "error"}
+                and message.get("seq") == seq,
+            )
+
+        while True:
+            message = reader.read_message()
+            if message is None:
+                break
+            print("<<", json.dumps(message, separators=(",", ":")))
+            if args.once:
+                break
+        return 0
+    except (ConnectionError, OSError, UnicodeError, ValueError) as error:
+        print(f"Adapter client failed: {error}", file=sys.stderr)
         return 1
-    print("<<", line.decode("utf-8"))
-
-    if args.command:
-        actions = [item.strip() for item in args.command.split(",") if item.strip()]
-        command = {
-            "type": "command",
-            "seq": 2,
-            "ts": int(time.time() * 1000),
-            "mode": "action",
-            "actions": actions,
-        }
-        send_line(sock, command)
-        ack = read_line(sock)
-        if ack:
-            print("<<", ack.decode("utf-8"))
-
-    if args.claim or args.release:
-        control = {
-            "type": "control",
-            "seq": 3,
-            "ts": int(time.time() * 1000),
-            "action": "claim" if args.claim else "release",
-        }
-        send_line(sock, control)
-        reply = read_line(sock)
-        if reply:
-            print("<<", reply.decode("utf-8"))
-
-    while True:
-        line = read_line(sock)
-        if not line:
-            break
-        print("<<", line.decode("utf-8"))
-        if args.once:
-            break
-    return 0
+    finally:
+        sock.close()
 
 
 if __name__ == "__main__":
