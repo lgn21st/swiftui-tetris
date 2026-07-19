@@ -94,6 +94,20 @@ import Core
         #expect(plan?.count == 3)
     }
 
+    @Test func commandExecutorAppliesRestartSeedDeterministically() throws {
+        var actual = GameState(config: GameConfig(), seed: 1)
+        var expected = GameState(config: GameConfig(), seed: 1)
+        let command = TetrisAICommand.action(actions: [.restart, .moveLeft])
+
+        let result = try AdapterCommandExecutor.execute(command, restartSeed: 42, state: &actual)
+        expected.restart(seed: 42)
+        expected.apply(action: .moveLeft)
+
+        #expect(result.active == expected.snapshot().active)
+        #expect(result.nextQueue == expected.snapshot().nextQueue)
+        #expect(result.logicalStep == expected.snapshot().logicalStep)
+    }
+
     private func apply(
         actions: [GameAction],
         to snapshot: GameStateSnapshot,

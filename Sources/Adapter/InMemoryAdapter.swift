@@ -17,12 +17,7 @@ public final class InMemoryAdapter: AdapterHandling {
 
     public func poll(elapsedMs: Int, state: inout GameState) {
         while let command = transport.dequeueCommand() {
-            let snapshot = state.snapshot()
-            if let actions = try? CommandMapper.map(command: command, snapshot: snapshot) {
-                for action in actions {
-                    state.apply(action: action)
-                }
-            }
+            _ = try? AdapterCommandExecutor.execute(command, state: &state)
         }
     }
 

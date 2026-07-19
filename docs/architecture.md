@@ -52,7 +52,7 @@ Where to edit:
 - TetrisScene reports clamped frame time; it owns no gameplay clock.
 - GameRuntime accumulates frame time and advances Core in independent 16ms transactions, including catch-up frames.
 - Rendering happens after logic.
-- Adapter begins a logical transition, polls commands, advances that fixed step, and emits its snapshot.
+- Runtime begins a logical transition, polls Adapter commands, advances that fixed step, and emits its snapshot.
 
 ### External AI Transport
 - Adapter implements canonical Tetris AI Adapter Protocol 3.0.0; the normative package lives in the sibling `tui-tetris/protocol/adapter` directory.
@@ -95,7 +95,8 @@ Where to edit:
 - **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
 ## Status
-- The headless Runtime and Swift Testing foundation are complete. Core API simplification and Adapter decomposition remain in progress.
+- The headless Runtime, private mutable-state boundary, Swift Testing migration,
+  and Adapter transport/session/execution decomposition are complete.
 
 ## Target Architecture
 ### Loop & Timing
@@ -135,6 +136,7 @@ Where to edit:
 - Audio uses `AVAudioEngine` with preloaded buffers.
 - UI polish includes commands, overlays, focus pause handling, and accessibility coverage.
 - Adapter framing is bounded to 65,536 payload bytes; nonblocking per-client output is bounded to 256 KiB and queues partial writes until complete.
+- Adapter session/control policy and command execution are transport-free, independently tested components; SocketAdapter only coordinates wire messages, bounded queues, and Runtime delivery.
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.

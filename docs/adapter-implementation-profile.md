@@ -26,8 +26,12 @@ used to redefine portable wire behavior.
   queue.
 - `adapter.socket.state` owns client registration, sequencing, controller
   ownership, observation sequence allocation, and the inbound command queue.
-- SceneDriver remains authoritative: for every fixed step it begins one logical
+- `GameRuntime` is authoritative: for every fixed step it begins one logical
   transition, drains/applies commands, advances Core, then emits a full snapshot.
+- `AdapterSessionRegistry` is a pure state machine for identity, sequencing,
+  controller ownership, observation subscriptions, and disconnect promotion.
+- `AdapterCommandExecutor` is the shared, transport-free command application
+  path used by both TCP and in-memory adapters.
 - `adapter.socket.log` serializes optional JSONL wire logs off the game loop.
 - Inbound commands are bounded by `TETRIS_AI_MAX_PENDING` (default `64`). A
   rejection returns `backpressure` with `retry_after_ms` from

@@ -81,14 +81,11 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private let timeSource: () -> Int
     private var seq: Int
     private let queue = DispatchQueue(label: "adapter.socket.state")
-    private let logQueue = DispatchQueue(label: "adapter.socket.log")
-    private var logHandle: FileHandle?
+    private let logger: AdapterWireLogger
     private var pendingCommands: [PendingCommand] = []
-    private var clients: [UUID: ClientState] = [:]
-    private var controllerId: UUID?
+    private var sessions = AdapterSessionRegistry()
     private var lastObservationTs: Int?
     private var latestSnapshot: GameStateSnapshot?
-    private var nextJoinOrder: Int = 0
 
     public var boundPort: Int? { transport.boundPort }
     
@@ -104,7 +101,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         )
         self.timeSource = timeSource
         self.seq = 0
-        self.logHandle = SocketAdapter.openLogHandle(path: configuration.logPath, timeSource: timeSource)
+        self.logger = AdapterWireLogger(path: configuration.logPath, timeSource: timeSource)
         self.transport.onReceive = { [weak self] connectionId, data in
             self?.handleIncoming(connectionId: connectionId, data: data)
         }
@@ -120,12 +117,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
 
     public func stop() {
         transport.stop()
-        logQueue.sync {
-            if let handle = logHandle {
-                try? handle.close()
-                logHandle = nil
-            }
-        }
+        logger.close()
     }
 
     public func poll(elapsedMs: Int, state: inout GameState) {
@@ -136,17 +128,12 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         }
 
         for pending in commands {
-            let snapshot = state.snapshot()
             do {
-                let actions = try CommandMapper.map(command: pending.command, snapshot: snapshot)
-                for action in actions {
-                    if action == .restart, let seed = pending.restartSeed {
-                        state.restart(seed: UInt64(seed))
-                    } else {
-                        state.apply(action: action)
-                    }
-                }
-                let appliedSnapshot = state.snapshot()
+                let appliedSnapshot = try AdapterCommandExecutor.execute(
+                    pending.command,
+                    restartSeed: pending.restartSeed,
+                    state: &state
+                )
                 sendAck(
                     connectionId: pending.connectionId,
                     seq: pending.seq,
@@ -167,9 +154,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         let now = timeSource()
         let emission = queue.sync { () -> (targets: [UUID], seq: Int)? in
             latestSnapshot = snapshot
-            let targets = clients
-                .filter { $0.value.handshakeComplete && $0.value.streamObservations }
-                .map { $0.key }
+            let targets = sessions.observationTargets
             guard !targets.isEmpty else { return nil }
             if let interval = configuration.observationIntervalMs, interval > 0,
                let lastObservationTs, now - lastObservationTs < interval {
@@ -248,47 +233,19 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
             return
         }
 
-        let assigned = queue.sync { () -> (clientId: Int, role: ClientRole, controllerClientId: Int?) in
-            let requestedRole = hello.requested.role ?? .auto
-            let controllerEligible = requestedRole != .observer
-
-            let joinOrder = nextJoinOrder
-            nextJoinOrder += 1
-            let clientId = joinOrder + 1
-
-            let assignedRole: ClientRole
-            if controllerId == nil, controllerEligible {
-                controllerId = connectionId
-                assignedRole = .controller
-            } else {
-                assignedRole = .observer
-            }
-
-            clients[connectionId] = ClientState(
-                handshakeComplete: true,
-                streamObservations: hello.requested.streamObservations,
-                role: assignedRole,
-                joinOrder: joinOrder,
-                clientId: clientId,
-                controllerEligible: controllerEligible,
-                lastReceivedSeq: 1
+        let assigned = queue.sync {
+            sessions.register(
+                connectionId,
+                requestedRole: hello.requested.role ?? .auto,
+                streamsObservations: hello.requested.streamObservations
             )
-
-            let controllerClientId: Int?
-            if controllerId == connectionId {
-                controllerClientId = clientId
-            } else {
-                controllerClientId = controllerId.flatMap { clients[$0]?.clientId }
-            }
-
-            return (clientId: clientId, role: assignedRole, controllerClientId: controllerClientId)
         }
         let welcome = TetrisAIWelcome(
             seq: hello.seq,
             tsMs: timeSource(),
             protocolVersion: configuration.protocolVersion,
             clientId: assigned.clientId,
-            role: assigned.role == .controller ? .controller : .observer,
+            role: assigned.role,
             controllerId: assigned.controllerClientId,
             gameId: configuration.gameId,
             capabilities: TetrisAICapabilities(
@@ -376,32 +333,14 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         }
         switch control.action {
         case .claim:
-            let claimResult = queue.sync { () -> Bool in
-                if controllerId == nil {
-                    controllerId = connectionId
-                    if var state = clients[connectionId] {
-                        state.role = .controller
-                        clients[connectionId] = state
-                    }
-                    return true
-                }
-                return controllerId == connectionId
-            }
+            let claimResult = queue.sync { sessions.claim(connectionId) }
             if claimResult {
                 sendAck(connectionId: connectionId, seq: control.seq, status: "ok")
             } else {
                 sendError(connectionId: connectionId, seq: control.seq, code: "controller_active", message: "Controller already assigned.")
             }
         case .release:
-            let released = queue.sync { () -> Bool in
-                guard controllerId == connectionId else { return false }
-                controllerId = nil
-                if var state = clients[connectionId] {
-                    state.role = .observer
-                    clients[connectionId] = state
-                }
-                return true
-            }
+            let released = queue.sync { sessions.release(connectionId) }
             if released {
                 sendAck(connectionId: connectionId, seq: control.seq, status: "ok")
             } else {
@@ -473,30 +412,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     private func logEvent(direction: String, connectionId: UUID, line: Data) {
-        guard let handle = logHandle else { return }
-        logQueue.async {
-            let lineString = String(data: line, encoding: .utf8)
-            var payload: [String: Any] = [
-                "ts_ms": self.timeSource(),
-                "direction": direction,
-                "connection_id": connectionId.uuidString
-            ]
-            if let lineString {
-                payload["line"] = lineString
-            } else {
-                payload["line_base64"] = line.base64EncodedString()
-            }
-            guard let data = try? JSONSerialization.data(withJSONObject: payload, options: []) else { return }
-            handle.write(data)
-            handle.write(Data([0x0A]))
-        }
-    }
-
-    private static func openLogHandle(path: String?, timeSource: () -> Int) -> FileHandle? {
-        guard let path else { return nil }
-        let resolved = path == "auto" ? "/tmp/tetris-ai-adapter-\(timeSource()).jsonl" : path
-        FileManager.default.createFile(atPath: resolved, contents: nil)
-        return FileHandle(forWritingAtPath: resolved)
+        logger.record(direction: direction, connection: connectionId, line: line)
     }
 
     private func mapCommandError(_ error: CommandMappingError) -> (code: String, message: String) {
@@ -531,48 +447,19 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     }
 
     private func isHandshakeComplete(connectionId: UUID) -> Bool {
-        queue.sync {
-            clients[connectionId]?.handshakeComplete ?? false
-        }
+        queue.sync { sessions.contains(connectionId) }
     }
 
     private func validateAndUpdateSeq(connectionId: UUID, seq: Int) -> Bool {
-        queue.sync {
-            guard var state = clients[connectionId], state.handshakeComplete else { return false }
-            guard seq > state.lastReceivedSeq else { return false }
-            state.lastReceivedSeq = seq
-            clients[connectionId] = state
-            return true
-        }
+        queue.sync { sessions.accept(sequence: seq, from: connectionId) }
     }
 
     private func isController(connectionId: UUID) -> Bool {
-        queue.sync {
-            controllerId == connectionId
-        }
+        queue.sync { sessions.isController(connectionId) }
     }
 
     private func handleDisconnect(connectionId: UUID) {
-        queue.sync {
-            clients.removeValue(forKey: connectionId)
-            if controllerId == connectionId {
-                controllerId = nil
-                promoteObserverIfNeeded(excluding: nil)
-            }
-        }
-    }
-
-    private func promoteObserverIfNeeded(excluding connectionId: UUID?) {
-        guard controllerId == nil else { return }
-        let sorted = clients
-            .filter { $0.value.role == .observer && $0.value.controllerEligible && $0.key != connectionId }
-            .sorted { $0.value.joinOrder < $1.value.joinOrder }
-        guard let next = sorted.first else { return }
-        controllerId = next.key
-        if var state = clients[next.key] {
-            state.role = .controller
-            clients[next.key] = state
-        }
+        queue.sync { sessions.disconnect(connectionId) }
     }
 }
 
@@ -587,19 +474,4 @@ private enum SemanticVersion {
               let majorRange = Range(match.range(at: 1), in: value) else { return nil }
         return Int(value[majorRange])
     }
-}
-
-private struct ClientState {
-    var handshakeComplete: Bool
-    var streamObservations: Bool
-    var role: ClientRole
-    var joinOrder: Int
-    var clientId: Int
-    var controllerEligible: Bool
-    var lastReceivedSeq: Int
-}
-
-private enum ClientRole {
-    case controller
-    case observer
 }
