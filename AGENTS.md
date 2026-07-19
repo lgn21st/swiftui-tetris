@@ -8,10 +8,7 @@
 ## Key Docs
 - `docs/rules-spec.md`: authoritative rules/timing constants.
 - `docs/feature-matrix.md`: feature checklist.
-- `docs/roadmap.md`: goals and validation checklist.
 - `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment plan.
-- `docs/evaluation.md`: comprehensive project evaluation (architecture, visuals, UX, code quality).
-- `docs/todo.md`: tech-debt and improvement backlog.
 - `docs/adapter-conformance.md`: current protocol version and requirement/test evidence.
 - `docs/adapter-implementation-profile.md`: project-local Adapter runtime policy.
 
@@ -34,9 +31,10 @@
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.
 - Avoid mixing SpriteKit state mutations with Core rule logic.
 
-## Progress Updates
-- Keep `README.md` and `docs/roadmap.md` updated after each phase.
-- Last update: Adapter aligned to canonical Tetris AI Adapter Protocol 3.0.0.
+## Documentation Updates
+- Keep `README.md`, architecture, rules, feature matrix, conformance evidence,
+  implementation profile, and release checklist current. Do not maintain
+  historical progress or completed-work ledgers.
 
 ## Skills
 - Use skill `swiftui-spritekit-tetris-dev` for any SwiftUI/SpriteKit/Core work in this repo.

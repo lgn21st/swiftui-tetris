@@ -1,7 +1,8 @@
 import Foundation
 import Core
+import Runtime
 
-public final class InMemoryAdapter: AdapterHandling {
+public final class InMemoryAdapter: GameRuntimePort {
     private let transport: InMemoryTransport
     private let timeSource: () -> Int
     private var seq: Int

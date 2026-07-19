@@ -64,9 +64,7 @@ public struct SocketAdapterConfiguration: Equatable {
     }
 }
 
-public typealias AdapterLifecycle = GameRuntimePortLifecycle
-
-public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
+public final class SocketAdapter: GameRuntimePort, GameRuntimePortLifecycle {
     private struct PendingCommand {
         let connectionId: UUID
         let seq: Int

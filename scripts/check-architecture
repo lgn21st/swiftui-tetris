@@ -22,4 +22,9 @@ then
     exit 1
 fi
 
+if rg -n '^public typealias (AdapterHandling|AdapterLifecycle)' "${project_root}/Sources/Adapter"; then
+    print -u2 "Adapter compatibility aliases are forbidden; use Runtime protocols directly."
+    exit 1
+fi
+
 print "Architecture boundaries: OK"

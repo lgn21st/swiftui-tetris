@@ -37,4 +37,4 @@ Use this checklist before cutting a release build.
 
 ## Notes
 - Use unique `--bundle-id` and increment `--version`/`--build` for real releases.
-- Keep `docs/progress.md` and `README.md` updated with release status.
+- Keep `README.md`, `docs/architecture.md`, and protocol evidence current.

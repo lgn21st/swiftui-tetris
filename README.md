@@ -65,8 +65,6 @@ only a bounded local soak/performance mode.
 - `docs/architecture.md`: SwiftUI + SpriteKit best-practice alignment.
 - `docs/feature-matrix.md`: feature checklist.
 - `docs/rules-spec.md`: rules + timing constants.
-- `docs/roadmap.md`: scope, goals, and validation checklist.
-- `docs/progress.md`: progress log.
 - `docs/cli-packaging.md`: packaging steps.
 - `docs/codesign-notarize.md`: codesign + notarization steps.
 - `docs/release-checklist.md`: pre-release QA checklist.
@@ -75,4 +73,4 @@ only a bounded local soak/performance mode.
 - `docs/adapter-conformance.md`: protocol 3.0.0 requirement/evidence matrix.
 
 ## Status
-Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. `scripts/verify` is the Xcode-independent release gate for architecture, tests, builds, protocol conformance, and headless soak performance. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.
+Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. `scripts/verify` is the Xcode-independent release gate for architecture, tests, builds, protocol conformance, and headless soak performance. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). Current architecture and residual risks are recorded in `docs/architecture.md`.

@@ -5,7 +5,7 @@ import Adapter
 @testable import UI
 
 @Suite @MainActor struct SceneDriverAdapterIntegrationTests {
-    private final class SpyAdapter: AdapterHandling {
+    private final class SpyAdapter: GameRuntimePort {
         private(set) var pollCount = 0
         private(set) var emitCount = 0
         private(set) var lastSnapshot: GameStateSnapshot?

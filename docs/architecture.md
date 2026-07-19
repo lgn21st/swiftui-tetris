@@ -160,6 +160,20 @@ Where to edit:
 - Swift tools 6.2 is the package language mode. AppKit/SpriteKit coordination is main-actor isolated; Adapter queue confinement is expressed with narrow Sendable contracts.
 
 ## Risks
-- Migrating the loop can change timing; guard with deterministic tests.
-- Audio engine changes may affect latency; validate with quick repeat actions.
-- Input refactor can cause regressions; maintain exhaustive mapping tests.
+- Adapter queue capacities are project-local defaults and require fresh load
+  evidence before exposing the endpoint beyond a trusted local interface.
+- Headless throughput does not measure rendered FPS, input latency, or audio
+  latency; validate those through the manual Release checklist before making
+  quantitative UI claims.
+- Rules and timing changes require deterministic Core/Runtime tests; UI and
+  Renderer must remain snapshot-only consumers.
+
+## Current Verification
+
+- `scripts/verify` is the authoritative machine gate: architecture boundaries,
+  Swift Testing, Debug/Release builds, canonical Adapter 3.0.0 checks, and a
+  one-million-step Headless time/RSS budget.
+- The current suite contains 290 tests across 92 suites and uses no XCTest or
+  Xcode project.
+- Release Headless verification passes ready, claim, restart, deterministic
+  seeded replay, and the project concurrency/backpressure/reconnect suites.
