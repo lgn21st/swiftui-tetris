@@ -1,5 +1,6 @@
 import Foundation
 import Core
+import Runtime
 
 public struct SocketAdapterConfiguration: Equatable {
     public var transport: SocketTransportConfiguration
@@ -63,10 +64,7 @@ public struct SocketAdapterConfiguration: Equatable {
     }
 }
 
-public protocol AdapterLifecycle {
-    func start()
-    func stop()
-}
+public typealias AdapterLifecycle = GameRuntimePortLifecycle
 
 public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     private struct PendingCommand {

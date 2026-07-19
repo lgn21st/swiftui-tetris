@@ -49,6 +49,6 @@ control concurrency, inbound backpressure/retry hints, the 65,536-byte frame
 boundary, slow-client isolation, and disconnect/reconnect behavior.
 
 The project uses Swift Testing exclusively through `scripts/test`; Xcode and
-XCTest are not supported. The current local suite contains 289 tests across 92
+XCTest are not supported. The current local suite contains 290 tests across 92
 suites. The exact cases above remain mandatory regression gates and must pass
 before any Adapter or runtime batch is committed.

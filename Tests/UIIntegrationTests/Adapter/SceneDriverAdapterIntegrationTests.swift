@@ -1,5 +1,6 @@
 import Testing
 import Core
+import Runtime
 import Adapter
 @testable import UI
 
@@ -19,9 +20,30 @@ import Adapter
         }
     }
 
+    private final class LifecyclePort: GameRuntimePort, GameRuntimePortLifecycle {
+        private(set) var starts = 0
+        private(set) var stops = 0
+
+        func start() { starts += 1 }
+        func stop() { stops += 1 }
+        func poll(elapsedMs: Int, state: inout GameState) {}
+        func emit(snapshot: GameStateSnapshot) {}
+    }
+
+    @Test func runtimePortLifecycleFollowsSceneDriverLifecycle() {
+        let port = LifecyclePort()
+        let driver = SceneDriver(audio: nil, port: port)
+
+        driver.start()
+        driver.stop()
+
+        #expect(port.starts == 1)
+        #expect(port.stops == 1)
+    }
+
     @Test func testTickPollsAdapterAndEmitsObservation() {
         let adapter = SpyAdapter()
-        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), adapter: adapter)
+        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), port: adapter)
 
         #expect(adapter.emitCount == 1, "initial snapshot primes streaming handshakes")
 
@@ -34,7 +56,7 @@ import Adapter
 
     @Test func testCatchUpRunsEveryFixedStepThroughAdapterBoundary() {
         let adapter = SpyAdapter()
-        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), audio: nil, adapter: adapter)
+        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), audio: nil, port: adapter)
 
         driver.tick(elapsedMs: 48)
 
@@ -49,7 +71,7 @@ import Adapter
         let transport = InMemoryTransport()
         transport.enqueueCommand(.action(actions: [.pause]))
         let adapter = InMemoryAdapter(transport: transport)
-        let driver = SceneDriver(state: state, audio: nil, adapter: adapter)
+        let driver = SceneDriver(state: state, audio: nil, port: adapter)
 
         driver.tick(elapsedMs: 16)
 
@@ -64,7 +86,7 @@ import Adapter
         let driver = SceneDriver(
             state: GameState(config: GameConfig(), seed: 1),
             audio: nil,
-            adapter: InMemoryAdapter(transport: transport)
+            port: InMemoryAdapter(transport: transport)
         )
 
         driver.tick(elapsedMs: 16)

@@ -9,6 +9,11 @@ public protocol GameRuntimePort: AnyObject {
     func emit(snapshot: GameStateSnapshot)
 }
 
+public protocol GameRuntimePortLifecycle: AnyObject {
+    func start()
+    func stop()
+}
+
 public final class GameRuntime {
     public static let defaultStepMs = 16
     public static let defaultMaxFrameMs = 250

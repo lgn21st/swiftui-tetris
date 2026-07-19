@@ -2,7 +2,6 @@ import Foundation
 import Renderer
 import Core
 import Runtime
-import Adapter
 
 @MainActor public final class SceneDriver: ObservableObject {
     public let scene: TetrisScene
@@ -11,7 +10,7 @@ import Adapter
     private let audio: AudioPlaying?
     private var gamepad: GamepadManager?
     private let fullScreenHandler: FullScreenHandling
-    private let adapter: AdapterHandling?
+    private let port: GameRuntimePort?
     @Published public private(set) var hudState: HUDState
     @Published public private(set) var hudDiagnosticsState: HUDDiagnosticsState
     @Published public private(set) var overlayState: OverlayState
@@ -35,14 +34,14 @@ import Adapter
         audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
         fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler(),
         scene: TetrisScene? = nil,
-        adapter: AdapterHandling? = nil
+        port: GameRuntimePort? = nil
     ) {
         self.scene = scene ?? TetrisScene(size: TetrisScene.defaultSize)
         self.input = input
-        self.runtime = GameRuntime(state: state, input: input, port: adapter)
+        self.runtime = GameRuntime(state: state, input: input, port: port)
         self.audio = audio
         self.fullScreenHandler = fullScreenHandler
-        self.adapter = adapter
+        self.port = port
         let startedValue = false
         self.started = startedValue
         let initialSnapshot = state.snapshot()
@@ -100,7 +99,7 @@ import Adapter
             audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
         }
         gamepad?.start()
-        (adapter as? AdapterLifecycle)?.start()
+        (port as? GameRuntimePortLifecycle)?.start()
     }
 
     func tick(elapsedMs: Int) {
@@ -136,7 +135,7 @@ import Adapter
         gamepad?.stop()
         audio?.setAmbientLoop(enabled: false, masterVolume: masterVolume)
         audioActive = false
-        (adapter as? AdapterLifecycle)?.stop()
+        (port as? GameRuntimePortLifecycle)?.stop()
     }
 
     func stateSnapshot() -> GameStateSnapshot {

@@ -2,14 +2,14 @@ import SwiftUI
 import SpriteKit
 import Renderer
 import AppKit
-import Adapter
+import Runtime
 
 public struct TetrisContainerView: View {
     @StateObject private var driver: SceneDriver
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    public init(adapter: AdapterHandling? = nil) {
-        _driver = StateObject(wrappedValue: SceneDriver(adapter: adapter))
+    public init(port: GameRuntimePort? = nil) {
+        _driver = StateObject(wrappedValue: SceneDriver(port: port))
     }
 
     public var body: some View {

@@ -1,6 +1,7 @@
 # Progress Log
 
 ## 2026-07-19
+- Removed the reverse UI-to-Adapter dependency: App and TetrisServer are now explicit composition roots, UI accepts only Runtime ports/lifecycle, and the 290-test suite guards lifecycle behavior.
 - Added a reusable `Headless` target and UI-free `TetrisServer` executable with monotonic absolute-deadline pacing, graceful signals, bounded runs, and safe fast/auto-restart soak options.
 - Moved Adapter environment assembly below UI and added explicit throwing socket startup, so bind failures are observable and GUI/headless entry points share one policy.
 - Passed the canonical Adapter 3.0.0 verifier for ten consecutive complete rounds against the Release headless server; a one-million-step Release soak completed in 0.18 seconds with 2,965,504 bytes maximum resident memory.

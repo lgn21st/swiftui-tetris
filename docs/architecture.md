@@ -32,6 +32,10 @@ External AI (tetris-ai)
         -> Adapter (observation streaming)
 ```
 
+Executable targets are the composition roots. `App` may assemble UI and
+Adapter, while UI depends only on Core, Runtime, and Renderer. `TetrisServer`
+assembles Adapter and Headless directly. UI never imports the protocol layer.
+
 ### Folder Map
 ```
 Core/               Game rules and data (no UI)

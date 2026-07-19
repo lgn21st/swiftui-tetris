@@ -16,7 +16,7 @@ Current assessment:
 | Input/timing | Strong after fixes | DAS/ARR isolation and per-step catch-up processing |
 | Adapter | Aligned to 3.0.0 | Conformance matrix, isolated session policy/execution, applied-state ack, bounded transport/logging |
 | Documentation | Reconciled | Canonical protocol is external; local implementation profile and project docs agree |
-| Verification environment | Strong | Swift 6.2 CLI Debug/Release builds are warning-free and all 289 Swift Testing tests pass without Xcode or XCTest |
+| Verification environment | Strong | Swift 6.2 CLI Debug/Release builds are warning-free and all 290 Swift Testing tests pass without Xcode or XCTest |
 
 ## Correctness Findings Resolved
 
@@ -49,6 +49,7 @@ Current assessment:
 - `Headless`: owns the standalone monotonic deadline loop, bounded-run options, and graceful process lifecycle without UI frameworks.
 - `Renderer`: contains mapping, node reuse, textures, and visual-only state; it does not own gameplay clocks or mutate gameplay.
 - `UI`: contains SceneDriver, input devices, audio, views, window behavior, and derived HUD/overlay state.
+- `App`: is the GUI composition root; UI receives only Runtime protocols and has no Adapter dependency.
 - `Adapter`: separates protocol DTOs/codec, session policy, command execution, observations, framing, bounded transport, and best-effort logging.
 - `Packaging`/`App`/`TetrisServer`: remain thin entry and delivery layers.
 
@@ -61,7 +62,7 @@ Large files are no longer preserved merely to minimize diff size. Extraction is 
 - Live Adapter stress checks passed: control concurrency, inbound backpressure/retry hints, frame-boundary disconnect, slow-client isolation, and disconnect/reconnect ownership.
 - Targeted executable checks: passed for T-Spin scoring, combo event score, spawn ghost refresh, shape invariants, framing limit, planner depth, and a 512 KiB localhost TCP write.
 - `git diff --check`: passed after all edits.
-- `scripts/test`: all 289 tests in 92 suites pass with native Swift Testing and no XCTest dependency.
+- `scripts/test`: all 290 tests in 92 suites pass with native Swift Testing and no XCTest dependency.
 - `scripts/build` and `scripts/build -c release`: pass using Command Line Tools.
 - Package language mode is Swift 6.2; UI/AppKit ownership is main-actor isolated and queue-confined Adapter I/O has explicit Sendable contracts.
 - The release Packager emits a valid macOS 14 bundle, copies assets, and omits `.DS_Store` metadata.

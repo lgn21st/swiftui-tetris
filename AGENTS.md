@@ -21,6 +21,7 @@
 - `Headless` owns standalone monotonic scheduling and process lifecycle; it never duplicates Core or Adapter policy.
 - `Renderer` renders state from Core; no game logic inside SpriteKit nodes.
 - `UI` is platform coordination only: SwiftUI panels/overlays, input, audio, and lifecycle.
+- Executables are composition roots; `UI` must not depend on or import `Adapter`.
 - Rendering should reuse preallocated buffers and nodes to minimize per-frame allocations.
 
 ## Working Agreements
