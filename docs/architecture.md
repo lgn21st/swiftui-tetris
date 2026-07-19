@@ -171,8 +171,8 @@ Where to edit:
 ## Current Verification
 
 - `scripts/verify` is the authoritative machine gate: architecture boundaries,
-  Swift Testing, Debug/Release builds, canonical Adapter 3.0.0 checks, and a
-  one-million-step Headless time/RSS budget.
+  Swift Testing, Debug/Release builds, disposable Release packaging, canonical
+  Adapter 3.0.0 checks, and a one-million-step Headless time/RSS budget.
 - The current suite contains 290 tests across 92 suites and uses no XCTest or
   Xcode project.
 - Release Headless verification passes ready, claim, restart, deterministic

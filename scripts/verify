@@ -25,6 +25,7 @@ fi
 
 server_log="$(mktemp -t swiftui-tetris-server.XXXXXX)"
 timing_log="$(mktemp -t swiftui-tetris-soak.XXXXXX)"
+package_root="$(mktemp -d -t swiftui-tetris-package.XXXXXX)"
 server_pid=""
 
 cleanup() {
@@ -33,8 +34,40 @@ cleanup() {
         wait "${server_pid}" 2>/dev/null || true
     fi
     rm -f "${server_log}" "${timing_log}"
+    rm -rf "${package_root}"
 }
 trap cleanup EXIT INT TERM
+
+package_path="${package_root}/SwiftUITetris.app"
+"${TETRIS_PROJECT_ROOT}/.build/release/Packager" \
+    --binary-path "${TETRIS_PROJECT_ROOT}/.build/release/App" \
+    --output "${package_path}" \
+    --bundle-id com.example.swiftui-tetris \
+    --name SwiftUITetris \
+    --version 0.1.0 \
+    --build 1 \
+    --icon-path "${TETRIS_PROJECT_ROOT}/assets/AppIcon.icns" \
+    --assets-path "${TETRIS_PROJECT_ROOT}/assets"
+
+if [[ ! -x "${package_path}/Contents/MacOS/App" ]]; then
+    print -u2 "Packaged executable is missing or not executable."
+    exit 1
+fi
+if [[ ! -f "${package_path}/Contents/Resources/AppIcon.icns" ]] \
+    || [[ ! -f "${package_path}/Contents/Resources/assets/sfx/hard_drop.wav" ]]; then
+    print -u2 "Packaged icon or audio resources are missing."
+    exit 1
+fi
+if find "${package_path}/Contents/Resources" -name .DS_Store -print -quit | rg -q .; then
+    print -u2 "Packaged resources contain Finder metadata."
+    exit 1
+fi
+minimum_system="$(plutil -extract LSMinimumSystemVersion raw -o - "${package_path}/Contents/Info.plist")"
+if [[ "${minimum_system}" != "14.0" ]]; then
+    print -u2 "Packaged minimum system is ${minimum_system}, expected 14.0."
+    exit 1
+fi
+print "Release package: OK"
 
 TETRIS_AI_PORT="${verify_port}" \
 TETRIS_AI_LOG_PATH= \

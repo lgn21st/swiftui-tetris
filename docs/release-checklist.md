@@ -4,8 +4,9 @@ Use this checklist before cutting a release build.
 
 ## Build + Test
 - Run `scripts/verify`; it enforces architecture boundaries, all Swift Testing
-  tests, Debug/Release builds, canonical Adapter verification, and a bounded
-  one-million-step Headless performance/memory gate.
+  tests, Debug/Release builds, a disposable Release app bundle, canonical
+  Adapter verification, and a bounded one-million-step Headless performance/
+  memory gate.
 
 ## Manual QA (CLI-run)
 - `scripts/run` launches a window immediately.
@@ -38,3 +39,14 @@ Use this checklist before cutting a release build.
 ## Notes
 - Use unique `--bundle-id` and increment `--version`/`--build` for real releases.
 - Keep `README.md`, `docs/architecture.md`, and protocol evidence current.
+
+## Current QA Evidence
+
+- Release bundle launch, keyboard movement/rotation/drop/Hold, pause/resume,
+  restart, diagnostics, fullscreen round-trip, and focus-loss recovery pass.
+- The live diagnostics overlay reports approximately 59–60 FPS and 16–17 ms
+  ticks during this smoke run.
+- Audio resources, event routing, mute state, player reuse, and volume behavior
+  pass automated tests. Audible output still requires a human listener.
+- No USB or Bluetooth game controller is connected, so physical gamepad input
+  remains the only unexecuted checklist item.
