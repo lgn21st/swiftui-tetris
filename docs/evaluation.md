@@ -67,6 +67,7 @@ Large files are no longer preserved merely to minimize diff size. Extraction is 
 - Package language mode is Swift 6.2; UI/AppKit ownership is main-actor isolated and queue-confined Adapter I/O has explicit Sendable contracts.
 - The release Packager emits a valid macOS 14 bundle, copies assets, and omits `.DS_Store` metadata.
 - Release `TetrisServer --fast --auto-restart` completed 1,000,000 fixed steps in 0.18 seconds with 2,965,504 bytes maximum resident memory and no growth trend across repeat runs.
+- `scripts/verify` reproduces architecture, test, build, canonical protocol, and one-million-step soak gates in one Xcode-independent command; the first complete run passed at 0.32 seconds and 3,145,728 bytes maximum RSS for the soak phase.
 
 ## Residual Risks
 

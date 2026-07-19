@@ -29,6 +29,7 @@
 - Use Swift Testing only; XCTest and Xcode-specific test infrastructure are not supported.
 - Keep Swift tools/language mode at 6.2; AppKit/SpriteKit coordinators and their tests are `@MainActor`, while queue-confined I/O uses reviewed Sendable contracts.
 - Use `scripts/test`, `scripts/build`, `scripts/run`, and `scripts/server` so CLI builds select the verified SDK and module caches consistently.
+- Run `scripts/verify` before every completed batch; it is the authoritative machine release gate.
 - Update Core and tests first; UI changes come after logic is stable.
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.
 - Avoid mixing SpriteKit state mutations with Core rule logic.

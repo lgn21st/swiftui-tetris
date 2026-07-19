@@ -3,10 +3,9 @@
 Use this checklist before cutting a release build.
 
 ## Build + Test
-- Run `scripts/test` and ensure all tests pass.
-- Run `scripts/build -c release` with a clean tree.
-- Run `scripts/server --help` and the canonical Adapter verifier against the Release `TetrisServer`.
-- Run a bounded soak with `TETRIS_AI_DISABLED=1 scripts/server --fast --auto-restart --steps 1000000`.
+- Run `scripts/verify`; it enforces architecture boundaries, all Swift Testing
+  tests, Debug/Release builds, canonical Adapter verification, and a bounded
+  one-million-step Headless performance/memory gate.
 
 ## Manual QA (CLI-run)
 - `scripts/run` launches a window immediately.

@@ -13,6 +13,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 ## Run (CLI-first)
 - Requirements: macOS 14+, Swift 6.2 Command Line Tools. The package builds in Swift 6 language mode; Xcode is not required.
 - Tests: `scripts/test`
+- Complete verification gate: `scripts/verify`
 - Build (debug): `scripts/build`
 - Build (release): `scripts/build -c release`
 - Run app: `scripts/run`
@@ -74,4 +75,4 @@ only a bounded local soak/performance mode.
 - `docs/adapter-conformance.md`: protocol 3.0.0 requirement/evidence matrix.
 
 ## Status
-Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. The CLI-only project uses Swift Testing, reuses render buffers and textures, and keeps the TCP Adapter split into transport, codec, session policy, command execution, and logging components. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.
+Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. `scripts/verify` is the Xcode-independent release gate for architecture, tests, builds, protocol conformance, and headless soak performance. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.

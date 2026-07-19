@@ -1,6 +1,7 @@
 # Progress Log
 
 ## 2026-07-19
+- Added `scripts/check-architecture` and a single `scripts/verify` release gate covering dependency direction, the full test suite, Debug/Release builds, canonical 3.0.0 verification, and a one-million-step time/RSS budget.
 - Removed the reverse UI-to-Adapter dependency: App and TetrisServer are now explicit composition roots, UI accepts only Runtime ports/lifecycle, and the 290-test suite guards lifecycle behavior.
 - Added a reusable `Headless` target and UI-free `TetrisServer` executable with monotonic absolute-deadline pacing, graceful signals, bounded runs, and safe fast/auto-restart soak options.
 - Moved Adapter environment assembly below UI and added explicit throwing socket startup, so bind failures are observable and GUI/headless entry points share one policy.

@@ -23,6 +23,7 @@ Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revision
 Completed: replaced XCTest entirely with Swift Testing and made the verified CLI wrappers the supported developer entry points.
 Completed: moved fixed-step ownership out of SpriteKit into the headless Runtime target.
 Completed: added a true UI-free server product for Adapter operation, protocol verification, and bounded soak/performance runs.
+Completed: consolidated machine-verifiable release gates into `scripts/verify`.
 Completed: reduced mutable state to the Runtime boundary and split Adapter transport, wire codec, session policy, command execution, and logging responsibilities.
 Completed: reran the canonical verifier and validated a clean macOS 14 app bundle.
 Next: complete manual release QA for visual, input, and audio behavior before publishing UI latency claims.

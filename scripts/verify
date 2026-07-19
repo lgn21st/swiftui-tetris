@@ -1,0 +1,89 @@
+#!/bin/zsh
+
+set -euo pipefail
+source "${0:A:h}/swift-env"
+
+protocol_root="${TETRIS_ADAPTER_PROTOCOL_ROOT:-${TETRIS_PROJECT_ROOT:h}/tui-tetris/protocol/adapter}"
+verifier="${protocol_root}/conformance/adapter_verify.py"
+verify_port="${TETRIS_VERIFY_PORT:-17781}"
+
+if [[ ! -f "${verifier}" ]]; then
+    print -u2 "Canonical Adapter verifier not found: ${verifier}"
+    exit 1
+fi
+
+protocol_version="$(<"${protocol_root}/VERSION")"
+if [[ "${protocol_version}" != "3.0.0" ]]; then
+    print -u2 "Expected canonical Adapter Protocol 3.0.0, found ${protocol_version}"
+    exit 1
+fi
+
+"${TETRIS_PROJECT_ROOT}/scripts/check-architecture"
+"${TETRIS_PROJECT_ROOT}/scripts/test"
+"${TETRIS_PROJECT_ROOT}/scripts/build"
+"${TETRIS_PROJECT_ROOT}/scripts/build" -c release
+
+server_log="$(mktemp -t swiftui-tetris-server.XXXXXX)"
+timing_log="$(mktemp -t swiftui-tetris-soak.XXXXXX)"
+server_pid=""
+
+cleanup() {
+    if [[ -n "${server_pid}" ]] && kill -0 "${server_pid}" 2>/dev/null; then
+        kill -TERM "${server_pid}" 2>/dev/null || true
+        wait "${server_pid}" 2>/dev/null || true
+    fi
+    rm -f "${server_log}" "${timing_log}"
+}
+trap cleanup EXIT INT TERM
+
+TETRIS_AI_PORT="${verify_port}" \
+TETRIS_AI_LOG_PATH= \
+"${TETRIS_PROJECT_ROOT}/.build/release/TetrisServer" >"${server_log}" 2>&1 &
+server_pid=$!
+
+for _ in {1..100}; do
+    if ! kill -0 "${server_pid}" 2>/dev/null; then
+        print -u2 "TetrisServer exited before protocol verification:"
+        sed -n '1,120p' "${server_log}" >&2
+        exit 1
+    fi
+    if lsof -nP -a -p "${server_pid}" -iTCP:"${verify_port}" -sTCP:LISTEN >/dev/null 2>&1; then
+        break
+    fi
+    sleep 0.05
+done
+
+if ! lsof -nP -a -p "${server_pid}" -iTCP:"${verify_port}" -sTCP:LISTEN >/dev/null 2>&1; then
+    print -u2 "TetrisServer did not listen on port ${verify_port}."
+    exit 1
+fi
+
+python3 "${verifier}" all --host 127.0.0.1 --port "${verify_port}"
+kill -TERM "${server_pid}"
+wait "${server_pid}"
+server_pid=""
+
+/usr/bin/time -l env TETRIS_AI_DISABLED=1 \
+    "${TETRIS_PROJECT_ROOT}/.build/release/TetrisServer" \
+    --fast --auto-restart --steps 1000000 \
+    2>"${timing_log}"
+
+elapsed="$(awk '/ real / {print $1; exit}' "${timing_log}")"
+max_rss="$(awk '/maximum resident set size/ {print $1; exit}' "${timing_log}")"
+if [[ -z "${elapsed}" || -z "${max_rss}" ]]; then
+    print -u2 "Unable to read headless soak metrics."
+    sed -n '1,120p' "${timing_log}" >&2
+    exit 1
+fi
+if ! awk -v elapsed="${elapsed}" 'BEGIN { exit !(elapsed <= 10.0) }'; then
+    print -u2 "Headless soak exceeded 10 seconds: ${elapsed}s"
+    exit 1
+fi
+if (( max_rss > 67108864 )); then
+    print -u2 "Headless soak exceeded 64 MiB RSS: ${max_rss} bytes"
+    exit 1
+fi
+
+git -C "${TETRIS_PROJECT_ROOT}" diff --check
+print "Headless soak: ${elapsed}s, max RSS ${max_rss} bytes"
+print "Verification: OK"

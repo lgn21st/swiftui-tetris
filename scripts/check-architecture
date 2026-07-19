@@ -1,0 +1,25 @@
+#!/bin/zsh
+
+set -euo pipefail
+
+project_root="${0:A:h:h}"
+
+if rg -n '^(import Adapter|.*AdapterHandling|.*AdapterLifecycle)' "${project_root}/Sources/UI"; then
+    print -u2 "UI must depend on Runtime ports, never Adapter."
+    exit 1
+fi
+
+if ! rg -Fq '.target(name: "UI", dependencies: ["Core", "Runtime", "Renderer"]' "${project_root}/Package.swift"; then
+    print -u2 "Package.swift must keep UI independent from Adapter."
+    exit 1
+fi
+
+if rg -n '^import (SwiftUI|SpriteKit|AppKit|AVFoundation)$' \
+    "${project_root}/Sources/Headless" \
+    "${project_root}/Sources/TetrisServer";
+then
+    print -u2 "Headless products must not import UI or audio frameworks."
+    exit 1
+fi
+
+print "Architecture boundaries: OK"
