@@ -16,6 +16,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Build (debug): `scripts/build`
 - Build (release): `scripts/build -c release`
 - Run app: `scripts/run`
+- Run headless protocol server: `scripts/server`
 
 ## External AI (Adapter)
 Adapter implements Tetris AI Adapter Protocol `3.0.0` over TCP JSON Lines. Environment variables:
@@ -42,6 +43,14 @@ TETRIS_AI_OBSERVATION_MS=50 \
 swift run App
 ```
 
+For protocol clients and unattended validation, prefer the UI-free server:
+```
+scripts/server --seed 42
+TETRIS_AI_DISABLED=1 scripts/server --fast --auto-restart --steps 1000000
+```
+`--fast` is deliberately rejected while Adapter networking is enabled; it is
+only a bounded local soak/performance mode.
+
 ## Packaging
 - CLI packaging steps live in `docs/cli-packaging.md`.
 - Packaged apps should include assets and icon metadata.
@@ -65,4 +74,4 @@ swift run App
 - `docs/adapter-conformance.md`: protocol 3.0.0 requirement/evidence matrix.
 
 ## Status
-Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. The CLI-only project uses Swift Testing, reuses render buffers and textures, and keeps the TCP Adapter split into transport, codec, session policy, command execution, and logging components. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.
+Core and optional features are implemented behind a deterministic headless Runtime with private mutable state and immutable snapshot consumers. `TetrisServer` runs that runtime and Adapter without SwiftUI, SpriteKit, AppKit, or audio. The CLI-only project uses Swift Testing, reuses render buffers and textures, and keeps the TCP Adapter split into transport, codec, session policy, command execution, and logging components. External AI control is available through the localhost TCP Adapter (disable with `TETRIS_AI_DISABLED=1`). See `docs/evaluation.md` for the latest review and `docs/todo.md` for open maintenance work.

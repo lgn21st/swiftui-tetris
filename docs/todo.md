@@ -6,7 +6,8 @@ Last reviewed: 2026-07-19
 
 - [x] Finish the native Swift Testing migration and keep `scripts/test` green without Xcode or XCTest.
 - [ ] Run the release checklist in `docs/release-checklist.md`, including keyboard, gamepad, audio, focus loss, packaging, and Adapter smoke tests.
-- [ ] Capture an Instruments Time Profiler + Allocations baseline for a 10-minute game and an Adapter place-command burst; record results here or in a dated performance report.
+- [x] Capture a repeatable CLI headless throughput/memory baseline without Xcode.
+- [ ] Measure rendered FPS/input/audio latency only if quantitative UI performance claims are needed; CLI headless numbers do not establish them.
 
 ## Adapter Hardening
 

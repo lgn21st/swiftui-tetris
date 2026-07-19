@@ -5,6 +5,8 @@ Use this checklist before cutting a release build.
 ## Build + Test
 - Run `scripts/test` and ensure all tests pass.
 - Run `scripts/build -c release` with a clean tree.
+- Run `scripts/server --help` and the canonical Adapter verifier against the Release `TetrisServer`.
+- Run a bounded soak with `TETRIS_AI_DISABLED=1 scripts/server --fast --auto-restart --steps 1000000`.
 
 ## Manual QA (CLI-run)
 - `scripts/run` launches a window immediately.

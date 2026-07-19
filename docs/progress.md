@@ -1,6 +1,10 @@
 # Progress Log
 
 ## 2026-07-19
+- Added a reusable `Headless` target and UI-free `TetrisServer` executable with monotonic absolute-deadline pacing, graceful signals, bounded runs, and safe fast/auto-restart soak options.
+- Moved Adapter environment assembly below UI and added explicit throwing socket startup, so bind failures are observable and GUI/headless entry points share one policy.
+- Passed the canonical Adapter 3.0.0 verifier for ten consecutive complete rounds against the Release headless server; a one-million-step Release soak completed in 0.18 seconds with 2,965,504 bytes maximum resident memory.
+- Verified the resulting baseline with 289 Swift Testing tests across 92 suites.
 - Began the clean-break architecture rebuild: added Xcode-independent CLI wrappers, migrated all 280 tests from XCTest to Swift Testing, and raised the supported deployment target to macOS 14 to match the Testing runtime.
 - Verified all 280 tests across 91 suites plus Debug and Release CLI builds without Xcode.
 - Added a pure-Swift `Runtime` target that owns the 16 ms accumulator, frame clamping, command/input ordering, Core advancement, and per-step snapshot publication.

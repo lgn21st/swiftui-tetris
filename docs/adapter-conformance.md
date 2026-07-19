@@ -27,7 +27,7 @@ canonical files are consumed in place and are not copied into this project.
 | Streaming hello gets an immediate full snapshot | Adapter retains and targets the latest complete observation after welcome | Existing behavior retained with new mandatory fields | `testStreamingHelloImmediatelyReceivesLatestFullSnapshot`, canonical ready check |
 | Frames at most 65,536 bytes; bounded input/output; slow-client isolation | Incremental byte framer, 64-command default input bound, 256 KiB per-client output bound, observation coalescing | Existing behavior retained | framer tests, `testBackpressureRejectsCommand`, required-output overflow tests, live backpressure/frame/slow-client checks |
 | Diagnostic logging cannot create resource backpressure | JSONL work is best-effort on a separate queue with a project-local 64-record pending bound | Replaced an unbounded asynchronous logging submission path | `AdapterWireLoggerTests` |
-| Portable host/port/disabled controls | TCP profile defaults and environment overrides are project-local | Existing behavior retained | `AdapterBootstrapTests` |
+| Portable host/port/disabled controls | TCP profile defaults and environment overrides are project-local and shared by GUI/headless entry points | Moved environment policy below UI so the standalone server cannot diverge | `AdapterEnvironmentTests` |
 
 ## Changelog entries handled
 
@@ -43,11 +43,12 @@ canonical files are consumed in place and are not copied into this project.
 
 Debug and Release application targets build with the installed macOS 15.5 SDK.
 The canonical 3.0.0 `adapter_verify.py all` client passes ready, claim, restart,
-and determinism. Separate live checks pass v2 rejection, ack-shape validation,
+and determinism directly against the UI-free `TetrisServer`, including ten
+consecutive complete rounds. Separate live checks pass v2 rejection, ack-shape validation,
 control concurrency, inbound backpressure/retry hints, the 65,536-byte frame
 boundary, slow-client isolation, and disconnect/reconnect behavior.
 
 The project uses Swift Testing exclusively through `scripts/test`; Xcode and
-XCTest are not supported. The current local suite contains 283 tests across 90
+XCTest are not supported. The current local suite contains 289 tests across 92
 suites. The exact cases above remain mandatory regression gates and must pass
 before any Adapter or runtime batch is committed.

@@ -9,8 +9,9 @@ used to redefine portable wire behavior.
 
 ## Startup and endpoint
 
-- The app creates `SocketAdapter` during SwiftUI app assembly and primes it
-  with the SceneDriver's initial Core snapshot.
+- Both the SwiftUI app and `TetrisServer` use `AdapterEnvironment` to create the
+  same `SocketAdapter`; the app primes it through SceneDriver, while the server
+  publishes from `GameRuntime` without UI frameworks.
 - TCP JSON Lines is the only transport/format.
 - Defaults are `TETRIS_AI_HOST=127.0.0.1` and `TETRIS_AI_PORT=7777`.
 - `TETRIS_AI_DISABLED` disables startup when its case-insensitive value is
@@ -28,6 +29,9 @@ used to redefine portable wire behavior.
   ownership, observation sequence allocation, and the inbound command queue.
 - `GameRuntime` is authoritative: for every fixed step it begins one logical
   transition, drains/applies commands, advances Core, then emits a full snapshot.
+- `TetrisServer` uses absolute monotonic 16 ms deadlines and rebases after more
+  than 250 ms of lag. `--fast --auto-restart` is a bounded local soak mode and
+  requires `TETRIS_AI_DISABLED=1`; it is not portable protocol behavior.
 - `AdapterSessionRegistry` is a pure state machine for identity, sequencing,
   controller ownership, observation subscriptions, and disconnect promotion.
 - `AdapterCommandExecutor` is the shared, transport-free command application

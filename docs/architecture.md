@@ -6,12 +6,13 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 This section explains the codebase in plain language for new contributors.
 
 ### Big Picture
-The project is split into five layers:
+The project is split into six layers:
 1) Core (rules and state)
 2) Runtime (headless fixed-step transactions)
-3) Renderer (SpriteKit drawing)
-4) UI (SwiftUI views, input, audio)
-5) Adapter (protocol/transport boundary for external AI clients)
+3) Headless (standalone runtime scheduling and lifecycle)
+4) Renderer (SpriteKit drawing)
+5) UI (SwiftUI views, input, audio)
+6) Adapter (protocol/transport boundary for external AI clients)
 
 Flow:
 ```
@@ -24,6 +25,7 @@ Input (keyboard/gamepad)
 
 External AI (tetris-ai)
         -> Adapter (command mapping)
+        -> Headless server scheduling
         -> Runtime transaction
         -> Core state updates
         -> Snapshot mapping
@@ -34,6 +36,7 @@ External AI (tetris-ai)
 ```
 Core/               Game rules and data (no UI)
 Runtime/            Accumulator, transaction ordering, snapshots
+Headless/           Monotonic scheduling and UI-free server lifecycle
 Renderer/           SpriteKit rendering and textures
 Sources/UI/         SwiftUI views, input, audio, SceneDriver
 Adapter/            Local TCP protocol, command planning, observations
@@ -44,6 +47,7 @@ assets/             Audio files, icons
 Where to edit:
 - Rules, scoring, timing -> Core/
 - Fixed-step scheduling and command ordering -> Runtime/
+- Standalone scheduling and shutdown policy -> Headless/
 - Visual appearance -> Renderer/
 - HUD, overlays, inputs, audio -> Sources/UI/
 
@@ -53,6 +57,7 @@ Where to edit:
 - GameRuntime accumulates frame time and advances Core in independent 16ms transactions, including catch-up frames.
 - Rendering happens after logic.
 - Runtime begins a logical transition, polls Adapter commands, advances that fixed step, and emits its snapshot.
+- `TetrisServer` drives one Runtime transaction per absolute monotonic 16 ms deadline; a delay beyond 250 ms rebases the deadline instead of creating an unbounded catch-up burst.
 
 ### External AI Transport
 - Adapter implements canonical Tetris AI Adapter Protocol 3.0.0; the normative package lives in the sibling `tui-tetris/protocol/adapter` directory.
@@ -83,6 +88,7 @@ Where to edit:
 ### Common CLI Commands
 - Tests: `scripts/test`
 - Run: `scripts/run`
+- Run headless server: `scripts/server`
 - Build (debug): `scripts/build`
 - Build (release): `scripts/build -c release`
 
@@ -95,8 +101,9 @@ Where to edit:
 - **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
 ## Status
-- The headless Runtime, private mutable-state boundary, Swift Testing migration,
-  and Adapter transport/session/execution decomposition are complete.
+- The headless Runtime and standalone server, private mutable-state boundary,
+  Swift Testing migration, and Adapter transport/session/execution decomposition
+  are complete.
 
 ## Target Architecture
 ### Loop & Timing
@@ -129,6 +136,7 @@ Where to edit:
 
 ## Current Alignment
 - Fixed-step ownership lives in `GameRuntime`; `TetrisScene.update(_:)` only reports frame time and renders.
+- Standalone scheduling lives in `HeadlessServer`; it reuses the same Runtime transaction API and imports no UI framework.
 - Render pipeline reuses buffers/nodes and caches textures.
 - Render mapping passes Core board cells through copy-on-write storage instead of allocating a 10x20 kind projection every frame.
 - Tetromino shapes are an immutable process-wide table; collision and planning queries do not rebuild it.

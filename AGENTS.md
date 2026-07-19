@@ -18,6 +18,7 @@
 ## Architecture Expectations
 - `Core` owns board, pieces, RNG, scoring, timing, and actions.
 - `Runtime` owns the fixed-step accumulator, transaction ordering, and snapshot publication.
+- `Headless` owns standalone monotonic scheduling and process lifecycle; it never duplicates Core or Adapter policy.
 - `Renderer` renders state from Core; no game logic inside SpriteKit nodes.
 - `UI` is platform coordination only: SwiftUI panels/overlays, input, audio, and lifecycle.
 - Rendering should reuse preallocated buffers and nodes to minimize per-frame allocations.
@@ -26,7 +27,7 @@
 - Follow strict TDD: every feature, improvement, or refactor must add/adjust tests first.
 - Use Swift Testing only; XCTest and Xcode-specific test infrastructure are not supported.
 - Keep Swift tools/language mode at 6.2; AppKit/SpriteKit coordinators and their tests are `@MainActor`, while queue-confined I/O uses reviewed Sendable contracts.
-- Use `scripts/test`, `scripts/build`, and `scripts/run` so CLI builds select the verified SDK and module caches consistently.
+- Use `scripts/test`, `scripts/build`, `scripts/run`, and `scripts/server` so CLI builds select the verified SDK and module caches consistently.
 - Update Core and tests first; UI changes come after logic is stable.
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.
 - Avoid mixing SpriteKit state mutations with Core rule logic.

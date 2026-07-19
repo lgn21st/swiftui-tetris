@@ -91,6 +91,7 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
     
     public init(
         configuration: SocketAdapterConfiguration,
+        startsImmediately: Bool = true,
         timeSource: @escaping () -> Int = SocketAdapter.defaultTimeSource
     ) {
         self.configuration = configuration
@@ -108,11 +109,17 @@ public final class SocketAdapter: AdapterHandling, AdapterLifecycle {
         self.transport.onDisconnect = { [weak self] connectionId in
             self?.handleDisconnect(connectionId: connectionId)
         }
-        start()
+        if startsImmediately {
+            start()
+        }
     }
 
     public func start() {
-        try? transport.start()
+        try? startOrThrow()
+    }
+
+    public func startOrThrow() throws {
+        try transport.start()
     }
 
     public func stop() {
