@@ -8,12 +8,11 @@ import Testing
         let engine = InputEngine()
 
         let startX = state.active.x
-        engine.setLeftHeld(true, state: &state)
-        #expect(state.active.x == startX - 1)
+        #expect(engine.setLeftHeld(true) == .moveLeft)
 
         engine.reset()
-        engine.tick(elapsedMs: 200, canAccept: true, state: &state)
+        engine.produceActions(elapsedMs: 200, canAccept: true) { state.apply(action: $0) }
 
-        #expect(state.active.x == startX - 1)
+        #expect(state.active.x == startX)
     }
 }

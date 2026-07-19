@@ -7,6 +7,7 @@ import Testing
         let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1))
         let startX = driver.stateSnapshot().active.x
         driver.handleKeyDown("right")
+        driver.tick(elapsedMs: 16)
         #expect(!driver.overlayState.isTitle)
         #expect(driver.stateSnapshot().active.x == startX + 1)
     }
@@ -37,7 +38,7 @@ import Testing
         let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1))
         driver.handleKeyDown(" ")
         #expect(!driver.overlayState.isTitle)
-        let filled = driver.stateSnapshot().board.cells.flatMap { $0 }.contains { $0.filled }
+        let filled = driver.stateSnapshot().boardCells.flatMap { $0 }.contains { $0.filled }
         #expect(!filled)
         #expect(driver.stateSnapshot().score == 0)
     }
@@ -64,6 +65,7 @@ import Testing
         driver.commandStartGame()
         #expect(!driver.stateSnapshot().paused)
         driver.handleKeyDown("escape")
+        driver.tick(elapsedMs: 16)
         #expect(driver.stateSnapshot().paused)
     }
 
@@ -95,6 +97,7 @@ import Testing
 
         driver.handleKeyDown("d")
         driver.handleKeyDown("right")
+        driver.tick(elapsedMs: 16)
 
         #expect(driver.diagnosticsVisible)
         #expect(driver.stateSnapshot().active.x == startX + 1)

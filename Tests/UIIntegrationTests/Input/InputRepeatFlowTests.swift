@@ -6,13 +6,13 @@ import Testing
     @Test func testLeftRepeatAfterDasArr() {
         var state = GameState(config: GameConfig(), seed: 1)
         let engine = InputEngine()
-        engine.setLeftHeld(true, state: &state)
-        #expect(state.active.x == 2)
+        #expect(engine.setLeftHeld(true) == .moveLeft)
+        #expect(state.active.x == 3)
 
-        engine.tick(elapsedMs: 150, canAccept: true, state: &state)
-        #expect(state.active.x == 2)
+        engine.produceActions(elapsedMs: 150, canAccept: true) { state.apply(action: $0) }
+        #expect(state.active.x == 3)
 
-        engine.tick(elapsedMs: 50, canAccept: true, state: &state)
-        #expect(state.active.x == 1)
+        engine.produceActions(elapsedMs: 50, canAccept: true) { state.apply(action: $0) }
+        #expect(state.active.x == 2)
     }
 }

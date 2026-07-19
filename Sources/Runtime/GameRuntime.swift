@@ -1,7 +1,7 @@
 import Core
 
 public protocol GameRuntimeInput: AnyObject {
-    func tick(elapsedMs: Int, canAccept: Bool, state: inout GameState)
+    func produceActions(elapsedMs: Int, canAccept: Bool, emit: (GameAction) -> Void)
 }
 
 public protocol GameRuntimePort: AnyObject {
@@ -13,7 +13,7 @@ public final class GameRuntime {
     public static let defaultStepMs = 16
     public static let defaultMaxFrameMs = 250
 
-    public var state: GameState
+    private var state: GameState
     public var snapshot: GameStateSnapshot { state.snapshot() }
 
     private let input: GameRuntimeInput?
@@ -21,6 +21,7 @@ public final class GameRuntime {
     private let stepMs: Int
     private let maxFrameMs: Int
     private var accumulatorMs = 0
+    private var pendingActions: [GameAction] = []
 
     public init(
         state: GameState = GameState(config: GameConfig(), seed: 1),
@@ -34,7 +35,16 @@ public final class GameRuntime {
         self.port = port
         self.stepMs = max(stepMs, 1)
         self.maxFrameMs = max(maxFrameMs, 0)
+        pendingActions.reserveCapacity(16)
         port?.emit(snapshot: state.snapshot())
+    }
+
+    public func enqueue(_ action: GameAction) {
+        pendingActions.append(action)
+    }
+
+    public func takeSoundEvents() -> [SoundEvent] {
+        state.takeSoundEvents()
     }
 
     public func advance(frameMs: Int) {
@@ -48,11 +58,14 @@ public final class GameRuntime {
     private func runStep() {
         state.beginFixedStep()
         port?.poll(elapsedMs: stepMs, state: &state)
-        input?.tick(
+        for action in pendingActions {
+            state.apply(action: action)
+        }
+        pendingActions.removeAll(keepingCapacity: true)
+        input?.produceActions(
             elapsedMs: stepMs,
-            canAccept: !state.paused && !state.gameOver,
-            state: &state
-        )
+            canAccept: !state.paused && !state.gameOver
+        ) { state.apply(action: $0) }
         state.advanceFixedStep()
         state.tick(elapsedMs: stepMs, softDrop: false)
         port?.emit(snapshot: state.snapshot())

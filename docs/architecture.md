@@ -101,6 +101,7 @@ Where to edit:
 ### Loop & Timing
 - A UI-agnostic runtime becomes the authoritative owner of the 16 ms accumulator and fixed-step transaction.
 - Each transaction begins a logical step, applies local and Adapter commands, advances Core once, captures events, then publishes one snapshot and correlated Adapter result.
+- Local UI actions are queued; InputEngine produces actions without seeing `GameState`, and changes become visible at the next fixed transaction.
 - `SceneDriver` becomes a thin platform coordinator for input, audio, rendering, and lifecycle.
 - Headless tests and external controllers drive the same runtime API as SpriteKit.
 
@@ -138,7 +139,7 @@ Where to edit:
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.
 - Runtime tests cover headless accumulation, frame clamping, catch-up, transaction ordering, and snapshot publication.
-- UI integration tests cover input routing and overlay state.
+- UI integration tests cover action production, input routing, snapshot-derived HUD, and overlay state.
 - Renderer tests validate mapping logic and resource reuse.
 - Adapter tests cover protocol, concurrency, bounded backpressure, disconnect, and reconnect behavior through public boundaries.
 - Swift Testing is the only test framework; XCTest and Xcode projects are intentionally absent.

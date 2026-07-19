@@ -7,7 +7,7 @@ import Testing
         var state = GameState(config: GameConfig(), seed: 1)
         state.setTimersForTesting(lockTimerMs: 225)
         state.config.lockDelayMs = 450
-        let hud = HUDState.from(state: state)
+        let hud = HUDState.from(state: state.snapshot())
         #expect(abs((hud.lockBarRatio) - (0.5)) <= (0.001))
         #expect(hud.isClassicRuleset)
     }
@@ -16,7 +16,7 @@ import Testing
         var state = GameState(config: GameConfig(), seed: 1)
         state.config.lockDelayMs = 1000
         state.setTimersForTesting(lockTimerMs: 850)
-        let hud = HUDState.from(state: state)
+        let hud = HUDState.from(state: state.snapshot())
         #expect(hud.lockWarningActive)
         #expect(abs((hud.lockWarningPulse) - (0.55)) <= (0.001))
     }
@@ -25,7 +25,7 @@ import Testing
         var state = GameState(config: GameConfig(), seed: 1)
         state.config.lockDelayMs = 1000
         state.setTimersForTesting(lockTimerMs: 200)
-        let hud = HUDState.from(state: state)
+        let hud = HUDState.from(state: state.snapshot())
         #expect(!hud.lockWarningActive)
         #expect(abs((hud.lockWarningPulse) - (0)) <= (0.001))
     }

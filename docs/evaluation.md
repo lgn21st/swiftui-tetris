@@ -11,7 +11,7 @@ Current assessment:
 | Area | Assessment | Evidence |
 | --- | --- | --- |
 | Core correctness | Strong after fixes | Deterministic state, rules tests, lock-time T-Spin fix |
-| Architecture | Rebuild in progress | Core remains UI-free; fixed-step ownership still needs to leave SceneDriver/SpriteKit |
+| Architecture | Strong foundation | Runtime owns private mutable state and fixed-step transactions; UI consumes snapshots and queues actions |
 | Rendering | Strong | Preallocated nodes, texture cache, incremental cell buffer, direct snapshot board reuse |
 | Input/timing | Strong after fixes | DAS/ARR isolation and per-step catch-up processing |
 | Adapter | Aligned to 3.0.0 | Conformance matrix, logical transitions/events, applied-state ack, bounded transport |
@@ -58,11 +58,11 @@ Large files are no longer preserved merely to minimize diff size. Extraction is 
 - Live Adapter stress checks passed: control concurrency, inbound backpressure/retry hints, frame-boundary disconnect, slow-client isolation, and disconnect/reconnect ownership.
 - Targeted executable checks: passed for T-Spin scoring, combo event score, spawn ghost refresh, shape invariants, framing limit, planner depth, and a 512 KiB localhost TCP write.
 - `git diff --check`: passed after all edits.
-- `scripts/test`: all 276 tests in 89 suites pass with native Swift Testing and no XCTest dependency after replacing Renderer clock/wrapper tests with headless Runtime contracts.
+- `scripts/test`: all 276 tests in 88 suites pass with native Swift Testing and no XCTest dependency after consolidating redundant input coverage.
 - `scripts/build` and `scripts/build -c release`: pass using Command Line Tools.
 
 ## Residual Risks
 
-- Runtime extraction can now proceed from the green Swift Testing baseline; protocol and performance gates must remain green after each batch.
+- Adapter decomposition can proceed from the private-state Runtime boundary; protocol and performance gates must remain green after each batch.
 - Adapter queue capacities are implementation-local defaults and should be load-tested before exposing the endpoint beyond a trusted local interface.
 - Performance changes are complexity/allocation improvements validated by code inspection and builds, not Instruments measurements. Capture Instruments baselines before making claims about FPS or latency percentages.

@@ -17,9 +17,11 @@ import Testing
         driver.commandStartGame()
 
         driver.commandTogglePause()
+        driver.tick(elapsedMs: 16)
         #expect(driver.stateSnapshot().paused)
 
         driver.commandTogglePause()
+        driver.tick(elapsedMs: 16)
         #expect(!driver.stateSnapshot().paused)
     }
 
@@ -28,6 +30,7 @@ import Testing
         driver.commandTogglePause()
 
         driver.commandRestartGame()
+        driver.tick(elapsedMs: 16)
 
         #expect(!driver.stateSnapshot().paused)
         #expect(!driver.overlayState.isTitle)

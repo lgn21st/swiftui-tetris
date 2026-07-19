@@ -5,22 +5,22 @@ public struct FocusPauseHandler {
 
     public func handleAppActiveChanged(
         isActive: Bool,
-        state: inout GameState,
+        snapshot: GameStateSnapshot,
         input: InputEngine,
         started: Bool
     ) -> OverlayState {
         guard !isActive else {
             return OverlayState(
-                isPaused: state.paused,
-                isGameOver: state.gameOver,
+                isPaused: snapshot.paused,
+                isGameOver: snapshot.gameOver,
                 isTitle: !started,
                 onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
             )
         }
         input.reset()
         return OverlayState(
-            isPaused: state.paused,
-            isGameOver: state.gameOver,
+            isPaused: snapshot.paused,
+            isGameOver: snapshot.gameOver,
             isTitle: !started,
             onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
         )

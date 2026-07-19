@@ -32,34 +32,31 @@ public final class InputEngine {
         self.lastDir = nil
     }
 
-    public func apply(action: GameAction, to state: inout GameState) {
-        state.apply(action: action)
-    }
-
-    public func setLeftHeld(_ held: Bool, state: inout GameState) {
+    public func setLeftHeld(_ held: Bool) -> GameAction? {
         leftHeld = held
-        syncMovement(state: &state)
+        return syncMovement()
     }
 
-    public func setRightHeld(_ held: Bool, state: inout GameState) {
+    public func setRightHeld(_ held: Bool) -> GameAction? {
         rightHeld = held
-        syncMovement(state: &state)
+        return syncMovement()
     }
 
-    public func setDownHeld(_ held: Bool, state: inout GameState) {
+    public func setDownHeld(_ held: Bool) -> GameAction? {
         downHeld = held
         if downHeld != downRepeat.isHeld() {
             if downHeld {
                 if downRepeat.press() {
-                    state.apply(action: .softDrop)
+                    return .softDrop
                 }
             } else {
                 downRepeat.release()
             }
         }
+        return nil
     }
 
-    public func tick(elapsedMs: Int, canAccept: Bool, state: inout GameState) {
+    public func produceActions(elapsedMs: Int, canAccept: Bool, emit: (GameAction) -> Void) {
         if !canAccept {
             leftRepeat.release()
             rightRepeat.release()
@@ -81,16 +78,16 @@ public final class InputEngine {
             switch direction {
             case .left:
                 count = leftRepeat.tick(elapsedMs: elapsedMs, config: repeatConfig)
-                for _ in 0..<count { state.apply(action: .moveLeft) }
+                for _ in 0..<count { emit(.moveLeft) }
             case .right:
                 count = rightRepeat.tick(elapsedMs: elapsedMs, config: repeatConfig)
-                for _ in 0..<count { state.apply(action: .moveRight) }
+                for _ in 0..<count { emit(.moveRight) }
             }
         }
 
         if downRepeat.isHeld() {
             let count = downRepeat.tick(elapsedMs: elapsedMs, config: softDropRepeatConfig)
-            for _ in 0..<count { state.apply(action: .softDrop) }
+            for _ in 0..<count { emit(.softDrop) }
         }
     }
 
@@ -117,11 +114,12 @@ public final class InputEngine {
         releaseMovementHolds()
     }
 
-    private func syncMovement(state: inout GameState) {
+    private func syncMovement() -> GameAction? {
+        var action: GameAction?
         if leftHeld != leftRepeat.isHeld() {
             if leftHeld {
                 if leftRepeat.press() {
-                    state.apply(action: .moveLeft)
+                    action = .moveLeft
                 }
             } else {
                 leftRepeat.release()
@@ -131,7 +129,7 @@ public final class InputEngine {
         if rightHeld != rightRepeat.isHeld() {
             if rightHeld {
                 if rightRepeat.press() {
-                    state.apply(action: .moveRight)
+                    action = .moveRight
                 }
             } else {
                 rightRepeat.release()
@@ -144,6 +142,7 @@ public final class InputEngine {
         case (false, false): lastDir = nil
         default: break
         }
+        return action
     }
 }
 

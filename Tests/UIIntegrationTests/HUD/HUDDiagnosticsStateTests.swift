@@ -5,7 +5,7 @@ import Testing
 @Suite struct HUDDiagnosticsStateTests {
     @Test func testDiagnosticsStateIncludesLastInputAndHint() {
         let state = GameState(config: GameConfig(), seed: 1)
-        let diag = HUDDiagnosticsState.from(state: state, lastInput: .rotateCw)
+        let diag = HUDDiagnosticsState.from(state: state.snapshot(), lastInput: .rotateCw)
         #expect(diag.lastInputText == "Last input: Rotate CW")
         #expect(diag.hintText == "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause")
     }
@@ -13,7 +13,7 @@ import Testing
     @Test func testDiagnosticsStateIncludesGroundedAndLockResets() {
         var state = GameState(config: GameConfig(lockResetLimit: 15), seed: 1)
         state.setTimersForTesting(lockResetCount: 3)
-        let diag = HUDDiagnosticsState.from(state: state)
+        let diag = HUDDiagnosticsState.from(state: state.snapshot())
         #expect(diag.lockResetsText == "Lock resets: 12/15")
         #expect(diag.groundedText == "Grounded: No")
     }
@@ -22,7 +22,7 @@ import Testing
         var state = GameState(config: GameConfig(), seed: 1)
         state.active = Tetromino(kind: .i, x: 1, y: 2)
         state.updateGhostCache()
-        let diag = HUDDiagnosticsState.from(state: state)
+        let diag = HUDDiagnosticsState.from(state: state.snapshot())
         let ghostBlocks = state.ghostBlocks()
         #expect(diag.activeText == "Active: i @ (1, 2)")
         #expect(diag.ghostText == "Ghost blocks: \(ghostBlocks.count)")
@@ -50,7 +50,7 @@ import Testing
         var state = GameState(config: config, seed: 1)
         state.combo = 2
         state.backToBack = true
-        let diag = HUDDiagnosticsState.from(state: state)
+        let diag = HUDDiagnosticsState.from(state: state.snapshot())
         #expect(diag.comboText == "Combo: 2")
         #expect(diag.b2bText == "B2B: Yes")
         #expect(!diag.isClassicRuleset)

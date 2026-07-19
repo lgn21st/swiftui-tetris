@@ -19,7 +19,7 @@ import Core
     private final class Input: GameRuntimeInput {
         var acceptance: [Bool] = []
 
-        func tick(elapsedMs: Int, canAccept: Bool, state: inout GameState) {
+        func produceActions(elapsedMs: Int, canAccept: Bool, emit: (GameAction) -> Void) {
             acceptance.append(canAccept)
         }
     }
@@ -68,5 +68,16 @@ import Core
 
         #expect(runtime.snapshot.logicalStep == 1)
         #expect(runtime.snapshot.seed == 3)
+    }
+
+    @Test func queuesLocalActionsUntilTheNextTransaction() {
+        let runtime = GameRuntime(state: GameState(config: GameConfig(), seed: 1))
+        let startX = runtime.snapshot.active.x
+
+        runtime.enqueue(.moveRight)
+        #expect(runtime.snapshot.active.x == startX)
+        runtime.advance(frameMs: 16)
+
+        #expect(runtime.snapshot.active.x == startX + 1)
     }
 }

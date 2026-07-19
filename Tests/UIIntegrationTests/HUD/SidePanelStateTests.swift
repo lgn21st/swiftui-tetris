@@ -7,14 +7,14 @@ import Testing
         var state = GameState(config: GameConfig(), seed: 1)
         state.hold = .t
         state.nextQueue = [.i, .o, .s, .z, .l, .j]
-        let hud = HUDState.from(state: state)
+        let hud = HUDState.from(state: state.snapshot())
         #expect(hud.holdKind == .t)
         #expect(hud.nextKinds == [.i, .o, .s])
     }
 
     @Test func testHudStateIncludesStatusAndRulesetText() {
         let state = GameState(config: GameConfig(), seed: 1)
-        let hud = HUDState.from(state: state, started: false)
+        let hud = HUDState.from(state: state.snapshot(), started: false)
         #expect(hud.statusText.contains("Status"))
         #expect(hud.rulesetText.contains("Rules"))
     }

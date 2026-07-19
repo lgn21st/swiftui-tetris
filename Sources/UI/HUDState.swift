@@ -21,7 +21,7 @@ public struct HUDState: Equatable {
     private static let lockWarningPulseMin = 0.4
     private static let lockWarningPulseMax = 1.0
     public static func from(
-        state: GameState,
+        state: GameStateSnapshot,
         started: Bool = true,
         lastInput: GameAction? = nil
     ) -> HUDState {
@@ -110,12 +110,12 @@ public struct HUDDiagnosticsState: Equatable {
 
     private static let defaultHint = "Keys: ←/→ Move · ↑ Rotate · ↓ Soft · Space Hard · C Hold · P Pause"
 
-    public static func from(state: GameState, lastInput: GameAction? = nil) -> HUDDiagnosticsState {
+    public static func from(state: GameStateSnapshot, lastInput: GameAction? = nil) -> HUDDiagnosticsState {
         let groundedText = "Grounded: \(state.canMoveDown() ? "No" : "Yes")"
         let remainingResets = max(state.config.lockResetLimit - state.lockResetCount, 0)
         let lockResetsText = "Lock resets: \(remainingResets)/\(state.config.lockResetLimit)"
         let activeText = "Active: \(state.active.kind) @ (\(state.active.x), \(state.active.y))"
-        let ghostBlocks = state.ghostBlocks()
+        let ghostBlocks = state.ghostBlocks
         let ghostText = "Ghost blocks: \(ghostBlocks.count)"
         let ghostBoundsText = ghostBoundsDescription(ghostBlocks)
         let comboText = state.combo >= 0 ? "Combo: \(state.combo)" : "Combo: -"
