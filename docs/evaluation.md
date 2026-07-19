@@ -14,9 +14,9 @@ Current assessment:
 | Architecture | Strong foundation | Runtime owns private mutable state and fixed-step transactions; UI consumes snapshots and queues actions |
 | Rendering | Strong | Preallocated nodes, texture cache, incremental cell buffer, direct snapshot board reuse |
 | Input/timing | Strong after fixes | DAS/ARR isolation and per-step catch-up processing |
-| Adapter | Aligned to 3.0.0 | Conformance matrix, logical transitions/events, applied-state ack, bounded transport |
+| Adapter | Aligned to 3.0.0 | Conformance matrix, isolated session policy/execution, applied-state ack, bounded transport/logging |
 | Documentation | Reconciled | Canonical protocol is external; local implementation profile and project docs agree |
-| Verification environment | Strong | CLI Debug/Release builds and all 276 Swift Testing tests pass without Xcode or XCTest |
+| Verification environment | Strong | Swift 6.2 CLI Debug/Release builds are warning-free and all 283 Swift Testing tests pass without Xcode or XCTest |
 
 ## Correctness Findings Resolved
 
@@ -33,6 +33,7 @@ Current assessment:
 3. Ghost and landing-flash block arrays now retain their four-element capacity.
 4. Place planning used repeated linear minimum searches, middle-array removals, and copied the full action path for each frontier node. It now uses a stable binary min-heap and predecessor reconstruction.
 5. In-memory Adapter queues no longer shift all remaining elements on every dequeue.
+6. Diagnostic wire logging now bounds pending best-effort records at 64, so disk latency cannot create unbounded Dispatch work.
 
 ## Reliability and Security Findings Resolved
 
@@ -44,9 +45,10 @@ Current assessment:
 ## Structure Review
 
 - `Core`: correct owner for board, pieces, RNG, scoring, timing, actions, and snapshots.
-- `Renderer`: contains mapping, clocks, node reuse, textures, and visual-only state; it does not mutate gameplay.
+- `Runtime`: owns the fixed-step accumulator, transaction ordering, private mutable Core state, and snapshot publication.
+- `Renderer`: contains mapping, node reuse, textures, and visual-only state; it does not own gameplay clocks or mutate gameplay.
 - `UI`: contains SceneDriver, input devices, audio, views, window behavior, and derived HUD/overlay state.
-- `Adapter`: contains protocol DTOs, command planning, observations, framing, and transport.
+- `Adapter`: separates protocol DTOs/codec, session policy, command execution, observations, framing, bounded transport, and best-effort logging.
 - `Packaging`/`App`: remain thin entry and delivery layers.
 
 Large files are no longer preserved merely to minimize diff size. Extraction is justified where it produces a smaller public API or separates deterministic policy from I/O; otherwise code stays together.
@@ -58,11 +60,12 @@ Large files are no longer preserved merely to minimize diff size. Extraction is 
 - Live Adapter stress checks passed: control concurrency, inbound backpressure/retry hints, frame-boundary disconnect, slow-client isolation, and disconnect/reconnect ownership.
 - Targeted executable checks: passed for T-Spin scoring, combo event score, spawn ghost refresh, shape invariants, framing limit, planner depth, and a 512 KiB localhost TCP write.
 - `git diff --check`: passed after all edits.
-- `scripts/test`: all 276 tests in 88 suites pass with native Swift Testing and no XCTest dependency after consolidating redundant input coverage.
+- `scripts/test`: all 283 tests in 90 suites pass with native Swift Testing and no XCTest dependency.
 - `scripts/build` and `scripts/build -c release`: pass using Command Line Tools.
+- Package language mode is Swift 6.2; UI/AppKit ownership is main-actor isolated and queue-confined Adapter I/O has explicit Sendable contracts.
+- The release Packager emits a valid macOS 14 bundle, copies assets, and omits `.DS_Store` metadata.
 
 ## Residual Risks
 
-- Adapter decomposition can proceed from the private-state Runtime boundary; protocol and performance gates must remain green after each batch.
 - Adapter queue capacities are implementation-local defaults and should be load-tested before exposing the endpoint beyond a trusted local interface.
 - Performance changes are complexity/allocation improvements validated by code inspection and builds, not Instruments measurements. Capture Instruments baselines before making claims about FPS or latency percentages.

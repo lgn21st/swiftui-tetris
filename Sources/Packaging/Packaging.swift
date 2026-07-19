@@ -41,7 +41,7 @@ public enum Packaging {
             <key>CFBundlePackageType</key>
             <string>APPL</string>
             <key>LSMinimumSystemVersion</key>
-            <string>13.0</string>\(iconEntry)
+            <string>14.0</string>\(iconEntry)
         </dict>
         </plist>
         """
@@ -120,7 +120,7 @@ public enum Packaging {
     private static func copyDirectoryContents(from source: URL, to destination: URL) throws {
         let fileManager = FileManager.default
         let contents = try fileManager.contentsOfDirectory(atPath: source.path)
-        for entry in contents {
+        for entry in contents where entry != ".DS_Store" {
             let srcURL = source.appendingPathComponent(entry)
             let destURL = destination.appendingPathComponent(entry)
             var isDirectory: ObjCBool = false

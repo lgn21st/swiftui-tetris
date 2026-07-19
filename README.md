@@ -11,7 +11,7 @@ macOS-native Tetris built with SwiftUI + SpriteKit. The focus is solid rules, cr
 - Convention-over-configuration defaults: no Settings UI or persistence; minimal menu actions.
 
 ## Run (CLI-first)
-- Requirements: macOS 14+, Swift 6.2 Command Line Tools. Xcode is not required.
+- Requirements: macOS 14+, Swift 6.2 Command Line Tools. The package builds in Swift 6 language mode; Xcode is not required.
 - Tests: `scripts/test`
 - Build (debug): `scripts/build`
 - Build (release): `scripts/build -c release`

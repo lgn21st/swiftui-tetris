@@ -1,7 +1,7 @@
 import Testing
 @testable import UI
 
-@Suite struct DiagnosticsTrackerTests {
+@Suite @MainActor struct DiagnosticsTrackerTests {
     @Test func testDiagnosticsTrackerUpdatesFpsAfterWindow() {
         var tracker = DiagnosticsTracker()
         var state = DiagnosticsState.empty

@@ -25,6 +25,7 @@
 ## Working Agreements
 - Follow strict TDD: every feature, improvement, or refactor must add/adjust tests first.
 - Use Swift Testing only; XCTest and Xcode-specific test infrastructure are not supported.
+- Keep Swift tools/language mode at 6.2; AppKit/SpriteKit coordinators and their tests are `@MainActor`, while queue-confined I/O uses reviewed Sendable contracts.
 - Use `scripts/test`, `scripts/build`, and `scripts/run` so CLI builds select the verified SDK and module caches consistently.
 - Update Core and tests first; UI changes come after logic is stable.
 - If behavior changes, update `docs/rules-spec.md` and `docs/feature-matrix.md`.

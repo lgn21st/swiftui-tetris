@@ -7,7 +7,9 @@
 - Removed `GameLoop`, Renderer `FixedStepClock`, and SpriteKit `onFixedStep`; the lean replacement baseline passes 276 tests across 89 suites.
 - Made Runtime's mutable `GameState` private, queued local actions at the transaction boundary, made InputEngine state-free, and converted SceneDriver/HUD/focus handling to snapshot-only reads; 276 tests across 88 suites and both builds pass.
 - Extracted Adapter identity/sequencing/control/promotion into a pure session registry, unified TCP and in-memory command mutation behind one executor, and isolated asynchronous JSONL logging from SocketAdapter.
-- The refactored baseline passes 282 Swift Testing tests across 90 suites, including all protocol, transport, backpressure, disconnect, and reconnect cases.
+- The refactored baseline passes 283 Swift Testing tests across 90 suites, including all protocol, transport, backpressure, disconnect, and reconnect cases.
+- Bounded diagnostic logging at 64 pending best-effort records, reran the canonical 3.0.0 black-box verifier successfully, aligned packaged deployment metadata to macOS 14, and excluded Finder metadata from app resources.
+- Raised the package manifest from Swift tools 5.9 to 6.2, isolated AppKit/SpriteKit coordinators on MainActor, documented queue-confined Sendable contracts, and reached warning-free Debug and Release builds.
 - Split fixed-step transaction start from active-piece advancement so commands applied inside a logical transition determine whether that transition advances gameplay.
 - Repaired the socket test client to retain bytes after a newline and to handle complete writes, exposing reliable protocol/backpressure evidence instead of timing-dependent tests.
 - Upgraded the external Adapter from protocol 2.1.1 to canonical 3.0.0.

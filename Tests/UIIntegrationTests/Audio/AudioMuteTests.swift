@@ -2,7 +2,7 @@ import Testing
 @testable import UI
 @testable import Core
 
-@Suite struct AudioMuteTests {
+@Suite @MainActor struct AudioMuteTests {
     @Test func testMuteToggleSuppressesPlaybackAndAmbientLoop() {
         let audio = RecordingAudio()
         let driver = SceneDriver(audio: audio)

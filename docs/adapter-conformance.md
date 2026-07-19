@@ -26,6 +26,7 @@ canonical files are consumed in place and are not copied into this project.
 | Transition order is begin, drain/apply, advance, emit | Headless `GameRuntime` opens the logical transition, polls commands, advances Core, then emits its snapshot | Moved transaction ownership out of SceneDriver/SpriteKit without changing protocol ordering | `GameRuntimeTests`, SceneDriver Adapter integration tests |
 | Streaming hello gets an immediate full snapshot | Adapter retains and targets the latest complete observation after welcome | Existing behavior retained with new mandatory fields | `testStreamingHelloImmediatelyReceivesLatestFullSnapshot`, canonical ready check |
 | Frames at most 65,536 bytes; bounded input/output; slow-client isolation | Incremental byte framer, 64-command default input bound, 256 KiB per-client output bound, observation coalescing | Existing behavior retained | framer tests, `testBackpressureRejectsCommand`, required-output overflow tests, live backpressure/frame/slow-client checks |
+| Diagnostic logging cannot create resource backpressure | JSONL work is best-effort on a separate queue with a project-local 64-record pending bound | Replaced an unbounded asynchronous logging submission path | `AdapterWireLoggerTests` |
 | Portable host/port/disabled controls | TCP profile defaults and environment overrides are project-local | Existing behavior retained | `AdapterBootstrapTests` |
 
 ## Changelog entries handled
@@ -47,6 +48,6 @@ control concurrency, inbound backpressure/retry hints, the 65,536-byte frame
 boundary, slow-client isolation, and disconnect/reconnect behavior.
 
 The project uses Swift Testing exclusively through `scripts/test`; Xcode and
-XCTest are not supported. The current local suite contains 282 tests across 90
+XCTest are not supported. The current local suite contains 283 tests across 90
 suites. The exact cases above remain mandatory regression gates and must pass
 before any Adapter or runtime batch is committed.

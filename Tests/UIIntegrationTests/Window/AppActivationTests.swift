@@ -2,7 +2,7 @@ import Testing
 import AppKit
 @testable import UI
 
-@Suite struct AppActivationTests {
+@Suite @MainActor struct AppActivationTests {
     private final class MockApp: ApplicationActivating {
         var policy: NSApplication.ActivationPolicy?
         var activatedFlag: Bool?

@@ -58,6 +58,11 @@ import Foundation
         try FileManager.default.createDirectory(at: sfxURL, withIntermediateDirectories: true)
         let soundURL = sfxURL.appendingPathComponent("move.wav")
         try "sound".write(to: soundURL, atomically: true, encoding: .utf8)
+        try "metadata".write(
+            to: assetsURL.appendingPathComponent(".DS_Store"),
+            atomically: true,
+            encoding: .utf8
+        )
 
         try Packaging.createAppBundle(
             binaryPath: binaryURL,
@@ -73,5 +78,8 @@ import Foundation
             .appendingPathComponent("Contents/Resources/assets/sfx", isDirectory: true)
             .appendingPathComponent("move.wav")
         #expect(FileManager.default.fileExists(atPath: copiedSound.path))
+        let copiedMetadata = bundleURL
+            .appendingPathComponent("Contents/Resources/assets/.DS_Store")
+        #expect(!FileManager.default.fileExists(atPath: copiedMetadata.path))
     }
 }

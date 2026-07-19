@@ -145,6 +145,7 @@ Where to edit:
 - Renderer tests validate mapping logic and resource reuse.
 - Adapter tests cover protocol, concurrency, bounded backpressure, disconnect, and reconnect behavior through public boundaries.
 - Swift Testing is the only test framework; XCTest and Xcode projects are intentionally absent.
+- Swift tools 6.2 is the package language mode. AppKit/SpriteKit coordination is main-actor isolated; Adapter queue confinement is expressed with narrow Sendable contracts.
 
 ## Risks
 - Migrating the loop can change timing; guard with deterministic tests.

@@ -4,7 +4,7 @@ import Core
 import Runtime
 import Adapter
 
-public final class SceneDriver: ObservableObject {
+@MainActor public final class SceneDriver: ObservableObject {
     public let scene: TetrisScene
     private let runtime: GameRuntime
     private let input: InputEngine

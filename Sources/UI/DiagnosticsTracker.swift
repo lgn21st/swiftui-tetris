@@ -1,6 +1,6 @@
 import Foundation
 
-public struct DiagnosticsState: Equatable {
+public struct DiagnosticsState: Equatable, Sendable {
     public var fpsText: String
     public var tickText: String
 

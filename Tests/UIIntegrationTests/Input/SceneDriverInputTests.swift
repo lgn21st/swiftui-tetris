@@ -2,7 +2,7 @@ import Testing
 @testable import UI
 @testable import Core
 
-@Suite struct SceneDriverInputTests {
+@Suite @MainActor struct SceneDriverInputTests {
     @Test func testSceneDriverHandlesKeyDown() {
         let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1))
         let startX = driver.stateSnapshot().active.x

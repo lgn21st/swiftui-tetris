@@ -1,7 +1,7 @@
 import Testing
 @testable import UI
 
-@Suite struct FocusPauseTests {
+@Suite @MainActor struct FocusPauseTests {
     @Test func testFocusLossPausesGame() {
         let driver = SceneDriver()
         driver.handleKeyDown("\n")

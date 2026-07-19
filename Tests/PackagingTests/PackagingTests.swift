@@ -19,6 +19,7 @@ import Foundation
         #expect(plist.contains("0.1.0"))
         #expect(plist.contains("CFBundleVersion"))
         #expect(plist.contains("1"))
+        #expect(plist.contains("<key>LSMinimumSystemVersion</key>\n    <string>14.0</string>"))
     }
 
     @Test func testCreateBundleWritesFiles() throws {

@@ -1,11 +1,17 @@
 import Foundation
 
-final class AdapterWireLogger {
+final class AdapterWireLogger: @unchecked Sendable {
     private let queue = DispatchQueue(label: "adapter.socket.log")
+    private let pendingSlots: DispatchSemaphore
     private let timeSource: () -> Int
     private var handle: FileHandle?
 
-    init(path: String?, timeSource: @escaping () -> Int) {
+    init(
+        path: String?,
+        maxPendingRecords: Int = 64,
+        timeSource: @escaping () -> Int
+    ) {
+        self.pendingSlots = DispatchSemaphore(value: max(0, maxPendingRecords))
         self.timeSource = timeSource
         guard let path else { return }
         let resolved = path == "auto" ? "/tmp/tetris-ai-adapter-\(timeSource()).jsonl" : path
@@ -14,7 +20,9 @@ final class AdapterWireLogger {
     }
 
     func record(direction: String, connection: UUID, line: Data) {
+        guard pendingSlots.wait(timeout: .now()) == .success else { return }
         queue.async {
+            defer { self.pendingSlots.signal() }
             guard let handle = self.handle else { return }
             var payload: [String: Any] = [
                 "ts_ms": self.timeSource(),

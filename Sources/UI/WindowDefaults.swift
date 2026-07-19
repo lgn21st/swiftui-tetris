@@ -1,6 +1,6 @@
 import AppKit
 
-public enum WindowDefaults {
+@MainActor public enum WindowDefaults {
     public static func apply(to window: NSWindow) {
         window.isRestorable = false
         window.setFrameAutosaveName("")

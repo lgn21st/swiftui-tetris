@@ -40,6 +40,7 @@ swift run Packager \
 
 ## Notes
 - The packager writes `Contents/Info.plist` and copies the binary into `Contents/MacOS/`.
+- Generated bundles declare macOS 14.0 as their minimum system version and omit Finder `.DS_Store` metadata from copied assets.
 - If `--icon-path` is provided, the `.icns` file is copied into `Contents/Resources/` and referenced in `Info.plist`.
 - If `--entitlements` is provided, the file is copied to `Contents/Entitlements.plist` for later codesign usage.
 - If `--assets-path` is provided, its contents are copied to `Contents/Resources/assets/`.

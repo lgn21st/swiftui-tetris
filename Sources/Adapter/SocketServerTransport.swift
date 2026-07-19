@@ -5,12 +5,12 @@ public enum SocketTransportConfiguration: Equatable {
     case tcp(host: String, port: Int)
 }
 
-public enum SocketOutboundDelivery: Equatable {
+public enum SocketOutboundDelivery: Equatable, Sendable {
     case required
     case latestObservation
 }
 
-public final class SocketServerTransport {
+public final class SocketServerTransport: @unchecked Sendable {
     public var onReceive: ((UUID, Data) -> Void)?
     public var onDisconnect: ((UUID) -> Void)?
     public private(set) var boundPort: Int?

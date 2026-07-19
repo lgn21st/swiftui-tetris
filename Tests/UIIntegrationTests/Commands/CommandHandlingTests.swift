@@ -1,7 +1,7 @@
 import Testing
 @testable import UI
 
-@Suite struct CommandHandlingTests {
+@Suite @MainActor struct CommandHandlingTests {
     @Test func testCommandStartClearsTitleOverlay() {
         let driver = SceneDriver()
 

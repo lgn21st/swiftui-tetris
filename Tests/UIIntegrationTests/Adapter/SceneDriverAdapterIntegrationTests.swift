@@ -3,7 +3,7 @@ import Core
 import Adapter
 @testable import UI
 
-@Suite struct SceneDriverAdapterIntegrationTests {
+@Suite @MainActor struct SceneDriverAdapterIntegrationTests {
     private final class SpyAdapter: AdapterHandling {
         private(set) var pollCount = 0
         private(set) var emitCount = 0

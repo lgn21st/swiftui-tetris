@@ -3,7 +3,7 @@ import Testing
 @testable import Renderer
 @testable import Core
 
-@Suite struct SceneDriverRenderTests {
+@Suite @MainActor struct SceneDriverRenderTests {
     @Test func testSceneDriverTickDoesNotRenderDirectly() {
         let driver = SceneDriver(
             audio: nil,

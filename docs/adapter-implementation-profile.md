@@ -33,6 +33,8 @@ used to redefine portable wire behavior.
 - `AdapterCommandExecutor` is the shared, transport-free command application
   path used by both TCP and in-memory adapters.
 - `adapter.socket.log` serializes optional JSONL wire logs off the game loop.
+  At most 64 best-effort records may be pending; further diagnostic records are
+  dropped rather than delaying sockets or gameplay.
 - Inbound commands are bounded by `TETRIS_AI_MAX_PENDING` (default `64`). A
   rejection returns `backpressure` with `retry_after_ms` from
   `TETRIS_AI_BACKPRESSURE_RETRY_MS` (default `50`).

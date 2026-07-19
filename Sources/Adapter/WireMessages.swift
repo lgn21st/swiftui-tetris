@@ -1,11 +1,11 @@
 import Foundation
 import Core
 
-public enum TetrisAIFormat: String, Codable, Equatable {
+public enum TetrisAIFormat: String, Codable, Equatable, Sendable {
     case json
 }
 
-public enum TetrisAICommandMode: String, Codable, Equatable {
+public enum TetrisAICommandMode: String, Codable, Equatable, Sendable {
     case action
     case place
 }
@@ -148,7 +148,7 @@ public struct TetrisAIWelcome: Codable, Equatable {
     }
 }
 
-public struct TetrisAICapabilities: Codable, Equatable {
+public struct TetrisAICapabilities: Codable, Equatable, Sendable {
     public var formats: [TetrisAIFormat]
     public var commandModes: [TetrisAICommandMode]
     public var features: [String]
@@ -191,7 +191,7 @@ public struct TetrisAICapabilities: Codable, Equatable {
     }
 }
 
-public struct TetrisAIControlPolicy: Codable, Equatable {
+public struct TetrisAIControlPolicy: Codable, Equatable, Sendable {
     public var autoPromoteOnDisconnect: Bool
     public var promotionOrder: String
 

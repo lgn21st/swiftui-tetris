@@ -1,12 +1,12 @@
-import GameController
+@preconcurrency import GameController
 import Core
 
-public final class GamepadManager {
+@MainActor public final class GamepadManager {
     private let onLeftHeld: (Bool) -> Void
     private let onRightHeld: (Bool) -> Void
     private let onDownHeld: (Bool) -> Void
     private let onAction: (GameAction) -> Void
-    private var observers: [NSObjectProtocol] = []
+    private let observerBag = NotificationObserverBag()
     private var started = false
 
     public init(
@@ -40,14 +40,17 @@ public final class GamepadManager {
 
     private func observeControllers() {
         let center = NotificationCenter.default
-        observers = [
+        observerBag.values = [
             center.addObserver(
                 forName: .GCControllerDidConnect,
                 object: nil,
                 queue: .main
             ) { [weak self] notification in
                 guard let controller = notification.object as? GCController else { return }
-                self?.configure(controller)
+                let reference = ControllerReference(controller)
+                MainActor.assumeIsolated {
+                    self?.configure(reference.value)
+                }
             },
             center.addObserver(
                 forName: .GCControllerDidDisconnect,
@@ -110,13 +113,27 @@ public final class GamepadManager {
 
     private func detachObservers() {
         let center = NotificationCenter.default
-        for observer in observers {
+        for observer in observerBag.values {
             center.removeObserver(observer)
         }
-        observers = []
+        observerBag.values = []
     }
+}
+
+private final class NotificationObserverBag: @unchecked Sendable {
+    var values: [NSObjectProtocol] = []
 
     deinit {
-        detachObservers()
+        for observer in values {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+}
+
+private final class ControllerReference: @unchecked Sendable {
+    let value: GCController
+
+    init(_ value: GCController) {
+        self.value = value
     }
 }

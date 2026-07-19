@@ -22,4 +22,17 @@ import Testing
         #expect(object["connection_id"] as? String == connection.uuidString)
         #expect(object["line"] as? String == #"{"type":"hello"}"#)
     }
+
+    @Test func dropsBestEffortRecordsWhenCapacityIsUnavailable() throws {
+        let path = FileManager.default.temporaryDirectory
+            .appendingPathComponent("adapter-wire-\(UUID().uuidString).jsonl")
+            .path
+        defer { try? FileManager.default.removeItem(atPath: path) }
+        let logger = AdapterWireLogger(path: path, maxPendingRecords: 0, timeSource: { 123 })
+
+        logger.record(direction: "send", connection: UUID(), line: Data("ignored".utf8))
+        logger.close()
+
+        #expect(try Data(contentsOf: URL(fileURLWithPath: path)).isEmpty)
+    }
 }
