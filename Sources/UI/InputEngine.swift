@@ -1,4 +1,5 @@
 import Core
+import Runtime
 
 public final class InputEngine {
     private enum AxisDirection {
@@ -145,3 +146,5 @@ public final class InputEngine {
         }
     }
 }
+
+extension InputEngine: GameRuntimeInput {}

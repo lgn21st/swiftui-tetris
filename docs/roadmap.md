@@ -20,8 +20,9 @@ Aligned the external Adapter through canonical protocol 3.0.0. The current migra
 
 Ongoing: small polish, bug fixes, and keep tests green.
 Ongoing: keep Adapter transport compatibility with `tetris-ai` protocol revisions.
-In progress: replace XCTest entirely with Swift Testing and make the verified CLI wrappers the only supported developer entry points.
-Next: move fixed-step ownership out of SpriteKit, reduce Core mutation surfaces, and split Adapter transport/session/protocol responsibilities.
+Completed: replaced XCTest entirely with Swift Testing and made the verified CLI wrappers the supported developer entry points.
+Completed: moved fixed-step ownership out of SpriteKit into the headless Runtime target.
+Next: reduce Core mutation surfaces and split Adapter transport/session/protocol responsibilities.
 
 ---
 

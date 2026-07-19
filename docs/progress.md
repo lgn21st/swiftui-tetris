@@ -3,6 +3,8 @@
 ## 2026-07-19
 - Began the clean-break architecture rebuild: added Xcode-independent CLI wrappers, migrated all 280 tests from XCTest to Swift Testing, and raised the supported deployment target to macOS 14 to match the Testing runtime.
 - Verified all 280 tests across 91 suites plus Debug and Release CLI builds without Xcode.
+- Added a pure-Swift `Runtime` target that owns the 16 ms accumulator, frame clamping, command/input ordering, Core advancement, and per-step snapshot publication.
+- Removed `GameLoop`, Renderer `FixedStepClock`, and SpriteKit `onFixedStep`; the lean replacement baseline passes 276 tests across 89 suites.
 - Split fixed-step transaction start from active-piece advancement so commands applied inside a logical transition determine whether that transition advances gameplay.
 - Repaired the socket test client to retain bytes after a newline and to handle complete writes, exposing reliable protocol/backpressure evidence instead of timing-dependent tests.
 - Upgraded the external Adapter from protocol 2.1.1 to canonical 3.0.0.

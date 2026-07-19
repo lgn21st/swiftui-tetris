@@ -20,9 +20,8 @@ import Adapter
     }
 
     @Test func testTickPollsAdapterAndEmitsObservation() {
-        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let adapter = SpyAdapter()
-        let driver = SceneDriver(loop: loop, adapter: adapter)
+        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), adapter: adapter)
 
         #expect(adapter.emitCount == 1, "initial snapshot primes streaming handshakes")
 
@@ -34,11 +33,10 @@ import Adapter
     }
 
     @Test func testCatchUpRunsEveryFixedStepThroughAdapterBoundary() {
-        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let adapter = SpyAdapter()
-        let driver = SceneDriver(loop: loop, audio: nil, adapter: adapter)
+        let driver = SceneDriver(state: GameState(config: GameConfig(), seed: 1), audio: nil, adapter: adapter)
 
-        driver.tick(elapsedMs: 48, fixedSteps: 3)
+        driver.tick(elapsedMs: 48)
 
         #expect(adapter.pollCount == 3)
         #expect(adapter.emitCount == 4)
@@ -48,11 +46,10 @@ import Adapter
     @Test func testFixedTransitionBeginsBeforeAdapterCommandsAndAdvancement() {
         var state = GameState(config: GameConfig(), seed: 1)
         state.paused = true
-        let loop = GameLoop(state: state)
         let transport = InMemoryTransport()
         transport.enqueueCommand(.action(actions: [.pause]))
         let adapter = InMemoryAdapter(transport: transport)
-        let driver = SceneDriver(loop: loop, audio: nil, adapter: adapter)
+        let driver = SceneDriver(state: state, audio: nil, adapter: adapter)
 
         driver.tick(elapsedMs: 16)
 
@@ -62,10 +59,13 @@ import Adapter
     }
 
     @Test func testRemoteLockEventSurvivesUntilSameStepObservation() {
-        let loop = GameLoop(state: GameState(config: GameConfig(), seed: 1))
         let transport = InMemoryTransport()
         transport.enqueueCommand(.action(actions: [.hardDrop]))
-        let driver = SceneDriver(loop: loop, audio: nil, adapter: InMemoryAdapter(transport: transport))
+        let driver = SceneDriver(
+            state: GameState(config: GameConfig(), seed: 1),
+            audio: nil,
+            adapter: InMemoryAdapter(transport: transport)
+        )
 
         driver.tick(elapsedMs: 16)
 

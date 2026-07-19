@@ -3,7 +3,6 @@ import Core
 
 public final class TetrisScene: SKScene {
     public static let defaultSize = CGSize(width: 480, height: 720)
-    public static let fixedStepMs: Double = 16
     public static let maxDeltaMs: Double = 250
     private let cellSize: CGFloat = RenderConstants.cellSize
     private static let activeNodeCount = 4
@@ -16,18 +15,15 @@ public final class TetrisScene: SKScene {
     private var lastActiveOverlayKey: ActiveOverlayKey?
     private var lastScorePopups: [ScorePopup] = []
     private var lastTSpinKey: TSpinKey?
-    private var clock: FixedStepClock
     private var frameClock: FrameClock
     private var textureCache: TextureCache
     private var scorePopupNodes: [SKLabelNode] = []
     private var tSpinBadge: SKLabelNode?
     internal private(set) var debugRenderCount: Int = 0
-    public var onFixedStep: ((Int) -> Void)?
     public var onFrame: ((Int) -> Void)?
     public var onRender: (() -> RenderState?)?
 
     public override init(size: CGSize) {
-        self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
         self.renderBuffer = RenderBuffer()
         self.textureCache = TextureCache(cellSize: cellSize)
@@ -35,17 +31,7 @@ public final class TetrisScene: SKScene {
         commonInit()
     }
 
-    public init(size: CGSize, stepMs: Double, maxDeltaMs: Double) {
-        self.clock = FixedStepClock(stepMs: stepMs, maxDeltaMs: maxDeltaMs)
-        self.frameClock = FrameClock(maxDeltaMs: maxDeltaMs)
-        self.renderBuffer = RenderBuffer()
-        self.textureCache = TextureCache(cellSize: cellSize)
-        super.init(size: size)
-        commonInit()
-    }
-
     public required init?(coder: NSCoder) {
-        self.clock = FixedStepClock(stepMs: Self.fixedStepMs, maxDeltaMs: Self.maxDeltaMs)
         self.frameClock = FrameClock(maxDeltaMs: Self.maxDeltaMs)
         self.renderBuffer = RenderBuffer()
         self.textureCache = TextureCache(cellSize: cellSize)
@@ -58,10 +44,6 @@ public final class TetrisScene: SKScene {
         let frameMs = frameClock.advance(currentTime: currentTime)
         if frameMs > 0 {
             onFrame?(frameMs)
-        }
-        let steps = clock.advance(currentTime: currentTime)
-        if steps > 0 {
-            onFixedStep?(steps)
         }
         if let renderState = onRender?(), shouldRender(state: renderState), Self.canRender(view: view) {
             render(state: renderState)

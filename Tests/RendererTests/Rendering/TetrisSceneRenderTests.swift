@@ -6,7 +6,7 @@ import SpriteKit
 
 @Suite @MainActor struct TetrisSceneRenderTests {
     @Test func testSceneRendersEachUpdateWhenProviderAvailable() {
-        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        let scene = TetrisScene(size: TetrisScene.defaultSize)
         var renderCalls = 0
         scene.onRender = {
             renderCalls += 1
@@ -20,7 +20,7 @@ import SpriteKit
     }
 
     @Test func testSceneSkipsRenderWhenPaused() {
-        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        let scene = TetrisScene(size: TetrisScene.defaultSize)
         var renderCalls = 0
         scene.onRender = {
             renderCalls += 1
@@ -34,7 +34,7 @@ import SpriteKit
     }
 
     @Test func testSceneRendersWhenGameOverEvenIfPaused() {
-        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        let scene = TetrisScene(size: TetrisScene.defaultSize)
         var renderCalls = 0
         scene.onRender = {
             renderCalls += 1
@@ -48,7 +48,7 @@ import SpriteKit
     }
 
     @Test func testSceneRendersActiveOverlayWithoutBoardCells() {
-        let scene = TetrisScene(size: TetrisScene.defaultSize, stepMs: 16, maxDeltaMs: 100)
+        let scene = TetrisScene(size: TetrisScene.defaultSize)
         let activeBlocks = [(4, 0), (5, 0), (4, 1), (5, 1)]
         let renderState = Self.emptyRenderState(
             activeBlocks: activeBlocks,

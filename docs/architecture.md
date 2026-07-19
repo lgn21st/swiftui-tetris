@@ -6,15 +6,17 @@ This document defines the target architecture and refactor plan for a SwiftUI + 
 This section explains the codebase in plain language for new contributors.
 
 ### Big Picture
-The runtime is split into four layers:
+The project is split into five layers:
 1) Core (rules and state)
-2) Renderer (SpriteKit drawing)
-3) UI (SwiftUI views, input, audio)
-4) Adapter (protocol/transport boundary for external AI clients)
+2) Runtime (headless fixed-step transactions)
+3) Renderer (SpriteKit drawing)
+4) UI (SwiftUI views, input, audio)
+5) Adapter (protocol/transport boundary for external AI clients)
 
 Flow:
 ```
 Input (keyboard/gamepad)
+        -> Runtime transaction
         -> Core state updates
         -> RenderState snapshot
         -> SpriteKit draws
@@ -22,6 +24,7 @@ Input (keyboard/gamepad)
 
 External AI (tetris-ai)
         -> Adapter (command mapping)
+        -> Runtime transaction
         -> Core state updates
         -> Snapshot mapping
         -> Adapter (observation streaming)
@@ -30,6 +33,7 @@ External AI (tetris-ai)
 ### Folder Map
 ```
 Core/               Game rules and data (no UI)
+Runtime/            Accumulator, transaction ordering, snapshots
 Renderer/           SpriteKit rendering and textures
 Sources/UI/         SwiftUI views, input, audio, SceneDriver
 Adapter/            Local TCP protocol, command planning, observations
@@ -39,12 +43,14 @@ assets/             Audio files, icons
 
 Where to edit:
 - Rules, scoring, timing -> Core/
+- Fixed-step scheduling and command ordering -> Runtime/
 - Visual appearance -> Renderer/
 - HUD, overlays, inputs, audio -> Sources/UI/
 
 ### Game Loop (Simple View)
 - TetrisScene.update(_:) runs every frame.
-- A fixed timestep clock advances Core logic in independent 16ms steps, including catch-up frames.
+- TetrisScene reports clamped frame time; it owns no gameplay clock.
+- GameRuntime accumulates frame time and advances Core in independent 16ms transactions, including catch-up frames.
 - Rendering happens after logic.
 - Adapter begins a logical transition, polls commands, advances that fixed step, and emits its snapshot.
 
@@ -89,7 +95,7 @@ Where to edit:
 - **Assets are packaged explicitly**: `Packager` copies `assets/`; `AssetLocator` resolves packaged and CLI layouts consistently.
 
 ## Status
-- The architecture is being rebuilt around a headless runtime and Swift Testing. The historical “alignment complete” claim is retired.
+- The headless Runtime and Swift Testing foundation are complete. Core API simplification and Adapter decomposition remain in progress.
 
 ## Target Architecture
 ### Loop & Timing
@@ -119,8 +125,8 @@ Where to edit:
 - Overlay HUD with `ZStack`.
 - Provide accessibility: reduce motion, keyboard focus order, and legible text sizes.
 
-## Alignment Summary (Complete)
-- Loop ownership moved to `TetrisScene.update(_:)` with fixed-step timing.
+## Current Alignment
+- Fixed-step ownership lives in `GameRuntime`; `TetrisScene.update(_:)` only reports frame time and renders.
 - Render pipeline reuses buffers/nodes and caches textures.
 - Render mapping passes Core board cells through copy-on-write storage instead of allocating a 10x20 kind projection every frame.
 - Tetromino shapes are an immutable process-wide table; collision and planning queries do not rebuild it.
@@ -131,6 +137,7 @@ Where to edit:
 
 ## Testing Strategy
 - Core tests remain the contract for rules and timing.
+- Runtime tests cover headless accumulation, frame clamping, catch-up, transaction ordering, and snapshot publication.
 - UI integration tests cover input routing and overlay state.
 - Renderer tests validate mapping logic and resource reuse.
 - Adapter tests cover protocol, concurrency, bounded backpressure, disconnect, and reconnect behavior through public boundaries.

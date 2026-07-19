@@ -1,11 +1,12 @@
 import Foundation
 import Renderer
 import Core
+import Runtime
 import Adapter
 
 public final class SceneDriver: ObservableObject {
     public let scene: TetrisScene
-    private let loop: GameLoop
+    private let runtime: GameRuntime
     private let input: InputEngine
     private let audio: AudioPlaying?
     private var gamepad: GamepadManager?
@@ -29,7 +30,7 @@ public final class SceneDriver: ObservableObject {
     internal private(set) var debugRenderStateVersion: Int
 
     public init(
-        loop: GameLoop = GameLoop(),
+        state: GameState = GameState(config: GameConfig(), seed: 1),
         input: InputEngine = InputEngine(),
         audio: AudioPlaying? = AudioEngine(baseURL: AssetLocator.sfxDirectory()),
         fullScreenHandler: FullScreenHandling = AppKitFullScreenHandler(),
@@ -37,15 +38,15 @@ public final class SceneDriver: ObservableObject {
         adapter: AdapterHandling? = nil
     ) {
         self.scene = scene ?? TetrisScene(size: TetrisScene.defaultSize)
-        self.loop = loop
         self.input = input
+        self.runtime = GameRuntime(state: state, input: input, port: adapter)
         self.audio = audio
         self.fullScreenHandler = fullScreenHandler
         self.adapter = adapter
         let startedValue = false
         self.started = startedValue
-        self.hudState = HUDState.from(state: loop.state, started: startedValue)
-        self.hudDiagnosticsState = HUDDiagnosticsState.from(state: loop.state)
+        self.hudState = HUDState.from(state: state, started: startedValue)
+        self.hudDiagnosticsState = HUDDiagnosticsState.from(state: state)
         self.overlayState = OverlayState(
             isPaused: false,
             isGameOver: false,
@@ -56,7 +57,7 @@ public final class SceneDriver: ObservableObject {
         self.diagnosticsVisible = false
         self.diagnosticsTracker = DiagnosticsTracker()
         self.lastInputAction = nil
-        self.latestRenderState = RenderMapper.map(snapshot: loop.state.snapshot())
+        self.latestRenderState = RenderMapper.map(snapshot: state.snapshot())
         self.debugRenderStateVersion = 0
         self.focusHandler = FocusPauseHandler()
         self.masterVolume = 0.7
@@ -78,21 +79,18 @@ public final class SceneDriver: ObservableObject {
                 self?.handleGamepadAction(action)
             }
         )
-        self.scene.onFixedStep = { [weak self] steps in
-            let elapsed = Int(Double(steps) * TetrisScene.fixedStepMs)
-            self?.tick(elapsedMs: elapsed, fixedSteps: steps)
-        }
         self.scene.onFrame = { [weak self] frameMs in
             guard let self else { return }
             self.diagnosticsAccumMs += frameMs
-            if self.diagnosticsAccumMs < 200 { return }
-            self.diagnosticsAccumMs = 0
-            self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: frameMs)
+            if self.diagnosticsAccumMs >= 200 {
+                self.diagnosticsAccumMs = 0
+                self.diagnosticsState = self.diagnosticsTracker.recordFrame(elapsedMs: frameMs)
+            }
+            self.tick(elapsedMs: frameMs)
         }
         self.scene.onRender = { [weak self] in
             self?.latestRenderState
         }
-        adapter?.emit(snapshot: loop.state.snapshot())
     }
 
     public func start() {
@@ -104,29 +102,15 @@ public final class SceneDriver: ObservableObject {
         (adapter as? AdapterLifecycle)?.start()
     }
 
-    func tick(elapsedMs: Int, fixedSteps: Int = 1) {
-        let elapsed = max(elapsedMs, 0)
-        let stepCount = max(fixedSteps, 1)
-        let baseStepMs = elapsed / stepCount
-        let remainderMs = elapsed % stepCount
+    func tick(elapsedMs: Int) {
+        runtime.advance(frameMs: elapsedMs)
 
-        for stepIndex in 0..<stepCount {
-            let stepElapsed = baseStepMs + (stepIndex < remainderMs ? 1 : 0)
-            loop.state.beginFixedStep()
-            adapter?.poll(elapsedMs: stepElapsed, state: &loop.state)
-            let canAccept = !loop.state.paused && !loop.state.gameOver
-            input.tick(elapsedMs: stepElapsed, canAccept: canAccept, state: &loop.state)
-            loop.state.advanceFixedStep()
-            loop.state.tick(elapsedMs: stepElapsed, softDrop: false)
-            adapter?.emit(snapshot: loop.state.snapshot())
-        }
-
-        let shouldUpdateRenderState = !loop.state.paused || loop.state.gameOver
+        let shouldUpdateRenderState = !runtime.state.paused || runtime.state.gameOver
         if shouldUpdateRenderState {
-            latestRenderState = RenderMapper.map(snapshot: loop.state.snapshot())
+            latestRenderState = RenderMapper.map(snapshot: runtime.state.snapshot())
             debugRenderStateVersion += 1
         }
-        let events = loop.state.takeSoundEvents()
+        let events = runtime.state.takeSoundEvents()
         if !isMuted {
             if let audio = audio {
                 for event in events {
@@ -137,7 +121,7 @@ public final class SceneDriver: ObservableObject {
                     )
                 }
             }
-            let shouldDuck = loop.state.lineClearTimerMs > 0
+            let shouldDuck = runtime.state.lineClearTimerMs > 0
             if shouldDuck != ambientDucked {
                 audio?.setAmbientDucking(enabled: shouldDuck)
                 ambientDucked = shouldDuck
@@ -154,23 +138,23 @@ public final class SceneDriver: ObservableObject {
     }
 
     func stateSnapshot() -> GameState {
-        loop.state
+        runtime.state
     }
 
     public func handleAppActiveChanged(isActive: Bool) {
         overlayState = focusHandler.handleAppActiveChanged(
             isActive: isActive,
-            state: &loop.state,
+            state: &runtime.state,
             input: input,
             started: started
         )
         hudState = HUDState.from(
-            state: loop.state,
+            state: runtime.state,
             started: started,
             lastInput: lastInputAction
         )
         hudDiagnosticsState = HUDDiagnosticsState.from(
-            state: loop.state,
+            state: runtime.state,
             lastInput: lastInputAction
         )
     }
@@ -202,16 +186,16 @@ public final class SceneDriver: ObservableObject {
         recordLastInput(action)
         switch action {
         case .moveLeft:
-            input.setLeftHeld(true, state: &loop.state)
+            input.setLeftHeld(true, state: &runtime.state)
         case .moveRight:
-            input.setRightHeld(true, state: &loop.state)
+            input.setRightHeld(true, state: &runtime.state)
         case .softDrop:
-            input.setDownHeld(true, state: &loop.state)
+            input.setDownHeld(true, state: &runtime.state)
         case .pause:
             input.releaseMovementHolds()
-            input.apply(action: action, to: &loop.state)
+            input.apply(action: action, to: &runtime.state)
         default:
-            input.apply(action: action, to: &loop.state)
+            input.apply(action: action, to: &runtime.state)
         }
 
         refreshDerivedState()
@@ -221,11 +205,11 @@ public final class SceneDriver: ObservableObject {
         guard let action = InputRouter.action(forKey: key) else { return }
         switch action {
         case .moveLeft:
-            input.setLeftHeld(false, state: &loop.state)
+            input.setLeftHeld(false, state: &runtime.state)
         case .moveRight:
-            input.setRightHeld(false, state: &loop.state)
+            input.setRightHeld(false, state: &runtime.state)
         case .softDrop:
-            input.setDownHeld(false, state: &loop.state)
+            input.setDownHeld(false, state: &runtime.state)
         default:
             break
         }
@@ -242,7 +226,7 @@ public final class SceneDriver: ObservableObject {
 
     public func commandRestartGame() {
         started = true
-        loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+        runtime.state.restart(seed: UInt64(runtime.state.rng.peekUInt32()))
         input.reset()
         refreshDerivedState()
     }
@@ -250,7 +234,7 @@ public final class SceneDriver: ObservableObject {
     public func commandTogglePause() {
         recordLastInput(.pause)
         input.releaseMovementHolds()
-        input.apply(action: .pause, to: &loop.state)
+        input.apply(action: .pause, to: &runtime.state)
         refreshDerivedState()
     }
 
@@ -263,7 +247,7 @@ public final class SceneDriver: ObservableObject {
             return
         }
         recordLastInput(action)
-        input.apply(action: action, to: &loop.state)
+        input.apply(action: action, to: &runtime.state)
         refreshDerivedState()
     }
 
@@ -283,17 +267,17 @@ public final class SceneDriver: ObservableObject {
 
     private func setGamepadLeftHeld(_ held: Bool) {
         if held { recordLastInput(.moveLeft) }
-        input.setLeftHeld(held, state: &loop.state)
+        input.setLeftHeld(held, state: &runtime.state)
     }
 
     private func setGamepadRightHeld(_ held: Bool) {
         if held { recordLastInput(.moveRight) }
-        input.setRightHeld(held, state: &loop.state)
+        input.setRightHeld(held, state: &runtime.state)
     }
 
     private func setGamepadDownHeld(_ held: Bool) {
         if held { recordLastInput(.softDrop) }
-        input.setDownHeld(held, state: &loop.state)
+        input.setDownHeld(held, state: &runtime.state)
     }
 
     private func recordLastInput(_ action: GameAction) {
@@ -302,17 +286,17 @@ public final class SceneDriver: ObservableObject {
 
     private func refreshDerivedState() {
         hudState = HUDState.from(
-            state: loop.state,
+            state: runtime.state,
             started: started,
             lastInput: lastInputAction
         )
         hudDiagnosticsState = HUDDiagnosticsState.from(
-            state: loop.state,
+            state: runtime.state,
             lastInput: lastInputAction
         )
         overlayState = OverlayState(
-            isPaused: loop.state.paused,
-            isGameOver: loop.state.gameOver,
+            isPaused: runtime.state.paused,
+            isGameOver: runtime.state.gameOver,
             isTitle: !started,
             onboardingHints: !started ? OverlayState.defaultOnboardingHints : []
         )
@@ -321,7 +305,7 @@ public final class SceneDriver: ObservableObject {
     private func startIfNeeded() {
         if !started {
             started = true
-            loop.state.restart(seed: UInt64(loop.state.rng.peekUInt32()))
+            runtime.state.restart(seed: UInt64(runtime.state.rng.peekUInt32()))
         }
     }
 
@@ -340,7 +324,7 @@ public final class SceneDriver: ObservableObject {
         }
         guard audioActive else { return }
         audio?.setAmbientLoop(enabled: true, masterVolume: masterVolume)
-        let shouldDuck = loop.state.lineClearTimerMs > 0
+        let shouldDuck = runtime.state.lineClearTimerMs > 0
         audio?.setAmbientDucking(enabled: shouldDuck)
         ambientDucked = shouldDuck
     }

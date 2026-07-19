@@ -1,6 +1,3 @@
-import Core
+import Runtime
 
-public protocol AdapterHandling {
-    func poll(elapsedMs: Int, state: inout GameState)
-    func emit(snapshot: GameStateSnapshot)
-}
+public typealias AdapterHandling = GameRuntimePort

@@ -17,8 +17,9 @@
 
 ## Architecture Expectations
 - `Core` owns board, pieces, RNG, scoring, timing, and actions.
+- `Runtime` owns the fixed-step accumulator, transaction ordering, and snapshot publication.
 - `Renderer` renders state from Core; no game logic inside SpriteKit nodes.
-- `UI` is SwiftUI-only: panels, overlays, and window behaviors.
+- `UI` is platform coordination only: SwiftUI panels/overlays, input, audio, and lifecycle.
 - Rendering should reuse preallocated buffers and nodes to minimize per-frame allocations.
 
 ## Working Agreements

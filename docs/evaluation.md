@@ -16,7 +16,7 @@ Current assessment:
 | Input/timing | Strong after fixes | DAS/ARR isolation and per-step catch-up processing |
 | Adapter | Aligned to 3.0.0 | Conformance matrix, logical transitions/events, applied-state ack, bounded transport |
 | Documentation | Reconciled | Canonical protocol is external; local implementation profile and project docs agree |
-| Verification environment | Strong | CLI Debug/Release builds and all 280 Swift Testing tests pass without Xcode or XCTest |
+| Verification environment | Strong | CLI Debug/Release builds and all 276 Swift Testing tests pass without Xcode or XCTest |
 
 ## Correctness Findings Resolved
 
@@ -58,7 +58,7 @@ Large files are no longer preserved merely to minimize diff size. Extraction is 
 - Live Adapter stress checks passed: control concurrency, inbound backpressure/retry hints, frame-boundary disconnect, slow-client isolation, and disconnect/reconnect ownership.
 - Targeted executable checks: passed for T-Spin scoring, combo event score, spawn ghost refresh, shape invariants, framing limit, planner depth, and a 512 KiB localhost TCP write.
 - `git diff --check`: passed after all edits.
-- `scripts/test`: all 280 tests in 91 suites pass with native Swift Testing and no XCTest dependency.
+- `scripts/test`: all 276 tests in 89 suites pass with native Swift Testing and no XCTest dependency after replacing Renderer clock/wrapper tests with headless Runtime contracts.
 - `scripts/build` and `scripts/build -c release`: pass using Command Line Tools.
 
 ## Residual Risks
